@@ -174,7 +174,8 @@ elif [ $MEDIAWIKI_ENABLE_SSL = true ]; then
 fi
 
 # If there is no LocalSettings.php, create one using maintenance/install.php
-if [ ! -e "LocalSettings.php" ]; then
+if [ ! -e "LocalSettings.php" -a ! -f "$MEDIAWIKI_SHARED/install.lock" ]; then
+    touch $MEDIAWIKI_SHARED/install.lock
 	php maintenance/install.php \
 		--confpath /var/www/html \
 		--dbname "$MEDIAWIKI_DB_NAME" \
@@ -205,6 +206,7 @@ if [ ! -e "LocalSettings.php" ]; then
 			mv LocalSettings.php "$MEDIAWIKI_SHARED/LocalSettings.php"
 			ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
 		fi
+    rm $MEDIAWIKI_SHARED/install.lock
 fi
 
 # Install extensions
@@ -229,9 +231,11 @@ fi
 # script. If already up to date, it won't do anything, otherwise it will
 # migrate the database if necessary on container startup. It also will
 # verify the database connection is working.
-if [ -e "LocalSettings.php" -a "$MEDIAWIKI_UPDATE" = 'true' ]; then
+if [ -e "LocalSettings.php" -a "$MEDIAWIKI_UPDATE" = 'true' -a ! -f "$MEDIAWIKI_SHARED/update.lock" ]; then
+    touch $MEDIAWIKI_SHARED/update.lock
 	echo >&2 'info: Running maintenance/update.php';
 	php maintenance/update.php --quick --conf ./LocalSettings.php
+    rm $MEDIAWIKI_SHARED/update.lock
 fi
 
 # Ensure images folder exists
