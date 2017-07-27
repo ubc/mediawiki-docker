@@ -114,8 +114,6 @@ if ($_ENV['MEDIAWIKI_DB_TYPE'] == 'mysql') {
 EOPHP
 
 cd /var/www/html
-# FIXME: Keep php files out of the doc root.
-ln -s /usr/src/mediawiki/* .
 
 : ${MEDIAWIKI_SHARED:=/data}
 if [ -d "$MEDIAWIKI_SHARED" ]; then
@@ -240,7 +238,8 @@ fi
 mkdir -p images
 
 # Fix file ownership and permissions
-chown -R www-data: .
+#chown -R www-data: . # takes long time to exec in k8s, plus it's not good to set everything owned by web user
+chown -R www-data: cache
 chmod 755 images
 
 exec "$@"
