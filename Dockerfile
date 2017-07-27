@@ -37,7 +37,9 @@ RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
 
 # install skin
-RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz | tar xz -C /var/www/html/skins
+RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz | tar xz -C /var/www/html/skins \
+    && mkdir -p /var/www/html/extensions/DynamicPageList \
+    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
 
 EXPOSE 80 443
 

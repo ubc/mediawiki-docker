@@ -197,6 +197,8 @@ if [ ! -e "LocalSettings.php" ]; then
 
         # Append inclusion of /compose_conf/CustomSettings.php
         echo "@include('/conf/CustomSettings.php');" >> LocalSettings.php
+        # Append inclusion of /compose_conf/CustomSettings.php
+        echo "@include('CustomExtensions.php');" >> LocalSettings.php
 
 		# If we have a mounted share volume, move the LocalSettings.php to it
 		# so it can be restored if this container needs to be reinitiated
@@ -205,6 +207,15 @@ if [ ! -e "LocalSettings.php" ]; then
 			mv LocalSettings.php "$MEDIAWIKI_SHARED/LocalSettings.php"
 			ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
 		fi
+fi
+
+# Install extensions
+if [[ $MEDIAWIKI_EXTENSIONS ]]; then
+    echo "<?php" > CustomExtensions.php
+    IFS="," read -ra exts <<< "$MEDIAWIKI_EXTENSIONS"
+    for i in "${exts[@]}"; do
+        echo "wfLoadExtension('$i');" >> CustomExtensions.php
+    done
 fi
 
 # If a composer.lock and composer.json file exist, use them to install
