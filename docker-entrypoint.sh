@@ -194,10 +194,10 @@ if [ ! -e "LocalSettings.php" -a ! -f "$MEDIAWIKI_SHARED/install.lock" ]; then
 		"$MEDIAWIKI_SITE_NAME" \
 		"$MEDIAWIKI_ADMIN_USER"
 
+        # Append inclusion of CustomExtensions.php
+        echo "@include('CustomExtensions.php');" >> LocalSettings.php
         # Append inclusion of /compose_conf/CustomSettings.php
         echo "@include('/conf/CustomSettings.php');" >> LocalSettings.php
-        # Append inclusion of /compose_conf/CustomSettings.php
-        echo "@include('CustomExtensions.php');" >> LocalSettings.php
 
 		# If we have a mounted share volume, move the LocalSettings.php to it
 		# so it can be restored if this container needs to be reinitiated

@@ -20,10 +20,32 @@ services:
     volumes:
        - ./.data/web:/data:rw
     environment:
-      - MEDIAWIKI_SITE_SERVER=//my-wiki
+      - MEDIAWIKI_SITE_SERVER=//localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
       - MEDIAWIKI_DB_HOST=db
       - MEDIAWIKI_DB_PASSWORD=password
       # uncomment 'MEDIAWIKI_ENABLE_SSL' to enable SSL support
       # - MEDIAWIKI_ENABLE_SSL=true
-      - MEDIAWIKI_EXTENSIONS=DynamicPageList
+      - MEDIAWIKI_EXTENSIONS=DynamicPageList,VisualEditor,WikiEditor
+      - PARSOID_URL=http://nodeservices:8142
+      - PARSOID_DOMAIN=localhost
+      - RESTBASE_URL=http://nodeservices:7231
+# use combined image for now
+#  parsoid:
+#    image: ubcctlt/parsoid
+#    environment:
+#      - MEDIAWIKI_API_URL=http://web/w/api.php
+#      - MEDIAWIKI_DOMAIN=localhost
+#      - MEDIAWIKI_PREFIX=localhost
+#  restbase:
+#    image: ubcctlt/restbase
+#    environment:
+#      - MEDIAWIKI_API_URL=http://web/w/api.php
+#      - PARSOID_DOMAIN=localhost
+#      - PARSOID_URL=http://parsoid:8000
+  nodeservices:
+    image: ubcctlt/mediawiki-node-servies
+    environment:
+      - MEDIAWIKI_API_URL=http://web/w/api.php
+    volumes:
+      - ./.data/services:/data
