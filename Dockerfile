@@ -44,7 +44,11 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
     && curl -L https://github.com/wikimedia/mediawiki-extensions-WikiEditor/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/WikiEditor
 
-EXPOSE 80 443
+RUN mkdir -p /data
+
+VOLUME /data
+
+EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apachectl", "-e", "info", "-D", "FOREGROUND"]

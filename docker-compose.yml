@@ -44,7 +44,7 @@ services:
 #      - PARSOID_DOMAIN=localhost
 #      - PARSOID_URL=http://parsoid:8000
   nodeservices:
-    image: ubcctlt/mediawiki-node-servies
+    image: ubcctlt/mediawiki-node-services
     environment:
       - MEDIAWIKI_API_URL=http://web/w/api.php
     volumes:
