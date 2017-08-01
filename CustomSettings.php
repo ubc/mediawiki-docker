@@ -53,3 +53,38 @@ $wgVirtualRestConfig['modules']['restbase'] = [
   'domain' => getenv('PARSOID_DOMAIN') ? getenv('PARSOID_DOMAIN') : 'localhost',
   'parsoidCompat' => false
 ];
+
+# If Ldap environment variables are defined, enabled ldap function
+if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRINGS') || getenv('LDAP_SEARCH_ATTRS')) {
+    require_once ("$IP/extensions/LdapAuthentication/LdapAuthentication.php");
+    $wgAuth = new LdapAuthenticationPlugin();
+
+    $wgLDAPUseLocal = getenv('LDAP_USE_LOCAL') ? getenv('LDAP_USE_LOCAL') == 'true' : true;
+
+    $wgLDAPDebug = getenv('LDAP_DEBUG') ? getenv('LDAP_DEBUG') : 0;
+    $wgDebugLogGroups['ldap'] = '/tmp/debug.log';
+
+    $ldapDomain = getenv('LDAP_DOMAIN') ? getenv('LDAP_DOMAIN') : 'LOCAL';
+    $wgLDAPDomainNames       = array($ldapDomain);
+    $wgLDAPServerNames       = array($ldapDomain => getenv('LDAP_SERVER') ? getenv('LDAP_SERVER') : 'localhost');
+    $wgLDAPEncryptionType    = array($ldapDomain => 'clear');
+    $wgMinimalPasswordLength = 1;
+    $wgLDAPBaseDNs           = array($ldapDomain => getenv('LDAP_BASE_DN') ? getenv('LDAP_BASE_DN') : 'ou=Users,ou=LOCAL,dc=domain,dc=local');
+
+    if (getenv('LDAP_SEARCH_STRINGS')) {
+        $wgLDAPSearchStrings     = array($ldapDomain => getenv('LDAP_SEARCH_STRINGS'));
+    }
+    if (getenv('LDAP_SEARCH_ATTRS')) {
+        $wgLDAPSearchAttributes  = array($ldapDomain => getenv('LDAP_SEARCH_ATTRS'));
+    }
+
+    $wgLDAPDisableAutoCreate = array($ldapDomain => getenv('LDAP_AUTO_CREATE') ? getenv('LDAP_AUTO_CREATE') == 'false' : true);
+    $wgLDAPPort              = array($ldapDomain => getenv('LDAP_PORT') ? getenv('LDAP_PORT') : 389);
+
+    if (getenv('LDAP_PROXY_AGENT')) {
+        $wgLDAPProxyAgent =  array($ldapDomain => getenv('LDAP_PROXY_AGENT'));
+    }
+    if (getenv('LDAP_PROXY_PASSWORD')) {
+        $wgLDAPProxyAgentPassword =  array($ldapDomain => getenv('LDAP_PROXY_PASSWORD'));
+    }
+}

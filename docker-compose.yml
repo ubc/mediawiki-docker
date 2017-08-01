@@ -30,6 +30,14 @@ services:
       - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
+      - LDAP_DOMAIN=CWL
+      - LDAP_SERVER=ldap
+      - LDAP_BASE_DN=dc=example,dc=org
+        #- LDAP_SEARCH_STRINGS=cn=USER-NAME,dc=example,dc=org
+      - LDAP_SEARCH_ATTRS=cn
+      - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
+      - LDAP_PROXY_PASSWORD=admin
+
 # use combined image for now
 #  parsoid:
 #    image: ubcctlt/parsoid
@@ -49,3 +57,5 @@ services:
       - MEDIAWIKI_API_URL=http://web/w/api.php
     volumes:
       - ./.data/services:/data
+  ldap:
+    image: osixia/openldap:1.1.9

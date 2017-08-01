@@ -8,13 +8,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng12-dev \
         libmagickwand-dev \
         libicu-dev \
+        libldap2-dev \
+        libldap-2.4-2 \
         netcat \
         git \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/apt/archives/* \
+    && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
+    && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && docker-php-source extract
 
-RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli \
+RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
@@ -39,10 +43,12 @@ RUN curl -L https://getcomposer.org/installer | php \
 
 # install skin and extensions
 RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz | tar xz -C /var/www/html/skins \
-    && mkdir -p /var/www/html/extensions/DynamicPageList /var/www/html/extensions/WikiEditor \
+    && mkdir -p /var/www/html/extensions/DynamicPageList /var/www/html/extensions/WikiEditor /var/www/html/extensions/LdapAuthentication \
     && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
-    && curl -L https://github.com/wikimedia/mediawiki-extensions-WikiEditor/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/WikiEditor
+    && curl -L https://github.com/wikimedia/mediawiki-extensions-WikiEditor/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/WikiEditor \
+    # ldap exts
+    && curl -L https://github.com/wikimedia/mediawiki-extensions-LdapAuthentication/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/LdapAuthentication
 
 RUN mkdir -p /data
 
