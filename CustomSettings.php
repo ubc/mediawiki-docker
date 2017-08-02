@@ -88,3 +88,8 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
         $wgLDAPProxyAgentPassword =  array($ldapDomain => getenv('LDAP_PROXY_PASSWORD'));
     }
 }
+
+
+# Scribunto
+require_once "$IP/extensions/Scribunto/Scribunto.php";
+$wgScribuntoDefaultEngine = 'luastandalone';

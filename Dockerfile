@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && docker-php-source extract
 
-RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap \
+# pcntl for Scribunto
+RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap pcntl\
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
@@ -43,14 +44,20 @@ RUN curl -L https://getcomposer.org/installer | php \
 
 # install skin and extensions
 RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz | tar xz -C /var/www/html/skins \
-    && mkdir -p /var/www/html/extensions/DynamicPageList /var/www/html/extensions/WikiEditor /var/www/html/extensions/LdapAuthentication \
+    && mkdir -p /var/www/html/extensions/DynamicPageList \
+       /var/www/html/extensions/WikiEditor \
+       /var/www/html/extensions/LdapAuthentication \
+       /var/www/html/extensions/Scribunto \
     && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
-    && curl -L https://github.com/wikimedia/mediawiki-extensions-WikiEditor/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/WikiEditor \
-    # ldap exts
-    && curl -L https://github.com/wikimedia/mediawiki-extensions-LdapAuthentication/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/LdapAuthentication
+    && curl -L https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_28-a665621.tar.gz | tar xz -C /var/www/html/extensions \
+    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite; do \
+      mkdir -p /var/www/html/extensions/$i; \
+      curl -L https://github.com/wikimedia/mediawiki-extensions-$i/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/$i; \
+    done
 
-RUN mkdir -p /data
+RUN mkdir -p /data \
+   && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua
 
 VOLUME /data
 
