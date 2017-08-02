@@ -19,14 +19,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-source extract
 
 # pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap pcntl\
+RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap pcntl opcache \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
     && pecl install imagick-3.4.3 \
-    && pecl install apcu-4.0.11 \
-    && docker-php-ext-enable imagick apcu mysqli \
-    && a2enmod rewrite
+    && docker-php-ext-enable imagick mysqli \
+    && a2enmod rewrite \
+    && rm -rf /tmp/pear
 
 WORKDIR /var/www/html
 

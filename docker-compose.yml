@@ -37,6 +37,8 @@ services:
       - LDAP_SEARCH_ATTRS=cn
       - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
       - LDAP_PROXY_PASSWORD=admin
+      - MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
+      - MEDIAWIKI_MEMCACHED_SERVERS=memcached
 
 # use combined image for now
 #  parsoid:
@@ -59,3 +61,5 @@ services:
       - ./.data/services:/data
   ldap:
     image: osixia/openldap:1.1.9
+  memcached:
+    image: memcached:1.5-alpine
