@@ -38,7 +38,7 @@ services:
       - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
       - LDAP_PROXY_PASSWORD=admin
       - MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
-      - MEDIAWIKI_MEMCACHED_SERVERS=memcached
+      - MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
 
 # use combined image for now
 #  parsoid:

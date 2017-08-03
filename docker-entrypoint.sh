@@ -5,7 +5,7 @@ set -e
 : ${MEDIAWIKI_SITE_NAME:=MediaWiki}
 : ${MEDIAWIKI_SITE_LANG:=en}
 : ${MEDIAWIKI_ADMIN_USER:=admin}
-: ${MEDIAWIKI_ADMIN_PASS:=rosebud}
+: ${MEDIAWIKI_ADMIN_PASS:=admin}
 : ${MEDIAWIKI_DB_TYPE:=mysql}
 : ${MEDIAWIKI_DB_SCHEMA:=mediawiki}
 : ${MEDIAWIKI_ENABLE_SSL:=false}
@@ -121,13 +121,6 @@ if [ ! -d "$MEDIAWIKI_SHARED" ]; then
 fi
 mkdir -p "$MEDIAWIKI_SHARED/images"
 
-# If there is no LocalSettings.php, symlink it even if there is no
-# such file in share location. We assume it will be created by another
-# container
-if [ ! -e LocalSettings.php ]; then
-    ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
-fi
-
 # If the images directory only contains a README, then link it to
 # $MEDIAWIKI_SHARED/images, creating the shared directory if necessary
 if [ "$(ls images)" = "README" -a ! -L images ]; then
@@ -178,8 +171,9 @@ elif [ -e "/etc/apache2/mods-enabled/ssl.load" ]; then
 fi
 
 # If there is no LocalSettings.php, create one using maintenance/install.php
-if [ ! -e "LocalSettings.php" -a ! -f "$MEDIAWIKI_SHARED/install.lock" ]; then
+if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock" ]; then
     touch $MEDIAWIKI_SHARED/install.lock
+    mv LocalSettings.php LocalSettings.php.bak
 	php maintenance/install.php \
 		--confpath /var/www/html \
 		--dbname "$MEDIAWIKI_DB_NAME" \
@@ -198,18 +192,8 @@ if [ ! -e "LocalSettings.php" -a ! -f "$MEDIAWIKI_SHARED/install.lock" ]; then
 		"$MEDIAWIKI_SITE_NAME" \
 		"$MEDIAWIKI_ADMIN_USER"
 
-        # Append inclusion of CustomExtensions.php
-        echo "@include('CustomExtensions.php');" >> LocalSettings.php
-        # Append inclusion of /compose_conf/CustomSettings.php
-        echo "@include('/conf/CustomSettings.php');" >> LocalSettings.php
-
-		# If we have a mounted share volume, move the LocalSettings.php to it
-		# so it can be restored if this container needs to be reinitiated
-		if [ -d "$MEDIAWIKI_SHARED" ]; then
-			# Move generated LocalSettings.php to share volume
-			mv LocalSettings.php "$MEDIAWIKI_SHARED/LocalSettings.php"
-			ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
-		fi
+    touch $MEDIAWIKI_SHARED/installed
+    mv LocalSettings.php.bak LocalSettings.php
     rm $MEDIAWIKI_SHARED/install.lock
 fi
 
