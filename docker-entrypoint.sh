@@ -202,7 +202,9 @@ if [[ $MEDIAWIKI_EXTENSIONS ]]; then
     echo "<?php" > CustomExtensions.php
     IFS="," read -ra exts <<< "$MEDIAWIKI_EXTENSIONS"
     for i in "${exts[@]}"; do
-        echo "wfLoadExtension('$i');" >> CustomExtensions.php
+        if [[ -f /var/www/html/extensions/$i/extension.json ]]; then
+            echo "wfLoadExtension('$i');" >> CustomExtensions.php
+        fi
     done
 fi
 
