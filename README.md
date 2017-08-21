@@ -9,18 +9,7 @@ The changes are:
 * Used stable version of MediaWiki
 * Customized for the production use
 
-# How to use this image
-
-    docker run --name some-mediawiki --link some-mysql:mysql -v /local/data/path:/data:rw -d wikimedia/mediawiki
-
-Partial explanation of arguments:
-
- - `--link` allows you to connect this container with a database container. See `Configure Database` below for more details.
- - `-v` is used to mount a shared folder with the container. See `Shared Volume` below for more details.
-
- Having troubling accessing your MediaWiki server? See `Accessing MediaWiki` below for help.
-
-## Extra configuration options
+## Configuration options
 
 Use the following environmental variables to generate a `LocalSettings.php` and perform automatic installation of MediaWiki. If you don't include these, you'll need to go through the installation wizard. See `Installation Wizard` below for more details. Please see [Manual:Configuration_settings](https://www.mediawiki.org/wiki/Manual:Configuration_settings) for details about what these configuration variables do.
 
@@ -31,34 +20,31 @@ Use the following environmental variables to generate a `LocalSettings.php` and 
  - `-e MEDIAWIKI_ADMIN_PASS=` (defaults to `rosebud`; configures default administrator password)
  - `-e MEDIAWIKI_UPDATE=true` (defaults to `false`; run `php maintenance/update.php`)
  - `-e MEDIAWIKI_SLEEP=` (defaults to `0`; delays startup of container, useful when using Docker Compose)
+ - `-e MEDIAWIKI_EXTENSIONS` (defaults to empty; specify which extensions to enable, comma separated. Extensions are installed through docker image build)
+ - `-e PARSOID_URL` (defaults to `http://localhost:8000`, parsoid instance URL)
+ - `-e PARSOID_DOMAIN` (defaults to `localhost`, parsoid domain)
+ - `-e PARSOID_PREFIX` (defaults to `localhost`, parsoid prefix)
+ - `-e RESTBASE_URL` (defaults not set, RestBase instance URL, if not set, no RestBase will be configured)
+ - `-e LDAP_DOMAIN` (defaults not set, LDAP domain, e.g. CWL)
+ - `-e LDAP_SERVER` (defaults not set, LDAP server address)
+ - `-e LDAP_PORT` (defaults to `389`, LDAP server port)
+ - `-e LDAP_AUTO_CREATE` (defaults to `false`, auto create user account if not in MediaWiki)
+ - `-e LDAP_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN)
+ - `-e LDAP_SEARCH_STRINGS` (defaults not set, LDAP search string)
+ - `-e LDAP_SEARCH_ATTRS` (defaults not set, LDAP search attribute)
+ - `-e LDAP_PROXY_AGENT` (defaults not set, LDAP proxy agent)
+ - `-e LDAP_PROXY_PASSWORD` (defaults not set, LDAP proxy agent password)
+ - `-e MEDIAWIKI_MAIN_CACHE` (defaults to `CACHE_NONE`, main cache)
+ - `-e MEDIAWIKI_MEMCACHED_SERVERS` (defaults to `[]`, list of memcched servers, comma separated, e.g.["memcached:11211", "memcached1:11211"])
 
 As mentioned, this will generate the `LocalSettings.php` file that is required by MediaWiki. If you mounted a shared volume (see `Shared Volume` below), the generated `LocalSettings.php` will be automatically moved to your share volume allowing you to edit it. If a `CustomSettings.php` file exists in your data file, a `require('/data/CustomSettings.php');` will be appended to the generated `LocalSettings.php` file.
 
-## Choosing MediaWiki version
-
-We currently track latest MediaWiki production branches, as run on
-wikipedia.org.
-
- - `wikimedia/mediawiki:latest` (currently uses `1.27-wmf9`)
-
-To use one of these pre-built containers, simply specify the tag as part of the `docker run` command:
-
-    docker run --name some-mediawiki --link mysql -v /local/data/path:/data:rw -d wikimedia/mediawiki
-
 ## Docker Compose
 
-See https://github.com/gwicke/mediawiki-containers for a fully-featured docker
-compose setup with VisualEditor & other services.
-
-## Configure Database
-
-The example above uses `--link` to connect the MediaWiki container with a running [mysql](https://hub.docker.com/_/mysql/) container. This is probably not the best idea for use in production, keeping data in docker containers can be dangerous.
-
-### Using Postgres
-
-You can use Postgres instead of MySQL as your database server using the `:postgres` tag:
-
-    docker run --name some-mediawiki --link some-postgres:postgres -v /local/data/path:/data:rw -d wikimedia/mediawiki:postgres
+```bash
+docker-compose up
+```
+Customization can be done through the environment variables in `docker-compose.yaml`.
 
 ### Using Database Server
 
@@ -99,42 +85,5 @@ Additionally if a `composer.lock` **and** a `composer.json` are detected, the co
 
 ## Accessing MediaWiki
 
-If you'd like to be able to access the instance from the host without the container's IP, standard port mappings can be used using the `-p` or `-P` argument when running `docker run`. See [docs.docker.com](https://docs.docker.com/reference/run/#expose-incoming-ports) for more help.
 
-    docker run --name some-mediawiki --link some-mysql:mysql -p 8080:80 -v /local/data/dir:data:rw -d wikimedia/mediawiki
-
-Then, access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
-
-### Installation Wizard
-
-The first time you access your new MediaWiki instance, you'll be navigated through an installation wizard. The purpose of which is to setup the default database and to generate a configuration file, `LocalSettings.php`.
-
-After using the installation wizard, save a copy of the generated `LocalSettings.php` to your data volume (`-v /local/data/dir:/data:rw`).
-
-If you're using `--link` to connect with a database, you'll be requested to specify the database host, user, password and name. Run `exec some-mediawiki printenv | grep 'MYSQL\|DB\|POSTGRES'` to view the environmental variables relating to the linked database. The database user will not be included, for that use `root` or `postgres` depending on whether you're using mysql or postgres respsectively.
-
-### Docker Machine
-
-If you're using Docker Machine, using `http://localhost:8080` won't work, instead you'll need to run:
-
-    docker-machine ip default
-
-And access your instance of MediaWiki at:
-
-    http://$(docker-machine ip default):8080/
-
-### boot2docker
-
-If you're using boot2docker, using `http://localhost:8080` won't work, instead you'll need to run:
-
-    boot2docker ip
-
-And access your instance of MediaWiki at:
-
-    http://$(boot2docker ip):8080/
-
-## Enabling SSL/TLS/HTTPS
-
-To enable SSL on your server, place your certificate files inside your mounted share volume as `ssl.key`, `ssl.crt` and `ssl.bundle.crt`.  Then add `-e MEDIAWIKI_ENABLE_SSL=true` to your `docker run` command. This will enable the ssl module for Apache and force your instance of mediawik to SSL-only, redirecting all requests from port 80 (http) to 443 (https). Also be sure to include [`-P` or `-p 443:443`](https://docs.docker.com/reference/run/#expose-incoming-ports) in your `docker run` command.
-
-**Note** When enabling SSL, you must update the `$wgServer` in your `LocalSettings.php` to include `https://` as the prefix. If using automatic install, update the `MEDIAWIKI_SITE_SERVER` environmental variable.
+Access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
