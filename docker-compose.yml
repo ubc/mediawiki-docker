@@ -6,10 +6,12 @@ services:
       - MYSQL_ROOT_PASSWORD=password
     volumes:
       - ./.data/db:/var/lib/mysql
+    ports:
+      - 3306:3306
   web:
     build: .
     ports:
-       - 8080:80
+      - 8080:80
     # use the links section if you want to use a container for a database.
     # if not, and you want to use an external database server, configure
     # if with the environment variables in the 'environment' section.

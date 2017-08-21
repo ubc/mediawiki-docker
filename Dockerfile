@@ -48,7 +48,7 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz
        /var/www/html/extensions/WikiEditor \
        /var/www/html/extensions/LdapAuthentication \
        /var/www/html/extensions/Scribunto \
-    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
+    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
     && curl -L https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_28-a665621.tar.gz | tar xz -C /var/www/html/extensions \
     && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite; do \
