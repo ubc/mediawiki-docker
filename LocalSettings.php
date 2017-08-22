@@ -197,12 +197,12 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     $wgLDAPUseLocal = getenv('LDAP_USE_LOCAL') ? getenv('LDAP_USE_LOCAL') == 'true' : true;
 
     $wgLDAPDebug = getenv('LDAP_DEBUG') ? getenv('LDAP_DEBUG') : 0;
-    $wgDebugLogGroups['ldap'] = '/tmp/debug.log';
+    $wgDebugLogGroups['ldap'] = '/tmp/mw_ldap_debug.log';
 
     $ldapDomain = getenv('LDAP_DOMAIN') ? getenv('LDAP_DOMAIN') : 'LOCAL';
     $wgLDAPDomainNames       = array($ldapDomain);
     $wgLDAPServerNames       = array($ldapDomain => getenv('LDAP_SERVER') ? getenv('LDAP_SERVER') : 'localhost');
-    $wgLDAPEncryptionType    = array($ldapDomain => 'clear');
+    $wgLDAPEncryptionType    = array($ldapDomain => loadenv('LDAP_ENCRYPTION_TYPE', 'clear'));
     $wgMinimalPasswordLength = 1;
     $wgLDAPBaseDNs           = array($ldapDomain => getenv('LDAP_BASE_DN') ? getenv('LDAP_BASE_DN') : 'ou=Users,ou=LOCAL,dc=domain,dc=local');
 
