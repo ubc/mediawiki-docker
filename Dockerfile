@@ -38,6 +38,7 @@ COPY mediawiki.conf /etc/apache2/
 RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
+COPY composer.local.json /var/www/html/composer.local.json
 
 RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
@@ -51,13 +52,14 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz
     && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
     && curl -L https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_28-a665621.tar.gz | tar xz -C /var/www/html/extensions \
-    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite InputBox; do \
+    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite InputBox Widgets Math; do \
       mkdir -p /var/www/html/extensions/$i; \
       curl -L https://github.com/wikimedia/mediawiki-extensions-$i/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/$i; \
     done
 
 RUN mkdir -p /data \
-   && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua
+   && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
+   && if [[ -d /var/www/html/extensions/Widgets/compiled_templates ]]; then chmod a+rw /var/www/html/extensions/Widgets/compiled_templates; fi
 
 VOLUME /data
 

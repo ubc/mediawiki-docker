@@ -1,0 +1,7 @@
+{
+    "minimum-stability": "stable",
+    "require": {
+        "mediawiki/maps": "~4.3",
+        "mediawiki/semantic-maps": "~2.5"
+    }
+}
