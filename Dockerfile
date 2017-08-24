@@ -55,7 +55,9 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz
     && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite InputBox Widgets Math; do \
       mkdir -p /var/www/html/extensions/$i; \
       curl -L https://github.com/wikimedia/mediawiki-extensions-$i/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/$i; \
-    done
+    done \
+    && mkdir -p /var/www/html/extensions/Widgets/smarty \
+    && curl -L https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
