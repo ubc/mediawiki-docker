@@ -241,4 +241,17 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ma
     }
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LiquidThreads') !== false) {
+    require_once "$IP/extensions/LiquidThreads/LiquidThreads.php";
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Variables') !== false) {
+    require_once "$IP/extensions/Variables/Variables.php";
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'RightFunctions') !== false) {
+    require_once "$IP/extensions/RightFunctions/RightFunctions.php";
+}
+
+
 @include('/conf/CustomSettings.php');
