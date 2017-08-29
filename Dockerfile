@@ -62,7 +62,7 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-f81a1b8.tar.gz
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
-   && if [[ -d /var/www/html/extensions/Widgets/compiled_templates ]]; then chmod a+rw /var/www/html/extensions/Widgets/compiled_templates; fi
+   && chmod a+rw /var/www/html/extensions/Widgets/compiled_templates
 
 VOLUME /data
 
