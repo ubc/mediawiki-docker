@@ -38,6 +38,16 @@ services:
       - LDAP_PROXY_PASSWORD=admin
       - MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
       - MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
+      - LDAP_DEBUG=3
+      # the following variables are from shell environment or .env file
+      - LDAP_SERVER
+      - LDAP_PORT
+      - LDAP_DOMAIN
+      - LDAP_BASE_DN
+      - LDAP_SEARCH_ATTRS
+      - LDAP_PROXY_AGENT
+      - LDAP_PROXY_PASSWORD
+      - LDAP_ENCRYPTION_TYPE
 
 # use combined image for now
 #  parsoid:
