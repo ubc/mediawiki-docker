@@ -28,6 +28,8 @@ $wgMetaNamespace = loadenv('MEDIAWIKI_META_NAMESPACE', 'MediaWiki');
 ## (like /w/index.php/Page_title to /wiki/Page_title) please see:
 ## https://www.mediawiki.org/wiki/Manual:Short_URL
 $wgScriptPath = loadenv('MEDIAWIKI_SCRIPT_PATH');
+$wgScriptExtension = ".php";
+$wgArticlePath = "/$1";
 
 ## The protocol and server name to use in fully-qualified URLs
 $wgServer = loadenv('MEDIAWIKI_SITE_SERVER', '//localhost');
@@ -76,6 +78,7 @@ $wgMemCachedServers = json_decode(loadenv('MEDIAWIKI_MEMCACHED_SERVERS', '[]'));
 $wgEnableUploads = false;
 #$wgUseImageMagick = true;
 #$wgImageMagickConvertCommand = "/usr/bin/convert";
+#$wgGenerateThumbnailOnParse = false;
 
 # InstantCommons allows wiki to use images from https://commons.wikimedia.org
 $wgUseInstantCommons = false;
