@@ -256,5 +256,10 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ri
     require_once "$IP/extensions/RightFunctions/RightFunctions.php";
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'UserPageEditProtection') !== false) {
+    require_once "$IP/extensions/UserPageEditProtection/UserPageEditProtection.php";
+    $wgOnlyUserEditUserPage = true;
+}
+
 
 @include('/conf/CustomSettings.php');
