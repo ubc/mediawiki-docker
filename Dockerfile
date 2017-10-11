@@ -53,7 +53,7 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-75765db.tar.gz
     && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
     && curl -L https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_28-a665621.tar.gz | tar xz -C /var/www/html/extensions \
     && curl -L https://extdist.wmflabs.org/dist/extensions/LiquidThreads-REL1_28-a07b03f.tar.gz | tar xz -C /var/www/html/extensions \
-    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection; do \
+    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData Cite InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz; do \
       mkdir -p /var/www/html/extensions/$i; \
       curl -L https://github.com/wikimedia/mediawiki-extensions-$i/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/$i; \
     done \
