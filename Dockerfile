@@ -1,6 +1,8 @@
-FROM php:5.6.30-apache
+FROM php:5.6.33-apache
 
-ENV WIKI_VERSION=1.28.2
+ENV WIKI_VERSION=1.30.0
+ENV WIKI_VERSION_STR=1_30
+ENV VECTOR_SKIN_VERSION=REL1_30-85a66bf
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -43,23 +45,17 @@ COPY composer.local.json /var/www/html/composer.local.json
 RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
 
-# install skin and extensions
-RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-REL1_28-75765db.tar.gz | tar xz -C /var/www/html/skins \
-    && mkdir -p /var/www/html/extensions/DynamicPageList \
-       /var/www/html/extensions/WikiEditor \
-       /var/www/html/extensions/LdapAuthentication \
-       /var/www/html/extensions/Scribunto \
-    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
-    && curl -L https://extdist.wmflabs.org/dist/extensions/VisualEditor-REL1_28-93528b7.tar.gz | tar xz -C /var/www/html/extensions \
-    && curl -L https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_28-a665621.tar.gz | tar xz -C /var/www/html/extensions \
-    && curl -L https://extdist.wmflabs.org/dist/extensions/LiquidThreads-REL1_28-a07b03f.tar.gz | tar xz -C /var/www/html/extensions \
-    && curl -L https://extdist.wmflabs.org/dist/extensions/Cite-REL1_28-3521136.tar.gz | tar xz -C /var/www/html/extensions \
-    && for i in WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz; do \
-      mkdir -p /var/www/html/extensions/$i; \
-      curl -L https://github.com/wikimedia/mediawiki-extensions-$i/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/$i; \
+RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}.tar.gz | tar xz -C /var/www/html/skins \
+    && EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
+    && for i in intersection VisualEditor Scribunto LiquidThreads Cite WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz; do \
+      FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
+      echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
+      curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
     done \
+    && mkdir /var/www/html/extensions/RatingBar \
+    && curl -Ls https://github.com/redekopmark/RatingBar/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/RatingBar \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
-    && curl -L https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
+    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
@@ -71,4 +67,3 @@ EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apachectl", "-e", "info", "-D", "FOREGROUND"]
-
