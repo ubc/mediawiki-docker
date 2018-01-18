@@ -47,13 +47,15 @@ RUN curl -L https://getcomposer.org/installer | php \
 
 RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}.tar.gz | tar xz -C /var/www/html/skins \
     && EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in intersection VisualEditor Scribunto LiquidThreads Cite WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
     done \
     && mkdir /var/www/html/extensions/RatingBar \
     && curl -Ls https://github.com/redekopmark/RatingBar/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/RatingBar \
+    && mkdir /var/www/html/extensions/DynamicPageList \
+    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
 

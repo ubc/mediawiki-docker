@@ -186,10 +186,19 @@ if (getenv('RESTBASE_URL')) {
     # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor
 
     $wgVirtualRestConfig['modules']['restbase'] = [
-        'url' => getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231',
+            'url' => getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231',
             'domain' => getenv('PARSOID_DOMAIN') ? getenv('PARSOID_DOMAIN') : 'localhost',
             'parsoidCompat' => false
         ];
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
+    # Math
+    # ref: https://www.mediawiki.org/wiki/Extension:Mat://www.mediawiki.org/wiki/Extension:Math
+
+    $wgDefaultUserOptions['math'] = 'mathml';
+
+    $wgMathFullRestbaseURL= getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231';
 }
 
 # If Ldap environment variables are defined, enabled ldap function
