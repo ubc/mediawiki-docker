@@ -55,7 +55,7 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
     && mkdir /var/www/html/extensions/RatingBar \
     && curl -Ls https://github.com/redekopmark/RatingBar/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/RatingBar \
     && mkdir /var/www/html/extensions/DynamicPageList \
-    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
+    && curl -L https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
 
