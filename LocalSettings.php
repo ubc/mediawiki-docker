@@ -76,7 +76,7 @@ $wgMemCachedServers = json_decode(loadenv('MEDIAWIKI_MEMCACHED_SERVERS', '[]'));
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
 $wgEnableUploads = true;
-#$wgUseImageMagick = true;
+$wgUseImageMagick = true;
 #$wgImageMagickConvertCommand = "/usr/bin/convert";
 #$wgGenerateThumbnailOnParse = false;
 
@@ -129,6 +129,8 @@ $wgDefaultSkin = loadenv('MEDIAWIKI_DEFAULT_SKIN', "vector");
 # The following skins were automatically enabled:
 wfLoadSkin( 'Vector' );
 
+// Needed to make UploadWizard work in IE, see https://phabricator.wikimedia.org/T41877
+$wgApiFrameOptions = 'SAMEORIGIN';
 
 @include('CustomExtensions.php');
 
