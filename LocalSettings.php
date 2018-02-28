@@ -131,6 +131,12 @@ wfLoadSkin( 'Vector' );
 
 // Needed to make UploadWizard work in IE, see https://phabricator.wikimedia.org/T41877
 $wgApiFrameOptions = 'SAMEORIGIN';
+// for UploadWizard to replace existing upload URL
+$wgUploadNavigationUrl = '/wiki/Special:UploadWizard';
+$wgExtensionFunctions[] = function() {
+    $GLOBALS['wgUploadNavigationUrl'] = SpecialPage::getTitleFor( 'UploadWizard'  )->getLocalURL();
+    return true;
+};
 
 @include('CustomExtensions.php');
 
