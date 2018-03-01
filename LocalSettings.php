@@ -138,6 +138,27 @@ $wgExtensionFunctions[] = function() {
     return true;
 };
 
+// enable categories for upload dialog
+$wgUploadDialog = [
+    'fields' => [
+        'description' => true,
+        'date' => false,
+        'categories' => true,
+    ],
+    'licensemessages' => [
+        'local' => 'generic-local',
+        'foreign' => 'generic-foreign',
+    ],
+    'comment' => '',
+    'format' => [
+        'filepage' => '$DESCRIPTION',
+        'description' => '$TEXT',
+        'ownwork' => '',
+        'license' => '',
+        'uncategorized' => '',
+    ],
+];
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
