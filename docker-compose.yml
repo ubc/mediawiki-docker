@@ -38,6 +38,8 @@ services:
       - LDAP_PROXY_PASSWORD=admin
       - MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
       - MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
+      # uncomment to specify the wgUploadPath
+      # - MEDIAWIKI_UPLOAD_PATH=
       - LDAP_DEBUG=3
       # the following variables are from shell environment or .env file
       - LDAP_SERVER

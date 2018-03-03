@@ -142,7 +142,7 @@ $wgExtensionFunctions[] = function() {
 $wgUploadDialog = [
     'fields' => [
         'description' => true,
-        'date' => false,
+        'date' => true,
         'categories' => true,
     ],
     'licensemessages' => [
@@ -158,6 +158,8 @@ $wgUploadDialog = [
         'uncategorized' => '',
     ],
 ];
+
+$wgUploadPath = loadenv('MEDIAWIKI_UPLOAD_PATH', "$wgScriptPath/images");
 
 @include('CustomExtensions.php');
 
