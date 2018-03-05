@@ -159,7 +159,11 @@ $wgUploadDialog = [
     ],
 ];
 
+# disable upload dialog
+$wgForeignUploadTargets = [];
+
 $wgUploadPath = loadenv('MEDIAWIKI_UPLOAD_PATH', "$wgScriptPath/images");
+
 
 @include('CustomExtensions.php');
 
