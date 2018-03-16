@@ -313,4 +313,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ra
     $wgW4GRB_Path = "/extensions/RatingBar";
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Collection') !== false) {
+	require_once "$IP/extensions/Collection/Collection.php";
+}
+
 @include('/conf/CustomSettings.php');
