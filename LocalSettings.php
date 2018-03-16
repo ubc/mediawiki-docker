@@ -138,6 +138,9 @@ $wgExtensionFunctions[] = function() {
     return true;
 };
 
+// It is used on the top page of the UBC Wiki
+$wgAllowSlowParserFunctions = true;
+
 // enable categories for upload dialog
 $wgUploadDialog = [
     'fields' => [
