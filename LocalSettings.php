@@ -20,7 +20,9 @@ function loadenv($envName, $default = "") {
 # $wgDisableOutputCompression = true;
 
 $wgSitename = loadenv('MEDIAWIKI_SITE_NAME', 'MediaWiki');
-$wgMetaNamespace = loadenv('MEDIAWIKI_META_NAMESPACE', $wgSitename);
+if (getenv('MEDIAWIKI_META_NAMESPACE') !== false) {
+    $wgMetaNamespace = loadenv('MEDIAWIKI_META_NAMESPACE', $wgSitename);
+}
 
 ## The URL base path to the directory containing the wiki;
 ## defaults for all runtime URL paths are based off of this.
