@@ -226,10 +226,14 @@ if (getenv('RESTBASE_URL')) {
     # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor
 
     $wgVirtualRestConfig['modules']['restbase'] = [
+            # used internally by wiki, so it can be docker/k8s service name
             'url' => getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231',
             'domain' => getenv('PARSOID_DOMAIN') ? getenv('PARSOID_DOMAIN') : 'localhost',
             'parsoidCompat' => false
         ];
+    # used in browser, so it has to be public accessible, using proxy to forward request to Restbase
+    $wgVisualEditorFullRestbaseURL = $wgServer . '/api/rest_';
+    $wgVisualEditorRestbaseURL = $wgVisualEditorFullRestbaseURL . 'v1/page/html/';
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
@@ -238,7 +242,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ma
 
     $wgDefaultUserOptions['math'] = 'mathml';
 
-    $wgMathFullRestbaseURL= getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231';
+    # used in browser, so it has to be public accessible, using proxy to forward request to Restbase
+    $wgMathFullRestbaseURL= $wgServer . '/api/rest_';
 }
 
 # If Ldap environment variables are defined, enabled ldap function

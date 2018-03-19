@@ -29,8 +29,8 @@ if [ -z "$MEDIAWIKI_DB_HOST" ]; then
 	fi
 fi
 
-if [ -z "$MEDIAWIKI_RESTBASE_URL" ]; then
-	export MEDIAWIKI_RESTBASE_URL=restbase-is-not-specified
+if [ -z "$RESTBASE_URL" ]; then
+	export RESTBASE_URL=restbase-is-not-specified
 fi
 
 if [ -z "$MEDIAWIKI_DB_USER" ]; then
