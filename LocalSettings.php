@@ -324,4 +324,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Co
 	require_once "$IP/extensions/Collection/Collection.php";
 }
 
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DynamicPageList') !== false) {
+    require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
+}
 @include('/conf/CustomSettings.php');
