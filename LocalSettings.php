@@ -169,6 +169,10 @@ $wgForeignUploadTargets = [];
 
 $wgUploadPath = loadenv('MEDIAWIKI_UPLOAD_PATH', "$wgScriptPath/images");
 
+$wgFileExtensions = array_merge( $wgFileExtensions,
+    array( 'doc', 'xls', 'docx', 'xlsx', 'pdf', 'ppt', 'pptx', 'jpg',
+        'tiff', 'odt', 'odg', 'ods', 'odp', 'mp3'
+));
 
 @include('CustomExtensions.php');
 
