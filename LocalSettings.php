@@ -171,7 +171,7 @@ $wgUploadPath = loadenv('MEDIAWIKI_UPLOAD_PATH', "$wgScriptPath/images");
 
 $wgFileExtensions = array_merge( $wgFileExtensions,
     array( 'doc', 'xls', 'docx', 'xlsx', 'pdf', 'ppt', 'pptx', 'jpg',
-        'tiff', 'odt', 'odg', 'ods', 'odp', 'mp3'
+        'tiff', 'odt', 'odg', 'ods', 'odp', 'mp3', 'swf', 'zip', 'xml', 'svg'
 ));
 
 # don't forget to change PHP and Nginx setting
