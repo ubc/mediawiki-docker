@@ -174,6 +174,10 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
         'tiff', 'odt', 'odg', 'ods', 'odp', 'mp3'
 ));
 
+# don't forget to change PHP and Nginx setting
+$wgMaxUploadSize = 1024 * 1024 * 20;
+$wgUseCopyrightUpload = "true";
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
