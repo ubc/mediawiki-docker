@@ -1,4 +1,4 @@
-FROM php:5.6.33-apache
+FROM php:5.6.35-apache
 
 ENV WIKI_VERSION=1.30.0
 ENV WIKI_VERSION_STR=1_30
