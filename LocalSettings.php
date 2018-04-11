@@ -178,6 +178,8 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 $wgMaxUploadSize = 1024 * 1024 * 20;
 $wgUseCopyrightUpload = "true";
 
+$wgAllowSiteCSSOnRestrictedPages = loadenv('MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES', false);
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
