@@ -178,7 +178,7 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 $wgMaxUploadSize = 1024 * 1024 * 20;
 $wgUseCopyrightUpload = "true";
 
-$wgAllowSiteCSSOnRestrictedPages = loadenv('MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES', false);
+$wgAllowSiteCSSOnRestrictedPages = filter_var(loadenv('MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES', false), FILTER_VALIDATE_BOOLEAN);
 
 @include('CustomExtensions.php');
 
@@ -339,3 +339,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Dy
     require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
 }
 @include('/conf/CustomSettings.php');
+
+if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
+    error_reporting(-1);
+    ini_set( 'display_errors', 1  );
+}

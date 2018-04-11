@@ -21,7 +21,8 @@ services:
       - db
     # uncomment the 'volumes' section to enable a shared volume with docker-compose
     volumes:
-       - ./.data/web:/data:rw
+      - ./.data/web:/data:rw
+      - ./CustomSettings.php:/conf/CustomSettings.php
     environment:
       - MEDIAWIKI_SITE_SERVER=//localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
@@ -51,6 +52,7 @@ services:
       - LDAP_PROXY_AGENT
       - LDAP_PROXY_PASSWORD
       - LDAP_ENCRYPTION_TYPE
+      - DEBUG=true
 
 # use combined image for now
 #  parsoid:
