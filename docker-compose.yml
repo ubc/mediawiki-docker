@@ -73,6 +73,7 @@ services:
       - 7231:7231
     environment:
       - MEDIAWIKI_API_URL=http://web/api.php
+      - LOG_LEVEL=debug
     volumes:
       - ./.data/services:/data
   ldap:
