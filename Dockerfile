@@ -41,7 +41,8 @@ COPY mediawiki.conf /etc/apache2/
 RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf \
     && rm /etc/apache2/sites-enabled/000-default.conf \
     && a2enmod proxy \
-    && a2enmod proxy_http
+    && a2enmod proxy_http \
+    && a2enmod remoteip
 
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
