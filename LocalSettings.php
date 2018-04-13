@@ -329,10 +329,14 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Co
     require_once "$IP/extensions/Collection/Collection.php";
 }
 
-
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DynamicPageList') !== false) {
     require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
 }
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'EmbedPage') !== false) {
+    require_once "$IP/extensions/EmbedPage/EmbedPage.php";
+}
+
 @include('/conf/CustomSettings.php');
 
 if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
