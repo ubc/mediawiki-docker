@@ -1,0 +1,7 @@
+User-agent: ia_archiver
+Allow: /*&action=raw
+User-agent: *
+Disallow: /Sandbox
+Disallow: /index.php?
+User-agent: bingbot
+Disallow: /

@@ -47,6 +47,7 @@ RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf \
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY composer.local.json /var/www/html/composer.local.json
+COPY robots.txt /var/www/html/robots.txt
 
 RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
