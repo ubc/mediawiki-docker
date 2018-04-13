@@ -58,8 +58,6 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
     done \
-    && mkdir /var/www/html/extensions/RatingBar \
-    && curl -Ls https://github.com/redekopmark/RatingBar/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/RatingBar \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty
 

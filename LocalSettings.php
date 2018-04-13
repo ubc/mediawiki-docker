@@ -325,13 +325,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Us
     $wgOnlyUserEditUserPage = true;
 }
 
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'RatingBar') !== false) {
-    require_once( "$IP/extensions/RatingBar/w4g_rb.php" );
-    $wgW4GRB_Path = "/extensions/RatingBar";
-}
-
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Collection') !== false) {
-	require_once "$IP/extensions/Collection/Collection.php";
+    require_once "$IP/extensions/Collection/Collection.php";
 }
 
 
