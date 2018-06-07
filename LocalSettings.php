@@ -289,6 +289,20 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     if (getenv('LDAP_PROXY_PASSWORD')) {
         $wgLDAPProxyAgentPassword =  array($ldapDomain => getenv('LDAP_PROXY_PASSWORD'));
     }
+
+    # set $wgLDAPLowerCaseUsername to false in order for the hook SetUsernameAttributeFromLDAP to work
+    # ref: https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/LdapAuthentication/+/master/LdapAuthenticationPlugin.php#1334
+    $wgLDAPLowerCaseUsername = array($ldapDomain => false);
+
+    # disable local wiki account creation page
+    $wgGroupPermissions['*']['createaccount'] = false;
+    # allow auto creation, in case LDAP auto create is enabled
+    # ref: https://www.mediawiki.org/wiki/Topic:T6s2lkqumdyy0zqv
+    $wgGroupPermissions['*']['autocreateaccount'] = true;
+
+    # disable password resets entirely
+    # ref: https://www.mediawiki.org/wiki/Manual:$wgPasswordResetRoutes
+    $wgPasswordResetRoutes = false;
 }
 
 
