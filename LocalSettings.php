@@ -180,6 +180,8 @@ $wgUseCopyrightUpload = "true";
 
 $wgAllowSiteCSSOnRestrictedPages = filter_var(loadenv('MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES', false), FILTER_VALIDATE_BOOLEAN);
 
+$wgGroupPermissions['*']['edit'] = filter_var(loadenv('MEDIAWIKI_ALLOW_ANONYMOUS_EDIT', false), FILTER_VALIDATE_BOOLEAN);
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
