@@ -310,6 +310,14 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
         global $wgDBprefix, $wgServer;
 
         if (empty($info)) {
+            /*
+            Sometimes wiki will call this hook without giving us the LDAP info.
+            It will cause problem if memcached is enabled.  So we stored a copy
+            of previously translated username in session and return it here.
+            */
+            if (array_key_exists('ldap_wiki_username', $_SESSION)) {
+                $LDAPUsername = $_SESSION['ldap_wiki_username'];
+            }
             return true;
         }
 
@@ -365,6 +373,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
                 throw new MWException('Failed to create new wiki user');
             }
         }
+        $_SESSION['ldap_wiki_username'] = $LDAPUsername;
         return true;
     }
 
