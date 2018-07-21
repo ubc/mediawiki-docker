@@ -351,6 +351,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Dy
 }
 @include('/conf/CustomSettings.php');
 
+@include('CustomHooks.php');
+
 if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     error_reporting(-1);
     ini_set( 'display_errors', 1  );
