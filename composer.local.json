@@ -2,6 +2,9 @@
     "minimum-stability": "stable",
     "require": {
         "mediawiki/maps": "~4.3",
-        "mediawiki/semantic-maps": "~2.5"
+        "mediawiki/semantic-maps": "~2.5",
+        "pear/mail": "1.4.1",
+        "pear/mail_mime": "1.10.2",
+        "pear/mail_mime-decode": "1.5.5.2"
     }
 }
