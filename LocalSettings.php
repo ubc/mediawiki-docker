@@ -182,6 +182,20 @@ $wgAllowSiteCSSOnRestrictedPages = filter_var(loadenv('MEDIAWIKI_ALLOW_SITE_CSS_
 
 $wgGroupPermissions['*']['edit'] = filter_var(loadenv('MEDIAWIKI_ALLOW_ANONYMOUS_EDIT', false), FILTER_VALIDATE_BOOLEAN);
 
+if (getenv('SMTP_HOST')) {
+    $wgSMTP['host'] = loadenv('SMTP_HOST');
+    if (getenv('SMTP_HOST_ID')) {
+        $wgSMTP['IDHost'] = loadenv('SMTP_HOST_ID');
+    }
+    $wgSMTP['port'] = loadenv('SMTP_PORT', 25);
+
+    if (getenv('SMTP_USER')) {
+       $wgSMTP['auth'] = true;
+       $wgSMTP['username'] = loadenv('SMTP_USER');
+       $wgSMTP['password'] = loadenv('SMTP_PASSWORD');
+    }
+}
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
