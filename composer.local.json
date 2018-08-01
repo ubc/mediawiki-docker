@@ -5,6 +5,7 @@
         "mediawiki/semantic-maps": "~2.5",
         "pear/mail": "1.4.1",
         "pear/mail_mime": "1.10.2",
-        "pear/mail_mime-decode": "1.5.5.2"
+        "pear/mail_mime-decode": "1.5.5.2",
+        "pear/net_smtp": "1.7.3"
     }
 }
