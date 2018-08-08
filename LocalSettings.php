@@ -155,18 +155,19 @@ $wgUploadWizardConfig = array(
         'url' => '//creativecommons.org/licenses/by-sa/4.0/',
         'languageCodePrefix' => 'deed.'
     ],
-    // 4.0 Attribution Canada
-    'cc-by-4.0-ca' => [
-            'msg' => 'mwe-upwiz-license-cc-by-4.0-ca',
+
+    // 2.5 Attribution Canada
+    'cc-by-2.5-ca' => [
+            'msg' => 'mwe-upwiz-license-cc-by-2.5-ca',
             'icons' => [ 'cc-by' ],
-            'templates' => [ 'cc-by-4.0-ca' ]
+            'templates' => [ 'cc-by-2.5-ca' ]
     ],
 
-    // 4.0 SA Canada
-    'cc-by-sa-4.0-ca' => [
-            'msg' => 'mwe-upwiz-license-cc-by-sa-4.0-ca',
+    // 2.5 SA Canada
+    'cc-by-sa-2.5-ca' => [
+            'msg' => 'mwe-upwiz-license-cc-by-sa-2.5-ca',
             'icons' => [ 'cc-by', 'cc-by-sa'],
-            'templates' => [ 'cc-by-sa-4.0-ca' ]
+            'templates' => [ 'cc-by-sa-2.5-ca' ]
     ],
 
     // Copyright Canadian Gov
@@ -210,9 +211,11 @@ $wgUploadWizardConfig = array(
               'licenses' => [
                   'cc-by-sa-4.0',
                   'cc-by-sa-3.0',
+                  'cc-by-sa-2.5-ca',
                   'cc-by-sa-2.5',
                   'cc-by-4.0',
                   'cc-by-3.0',
+                  'cc-by-2.5-ca',
                   'cc-by-2.5',
                   'cc-zero'
               ]
@@ -477,9 +480,6 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Em
 if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     error_reporting(-1);
     ini_set( 'display_errors', 1  );
-}
-
-if (getenv('DEBUG')) {
     $wgShowExceptionDetails = true;
     $wgCacheDirectory = false;
 }
