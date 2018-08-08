@@ -140,6 +140,109 @@ $wgExtensionFunctions[] = function() {
     return true;
 };
 
+// UploadWizard License Customization
+$wgUploadWizardConfig = array(
+  'feedbackLink' => false,
+  'alternativeUploadToolsPage' => false,
+  'tutorial' => [
+     // UBC edition of copyright tutorial
+     'template' => 'File:Ubc_copyright_tutorial.png'
+  ],
+  'licenses' => [
+    'cc-by-sa-4.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-sa-4.0',
+        'icons' => [ 'cc-by', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-sa/4.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+    // 4.0 Attribution Canada
+    'cc-by-4.0-ca' => [
+            'msg' => 'mwe-upwiz-license-cc-by-4.0-ca',
+            'icons' => [ 'cc-by' ],
+            'templates' => [ 'cc-by-4.0-ca' ]
+    ],
+
+    // 4.0 SA Canada
+    'cc-by-sa-4.0-ca' => [
+            'msg' => 'mwe-upwiz-license-cc-by-sa-4.0-ca',
+            'icons' => [ 'cc-by', 'cc-by-sa'],
+            'templates' => [ 'cc-by-sa-4.0-ca' ]
+    ],
+
+    // Copyright Canadian Gov
+    'cr-cdn-gov' => array(
+            'msg' => 'mwe-upwiz-license-cr-cdn-gov',
+            //'icons' => array( 'cc-by'),
+            'templates' => array( 'cr-cdn-gov' )
+    ),
+
+    // Expired Canada
+    'cr-cdn-exp' => array(
+            'msg' => 'mwe-upwiz-license-cr-cdn-exp',
+            'templates' => array( 'cr-cdn-exp' )
+    ),
+
+    // UBC
+    'cr-ubc' => array(
+            'msg' => 'mwe-upwiz-license-cr-ubc',
+            'templates' => array( 'cr-ubc' )
+    ),
+    'attribution' => [
+        'msg' => 'mwe-upwiz-license-attribution'
+    ],
+    'none' => [
+        'msg' => 'mwe-upwiz-license-none',
+        'templates' => [ 'subst:uwl' ]
+    ],
+    'generic' => [
+        'msg' => 'mwe-upwiz-license-generic',
+        'templates' => [ 'Generic' ]
+    ]
+  ],
+  'licensing' => [
+    'thirdParty' => [
+      'type' => 'and',
+      'licenseGroups' => [
+        [
+              // This should be a list of all CC licenses we can reasonably expect to find around the web
+              'head' => 'mwe-upwiz-license-cc-head',
+              'subhead' => 'mwe-upwiz-license-cc-subhead',
+              'licenses' => [
+                  'cc-by-sa-4.0',
+                  'cc-by-sa-3.0',
+                  'cc-by-sa-2.5',
+                  'cc-by-4.0',
+                  'cc-by-3.0',
+                  'cc-by-2.5',
+                  'cc-zero'
+              ]
+        ],
+        // Canadian Gov license
+        [
+           'head' => 'mwe-upwiz-license-cdngov-head',
+           'licenses' => array(
+              'cr-cdn-gov'
+           )
+        ],
+        // Expire Canadian Public Domain
+        [
+              'head' => 'mwe-upwiz-license-cr-cdn-exp-head',
+              'licenses' => array(
+                 'cr-cdn-exp'
+              )
+        ],
+        // UBC license
+        [
+            'head' => 'mwe-upwiz-license-ubc-head',
+            'licenses' => array(
+                'cr-ubc'
+            )
+        ],
+      ]
+    ]
+  ]
+);
+
 // It is used on the top page of the UBC Wiki
 $wgAllowSlowParserFunctions = true;
 
@@ -374,4 +477,9 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Em
 if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     error_reporting(-1);
     ini_set( 'display_errors', 1  );
+}
+
+if (getenv('DEBUG')) {
+    $wgShowExceptionDetails = true;
+    $wgCacheDirectory = false;
 }

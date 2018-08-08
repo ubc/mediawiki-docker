@@ -23,6 +23,7 @@ services:
     volumes:
       - ./.data/web:/data:rw
       - ./CustomSettings.php:/conf/CustomSettings.php
+      - ./LocalSettings.php:/var/www/html/LocalSettings.php
     environment:
       - MEDIAWIKI_SITE_SERVER=//localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
@@ -30,7 +31,7 @@ services:
       - MEDIAWIKI_DB_PASSWORD=password
       # uncomment 'MEDIAWIKI_ENABLE_SSL' to enable SSL support
       # - MEDIAWIKI_ENABLE_SSL=true
-      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage
+      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages
       - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
       - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
@@ -38,20 +39,21 @@ services:
       - LDAP_SEARCH_ATTRS=cn
       - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
       - LDAP_PROXY_PASSWORD=admin
-      - MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
-      - MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
+      #- MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
+      - MEDIAWIKI_MAIN_CACHE=CACHE_NONE
+      #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
       # uncomment to specify the wgUploadPath
       # - MEDIAWIKI_UPLOAD_PATH=
       - LDAP_DEBUG=3
       # the following variables are from shell environment or .env file
-      - LDAP_SERVER
-      - LDAP_PORT
-      - LDAP_DOMAIN
-      - LDAP_BASE_DN
-      - LDAP_SEARCH_ATTRS
-      - LDAP_PROXY_AGENT
-      - LDAP_PROXY_PASSWORD
-      - LDAP_ENCRYPTION_TYPE
+      #- LDAP_SERVER
+      #- LDAP_PORT
+      #- LDAP_DOMAIN
+      #- LDAP_BASE_DN
+      #- LDAP_SEARCH_ATTRS
+      #- LDAP_PROXY_AGENT
+      #- LDAP_PROXY_PASSWORD
+      #- LDAP_ENCRYPTION_TYPE
       - DEBUG=true
 
 # use combined image for now
