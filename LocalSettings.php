@@ -173,23 +173,23 @@ $wgUploadWizardConfig = array(
     ],
 
     // Copyright Canadian Gov
-    'cr-cdn-gov' => array(
+    'cr-cdn-gov' => [
         'msg' => 'mwe-upwiz-license-cr-cdn-gov',
         //'icons' => array( 'cc-by'),
-        'templates' => array( 'cr-cdn-gov' )
-    ),
+        'templates' => [ 'cr-cdn-gov' ]
+    ],
 
     // Expired Canada
-    'cr-cdn-exp' => array(
+    'cr-cdn-exp' => [
         'msg' => 'mwe-upwiz-license-cr-cdn-exp',
-        'templates' => array( 'cr-cdn-exp' )
-    ),
+        'templates' => [ 'cr-cdn-exp' ]
+    ],
 
     // UBC
-    'cr-ubc' => array(
+    'cr-ubc' => [
         'msg' => 'mwe-upwiz-license-cr-ubc',
-        'templates' => array( 'cr-ubc' )
-    ),
+        'templates' => [ 'cr-ubc' ]
+    ],
     'attribution' => [
         'msg' => 'mwe-upwiz-license-attribution'
     ],
@@ -204,7 +204,7 @@ $wgUploadWizardConfig = array(
   ],
   'licensing' => [
     'thirdParty' => [
-      'type' => 'and',
+      'type' => 'or',
       'licenseGroups' => [
         [
               // This should be a list of all CC licenses we can reasonably expect to find around the web
