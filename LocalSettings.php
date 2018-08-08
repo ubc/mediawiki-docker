@@ -158,35 +158,37 @@ $wgUploadWizardConfig = array(
 
     // 2.5 Attribution Canada
     'cc-by-2.5-ca' => [
-            'msg' => 'mwe-upwiz-license-cc-by-2.5-ca',
-            'icons' => [ 'cc-by' ],
-            'templates' => [ 'cc-by-2.5-ca' ]
+        'msg' => 'mwe-upwiz-license-cc-by-2.5-ca',
+        'icons' => [ 'cc-by' ],
+        'url' => '//creativecommons.org/licenses/by/2.5/ca/',
+        'templates' => [ 'cc-by-2.5-ca' ]
     ],
 
     // 2.5 SA Canada
     'cc-by-sa-2.5-ca' => [
-            'msg' => 'mwe-upwiz-license-cc-by-sa-2.5-ca',
-            'icons' => [ 'cc-by', 'cc-by-sa'],
-            'templates' => [ 'cc-by-sa-2.5-ca' ]
+        'msg' => 'mwe-upwiz-license-cc-by-sa-2.5-ca',
+        'icons' => [ 'cc-by', 'cc-by-sa'],
+        'url' => '//creativecommons.org/licenses/by-sa/2.5/ca/',
+        'templates' => [ 'cc-by-sa-2.5-ca' ]
     ],
 
     // Copyright Canadian Gov
     'cr-cdn-gov' => array(
-            'msg' => 'mwe-upwiz-license-cr-cdn-gov',
-            //'icons' => array( 'cc-by'),
-            'templates' => array( 'cr-cdn-gov' )
+        'msg' => 'mwe-upwiz-license-cr-cdn-gov',
+        //'icons' => array( 'cc-by'),
+        'templates' => array( 'cr-cdn-gov' )
     ),
 
     // Expired Canada
     'cr-cdn-exp' => array(
-            'msg' => 'mwe-upwiz-license-cr-cdn-exp',
-            'templates' => array( 'cr-cdn-exp' )
+        'msg' => 'mwe-upwiz-license-cr-cdn-exp',
+        'templates' => array( 'cr-cdn-exp' )
     ),
 
     // UBC
     'cr-ubc' => array(
-            'msg' => 'mwe-upwiz-license-cr-ubc',
-            'templates' => array( 'cr-ubc' )
+        'msg' => 'mwe-upwiz-license-cr-ubc',
+        'templates' => array( 'cr-ubc' )
     ),
     'attribution' => [
         'msg' => 'mwe-upwiz-license-attribution'
