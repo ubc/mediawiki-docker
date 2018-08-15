@@ -486,16 +486,16 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'go
     // Store full IP address in Google Universal Analytics (see https://support.google.com/analytics/answer/2763052?hl=en for details)
     $wgGoogleAnalyticsAnonymizeIP = false;
     // Array with NUMERIC namespace IDs where web analytics code should NOT be included.
-    $wgGoogleAnalyticsIgnoreNsIDs = array(500);
+    #$wgGoogleAnalyticsIgnoreNsIDs = array(500);
     // Array with page names (see magic word Extension:Google Analytics Integration) where web analytics code should NOT be included.
-    $wgGoogleAnalyticsIgnorePages = array('ArticleX', 'Foo:Bar');
+    #$wgGoogleAnalyticsIgnorePages = array('ArticleX', 'Foo:Bar');
     // Array with special pages where web analytics code should NOT be included.
     $wgGoogleAnalyticsIgnoreSpecials = array( 'Userlogin', 'Userlogout', 'Preferences', 'ChangePassword', 'OATH');
     // Use 'noanalytics' permission to exclude specific user groups from web analytics, e.g.
     $wgGroupPermissions['sysop']['noanalytics'] = true;
     $wgGroupPermissions['bot']['noanalytics'] = true;
     // To exclude all logged in users give 'noanalytics' permission to 'user' group, i.e.
-    $wgGroupPermissions['user']['noanalytics'] = true;
+    #$wgGroupPermissions['user']['noanalytics'] = true;
 }
 
 @include('/conf/CustomSettings.php');
