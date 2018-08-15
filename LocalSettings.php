@@ -496,6 +496,12 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'go
     $wgGroupPermissions['bot']['noanalytics'] = true;
     // To exclude all logged in users give 'noanalytics' permission to 'user' group, i.e.
     #$wgGroupPermissions['user']['noanalytics'] = true;
+
+    # Google Analyics Metrics
+    $t = loadenv('GOOGLE_ANALYTICS_METRICS_ALLOWED', '*');
+    $wgGoogleAnalyticsMetricsAllowed = $t == '*' ? '*' : explode(',', $t);
+    $wgGoogleAnalyticsMetricsPath = loadenv('GOOGLE_ANALYTICS_METRICS_PATH', NULL);
+    $wgGoogleAnalyticsMetricsViewId = loadenv('GOOGLE_ANALYTICS_METRICS_VIEWID', '');
 }
 
 @include('/conf/CustomSettings.php');

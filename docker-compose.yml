@@ -55,6 +55,10 @@ services:
       #- LDAP_PROXY_PASSWORD
       #- LDAP_ENCRYPTION_TYPE
       #- GOOGLE_ANALYTICS_UA=UA-XXXXXXX-XX
+      # GoogleAnalyticsMetrics: https://www.mediawiki.org/wiki/Extension:GoogleAnalyticsMetrics
+      #- GOOGLE_ANALYTICS_METRICS_ALLOWED
+      #- GOOGLE_ANALYTICS_METRICS_PATH
+      #- GOOGLE_ANALYTICS_METRICS_VIEWID
       - DEBUG=true
 
 # use combined image for now
