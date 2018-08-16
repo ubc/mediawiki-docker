@@ -513,4 +513,5 @@ if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     ini_set( 'display_errors', 1  );
     $wgShowExceptionDetails = true;
     $wgCacheDirectory = false;
+    $wgDebugLogFile = "/tmp/mw-debug-{$wgDBname}.log";
 }
