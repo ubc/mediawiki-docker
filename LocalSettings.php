@@ -290,6 +290,9 @@ $wgAllowSiteCSSOnRestrictedPages = filter_var(loadenv('MEDIAWIKI_ALLOW_SITE_CSS_
 
 $wgGroupPermissions['*']['edit'] = filter_var(loadenv('MEDIAWIKI_ALLOW_ANONYMOUS_EDIT', false), FILTER_VALIDATE_BOOLEAN);
 
+# allow admin/sysop class to rename user
+$wgGroupPermissions['sysop']['renameuser'] = true;
+
 if (getenv('SMTP_HOST')) {
     $wgSMTP['host'] = loadenv('SMTP_HOST');
     if (getenv('SMTP_HOST_ID')) {
