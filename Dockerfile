@@ -1,6 +1,8 @@
 FROM php:5.6.35-apache
 
-ENV WIKI_VERSION=1.30.0
+ENV WIKI_VERSION_MAJOR_MINOR=1.30
+ENV WIKI_VERSION_BUGFIX=0
+ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_30
 ENV VECTOR_SKIN_VERSION=REL1_30-85a66bf
 
@@ -15,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         netcat \
         git \
         imagemagick \
+        unzip \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/apt/archives/* \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
@@ -33,7 +36,7 @@ RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap pcntl 
 
 WORKDIR /var/www/html
 
-RUN curl -L https://api.github.com/repos/wikimedia/mediawiki/tarball/$WIKI_VERSION | tar xz --strip=1
+RUN curl -L https://releases.wikimedia.org/mediawiki/$WIKI_VERSION_MAJOR_MINOR/mediawiki-$WIKI_VERSION.tar.gz | tar xz --strip=1
 
 COPY php.ini /usr/local/etc/php/
 
