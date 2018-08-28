@@ -5,7 +5,7 @@ set -e
 : ${MEDIAWIKI_SITE_NAME:=MediaWiki}
 : ${MEDIAWIKI_SITE_LANG:=en}
 : ${MEDIAWIKI_ADMIN_USER:=admin}
-: ${MEDIAWIKI_ADMIN_PASS:=admin}
+: ${MEDIAWIKI_ADMIN_PASS:=admin1234}
 : ${MEDIAWIKI_DB_TYPE:=mysql}
 : ${MEDIAWIKI_DB_SCHEMA:=mediawiki}
 : ${MEDIAWIKI_ENABLE_SSL:=false}
@@ -194,6 +194,8 @@ if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock"
 
     touch $MEDIAWIKI_SHARED/installed
     mv LocalSettings.php.bak LocalSettings.php
+    # run update.php as extensions need to create tables
+    php maintenance/update.php --quick
     rm $MEDIAWIKI_SHARED/install.lock
 fi
 
