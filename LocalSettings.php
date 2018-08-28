@@ -307,6 +307,8 @@ if (getenv('SMTP_HOST')) {
     }
 }
 
+$wgReadOnly = loadenv('MEDIAWIKI_READONLY', null);
+
 @include('CustomExtensions.php');
 
 # some sensible defaults

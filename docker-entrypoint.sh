@@ -105,8 +105,6 @@ if ($_ENV['MEDIAWIKI_DB_TYPE'] == 'mysql') {
 
 	if (!$mysql->query('CREATE DATABASE IF NOT EXISTS `' . $mysql->real_escape_string($_ENV['MEDIAWIKI_DB_NAME']) . '`')) {
 		file_put_contents('php://stderr', 'MySQL "CREATE DATABASE" Error: ' . $mysql->error . "\n");
-		$mysql->close();
-		exit(1);
 	}
 
 	$mysql->close();
