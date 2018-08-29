@@ -309,6 +309,14 @@ if (getenv('SMTP_HOST')) {
 
 $wgReadOnly = loadenv('MEDIAWIKI_READONLY', null);
 
+$wgLocalisationCacheConf = array(
+    'class' => 'LocalisationCache',
+    'store' => loadenv('MEDIAWIKI_LOCALISATION_CACHE_STORE', 'detect'),
+    'storeClass' => false,
+    'storeDirectory' => false,
+    'manualRecache' => filter_var(loadenv('MEDIAWIKI_LOCALISATION_CACHE_MANUALRECACHE', false), FILTER_VALIDATE_BOOLEAN),
+);
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
@@ -350,8 +358,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Vi
 
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'WikiEditor') !== false) {
-    # WikiEditor
-    # ref: https://www.mediawiki.org/wiki/Extension:WikiEditor
+    # WikiEditor # ref: https://www.mediawiki.org/wiki/Extension:WikiEditor
 
     # Enables use of WikiEditor by default but still allows users to disable it in preferences
     $wgDefaultUserOptions['usebetatoolbar'] = 1;
