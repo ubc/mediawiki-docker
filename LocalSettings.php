@@ -313,7 +313,6 @@ $wgLocalisationCacheConf = array(
     'class' => 'LocalisationCache',
     'store' => loadenv('MEDIAWIKI_LOCALISATION_CACHE_STORE', 'detect'),
     'storeClass' => false,
-    'storeDirectory' => false,
     'manualRecache' => filter_var(loadenv('MEDIAWIKI_LOCALISATION_CACHE_MANUALRECACHE', false), FILTER_VALIDATE_BOOLEAN),
 );
 
