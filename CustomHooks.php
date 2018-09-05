@@ -14,19 +14,12 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     function SetUsernameAttribute(&$LDAPUsername, $info) {
         global $wgDBprefix, $wgServer;
 
-        if (empty($info)) {
-            /*
-            Sometimes wiki will call this hook without giving us the LDAP info.
-            It will cause problem if memcached is enabled.  So we stored a copy
-            of previously translated username in session and return it here.
-            */
-            if (array_key_exists('ldap_wiki_username', $_SESSION)) {
-                $LDAPUsername = $_SESSION['ldap_wiki_username'];
-            }
+        $puidFromLDAP = _puid_from_ldap($info);
+        if (empty($puidFromLDAP)) {
+            $LDAPUsername = '';
             return true;
         }
 
-        $puidFromLDAP = _puid_from_ldap($info);
         $LDAPUsername = _cwl_login_from_ldap($info);  // default wiki username
 
         $existing_user_found = false;
@@ -78,7 +71,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
                 throw new MWException('Failed to create new wiki user');
             }
         }
-        $_SESSION['ldap_wiki_username'] = $LDAPUsername;
+
         return true;
     }
 
@@ -125,6 +118,36 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /*
+    When renaming a user, clear the canonical name cached by LDAP auth
+    */
+    $wgHooks['RenameUserAbort'][] = 'onRenameUserAbort';
+    function onRenameUserAbort($uid, $oldName, $newName) {
+        global $wgMemc, $wgDBprefix;
+        global $wgLDAPLowerCaseUsername;
+
+        // find our record based on uid
+        $dbr = wfGetDB(DB_REPLICA);
+        $res = $dbr->select(
+            array('ucead' => $wgDBprefix.'user_cwl_extended_account_data'),   // tables
+            array('ucead.cwllogin'),       // fields
+            array('ucead.user_id' => $uid),   // where clause
+            __METHOD__     // caller function name
+        );
+        foreach ($res as $row) {
+            $username = $row->cwllogin;
+            if ($wgLDAPLowerCaseUsername) {
+                $username = strtolower($username);
+            }
+            $key = wfMemcKey('ldapauthentication', 'canonicalname', ucfirst($username));
+            $wgMemc->delete($key);
+        }
+        $dbr->freeResult($res);
+
+        return true;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     // helper functions
 
     function _ldap_get_or_empty($info, $key) {
@@ -138,7 +161,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 
     // user information from LDAP
     function _cwl_login_from_ldap($info) {
-        return _ldap_get_or_empty($info, 'uid');
+        return _ldap_get_or_empty($info, getenv('LDAP_SEARCH_ATTRS')? getenv('LDAP_SEARCH_ATTRS') : 'uid');
     }
     function _first_name_from_ldap($info) {
         return _ldap_get_or_empty($info, 'givenname');
