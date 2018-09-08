@@ -293,6 +293,13 @@ $wgGroupPermissions['*']['edit'] = filter_var(loadenv('MEDIAWIKI_ALLOW_ANONYMOUS
 # allow admin/sysop class to rename user
 $wgGroupPermissions['sysop']['renameuser'] = true;
 
+# Hide renameuser logs from Special:Log
+$wgFilterLogTypes['renameuser'] = true;
+# Restrict access to renameuser log type.
+# Special:Log/renameuser is accessible only to those with renameuser permission.
+# This should also stop new renameuser logs being added to Special:RecentChanges. Existing rename logs in RecentChanges can be cleared by running "php maintenance/rebuildrecentchanges.php"
+$wgLogRestrictions['renameuser'] = 'renameuser';
+
 if (getenv('SMTP_HOST')) {
     $wgSMTP['host'] = loadenv('SMTP_HOST');
     if (getenv('SMTP_HOST_ID')) {
