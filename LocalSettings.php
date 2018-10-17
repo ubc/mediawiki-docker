@@ -52,7 +52,7 @@ $wgEmergencyContact = loadenv('MEDIAWIKI_EMERGENCY_CONTACT', "apache@localhost")
 $wgPasswordSender = loadenv('MEDIAWIKI_PASSWORD_SENDER', "apache@localhost");
 
 $wgEnotifUserTalk = false; # UPO
-$wgEnotifWatchlist = false; # UPO
+$wgEnotifWatchlist = true; # UPO
 $wgEmailAuthentication = true;
 
 ## Database settings
