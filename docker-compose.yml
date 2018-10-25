@@ -23,7 +23,7 @@ services:
     volumes:
       - ./.data/web:/data:rw
       - ./CustomSettings.php:/conf/CustomSettings.php
-      # do not uncomment this when starting a new instance from scratch as 
+      # do not uncomment this when starting a new instance from scratch as
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
     environment:
@@ -38,9 +38,12 @@ services:
       - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
+      - LDAP_DOMAIN=CWL
+      - LDAP_SERVER=ldap
       - LDAP_SEARCH_ATTRS=cn
       - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
       - LDAP_PROXY_PASSWORD=admin
+      - LDAP_BASE_DN=dc=example,dc=org
       #- MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
       - MEDIAWIKI_MAIN_CACHE=CACHE_NONE
       #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
@@ -87,5 +90,12 @@ services:
       - ./.data/services:/data
   ldap:
     image: osixia/openldap:1.1.9
+    command: --copy-service
+    ports:
+      - 1389:389
+    volumes:
+      - ./dev/ldapadd_ubcedu.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/ldapadd_ubcedu.ldif
+      - ./.data/ldap:/var/lib/ldap
+      - ./.data/slapd.d:/etc/ldap/slapd.d
   memcached:
     image: memcached:1.5-alpine
