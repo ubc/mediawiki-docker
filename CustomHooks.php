@@ -1,5 +1,8 @@
 <?php
 
+use IMSGlobal\Caliper\entities\agent\Person;
+use CaliperExtension\caliper\CaliperSensor;
+
 # If LDAP environment variables are defined, enabled additional customization
 if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRINGS') || getenv('LDAP_SEARCH_ATTRS')) {
     // $wgDebugLogFile = "/tmp/debug-{$wgDBname}.log";
@@ -268,6 +271,49 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
             }
         }
         return $username;
+    }
+
+    # if Caliper is setup, use a custom actor with puid from LDAP
+    if (getenv('CaliperHost') && getenv('CaliperAPIKey')) {
+        $wgHooks['SetCaliperActorObject'][] = 'SetCaliperActor';
+
+        // This is the username MediaWiki will use.
+        function SetCaliperActor(&$actor, &$user) {
+            global $wgDBprefix;
+
+            if ($actor !== null) {
+                return true;
+            } else if (!$user->isLoggedIn() || !$user->getId()) {
+                return false;
+            }
+
+            $puid = null;
+            $userId = $user->getId();
+
+            $dbr = wfGetDB(DB_REPLICA);
+            $res = $dbr->select(
+                array('ucead' => $wgDBprefix.'user_cwl_extended_account_data'),   // tables
+                array('ucead.puid'),       // fields
+                array('ucead.user_id' => $userId, 'ucead.account_status' => 1),   // where clause
+                __METHOD__,     // caller function name
+                array('LIMIT' => 1)      // options. fetch first row only
+            );
+            foreach ($res as $row) {
+                $puid = $row->puid;
+            }
+
+            if (!$puid) {
+                return false;
+            }
+
+            $caliperLDAPActorHomepage = rtrim(loadenv('CaliperLDAPActorHomepage', ''), '/');
+
+            $actor = (new Person( $caliperLDAPActorHomepage . "/" . $puid ))
+                ->setName($user->getRealName())
+                ->setDateCreated(CaliperSensor::mediawikiTimestampToDateTime($user->getRegistration()));
+
+            return true;
+        }
     }
 } // end customization for LDAP authentication
 

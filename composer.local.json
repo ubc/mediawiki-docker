@@ -7,6 +7,7 @@
         "pear/mail_mime": "1.10.2",
         "pear/mail_mime-decode": "1.5.5.2",
         "pear/net_smtp": "1.7.3",
-        "google/apiclient":"^2.0"
+        "google/apiclient":"^2.0",
+        "imsglobal/caliper": "1.1.0"
     }
 }

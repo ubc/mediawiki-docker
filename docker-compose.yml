@@ -33,7 +33,7 @@ services:
       - MEDIAWIKI_DB_PASSWORD=password
       # uncomment 'MEDIAWIKI_ENABLE_SSL' to enable SSL support
       # - MEDIAWIKI_ENABLE_SSL=true
-      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,GoogleAnalyticsMetrics,googleAnalytics,Renameuser
+      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,GoogleAnalyticsMetrics,googleAnalytics,Renameuser,caliper
       - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
       - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
@@ -65,6 +65,10 @@ services:
       #- GOOGLE_ANALYTICS_METRICS_PATH
       #- GOOGLE_ANALYTICS_METRICS_VIEWID
       - DEBUG=true
+      # - CaliperHost=https://caliper.imsglobal.org/caliper/PUT_TEST_BEARER_TOKEN_HERE/message
+      # - CaliperAPIKey=PUT_TEST_BEARER_TOKEN_HERE
+      # - CaliperAppBaseUrl=http://localhost:8888/test_url/
+      # - CaliperLDAPActorHomepage=http://media_wiki_ldap_homepage
 
 # use combined image for now
 #  parsoid:
