@@ -309,7 +309,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
             $caliperLDAPActorHomepage = rtrim(loadenv('CaliperLDAPActorHomepage', ''), '/');
 
             $actor = (new Person( $caliperLDAPActorHomepage . "/" . $puid ))
-                ->setName($user->getRealName())
+                ->setName($user->getName())
                 ->setDateCreated(CaliperSensor::mediawikiTimestampToDateTime($user->getRegistration()));
 
             return true;
