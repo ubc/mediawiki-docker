@@ -51,6 +51,9 @@ $wgEnableUserEmail = filter_var(loadenv('MEDIAWIKI_ENABLE_USER_EMAIL', true), FI
 $wgEmergencyContact = loadenv('MEDIAWIKI_EMERGENCY_CONTACT', "apache@localhost");
 $wgPasswordSender = loadenv('MEDIAWIKI_PASSWORD_SENDER', "apache@localhost");
 
+# Disable Job execution on page requests (can be setup via cron jobs)
+$wgJobRunRate = 0;
+
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = true; # UPO
 $wgEmailAuthentication = true;
@@ -520,6 +523,13 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'go
     $wgGoogleAnalyticsMetricsAllowed = $t == '*' ? '*' : explode(',', $t);
     $wgGoogleAnalyticsMetricsPath = loadenv('GOOGLE_ANALYTICS_METRICS_PATH', NULL);
     $wgGoogleAnalyticsMetricsViewId = loadenv('GOOGLE_ANALYTICS_METRICS_VIEWID', '');
+}
+
+# setup caliper settings if enabled
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'caliper') !== false && loadenv('CaliperHost') && loadenv('CaliperAPIKey')) {
+    $wgCaliperHost = loadenv('CaliperHost');
+    $wgCaliperAPIKey = loadenv('CaliperAPIKey');
+    $wgCaliperAppBaseUrl = loadenv('CaliperAppBaseUrl', null);
 }
 
 @include('/conf/CustomSettings.php');

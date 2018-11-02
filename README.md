@@ -120,3 +120,11 @@ docker-compose up -d
 You can connect to the LDAP container using your preferred LDAP GUI using `localhost:1389` with login `cn=admin,dc=example,dc=org` and password `admin`.
 
 When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`, and `ubcEdu` classes.
+
+## Custom Caliper actor data
+
+See the [mediawiki-extensions-caliper](https://github.com/ubc/mediawiki-extensions-caliper/blob/master/caliper/actor.php) repo's `CaliperActor` object for the default logged in and logged out users.
+
+You can customize the Caliper actor by using the `SetCaliperActorObject` hook. This container has uses this hook with the `SetCaliperActor` function inside of `CustomHooks.php`.
+
+By default, the `SetCaliperActor` function will use UBC `puid` for the identifier and `CaliperLDAPActorHomepage` environment variable as the base string so the actor identifier will take the form of `CaliperLDAPActorHomepage/LDAP_PUID` (ex: `https://www.ubc.ca/SOME_PUID`). you can instead remove this function and create your own depending on your institution needs, deployment settings, and/or authorization methods.

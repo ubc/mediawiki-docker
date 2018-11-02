@@ -73,7 +73,9 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
-    && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics
+    && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
+    && mkdir -p /var/www/html/extensions/caliper \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
