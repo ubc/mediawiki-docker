@@ -1,0 +1,29 @@
+dn: cn=ubcedu,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: ubcedu
+#
+olcAttributeTypes: (
+    1.3.6.1.4.1.60.1.1.1.1 NAME 'ubcEduCwlPUID'       DESC 'CWL PUID'           EQUALITY caseIgnoreIA5Match SUBSTR caseIgnoreIA5SubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE
+    X-ORIGIN 'https://confluence.it.ubc.ca/display/UELE/ubcEdu+Object+Class'
+    )
+olcAttributeTypes: (
+    1.3.6.1.4.1.60.1.1.1.2 NAME 'ubcEduStudentNumber' DESC 'SIS Student Number' EQUALITY caseIgnoreMatch    SUBSTR caseIgnoreSubstringsMatch    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE
+    X-ORIGIN 'https://confluence.it.ubc.ca/display/UELE/ubcEdu+Object+Class'
+    )
+olcAttributeTypes: (
+    1.3.6.1.4.1.60.1.1.1.3 NAME 'ubcEduGender'        DESC 'Gender'             EQUALITY caseIgnoreIA5Match SUBSTR caseIgnoreIA5SubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE
+    X-ORIGIN 'https://confluence.it.ubc.ca/display/UELE/ubcEdu+Object+Class'
+    )
+olcAttributeTypes: (
+    1.3.6.1.4.1.60.1.1.1.4 NAME 'ubcEduCwlLoginKey'   DESC 'CWL Login Key'      EQUALITY integerMatch                                           SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE
+    X-ORIGIN 'https://confluence.it.ubc.ca/display/UELE/ubcEdu+Object+Class'
+    )
+olcObjectClasses: (
+    1.3.6.1.4.1.60.1.1.2.1 NAME 'ubcEdu'              DESC 'UBC Specific Attributes'
+    SUP top
+    AUXILIARY
+    MUST ubcEduCwlPUID
+    MAY ( ubcEduCwlLoginKey $ ubcEduGender $ ubcEduStudentNumber )
+    X-ORIGIN 'https://confluence.it.ubc.ca/display/UELE/ubcEdu+Object+Class'
+    )
+

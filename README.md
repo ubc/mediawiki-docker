@@ -89,3 +89,34 @@ Additionally if a `composer.lock` **and** a `composer.json` are detected, the co
 
 
 Access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
+
+
+## Setting up instance for development
+
+First startup the application for the first time with:
+
+```bash
+docker-compose up -d
+```
+
+Next after startup run the following to add `the user_cwl_extended_account_data` table
+
+```bash
+docker cp ./dev/add_table.sql mediawiki-docker_db_1:/add_table.sql
+docker exec -it mediawiki-docker_db_1 /bin/bash -c "mysql -u root -ppassword mediawiki < /add_table.sql"
+```
+
+Next you need to uncomment the line `- ./LocalSettings.php:/var/www/html/LocalSettings.php` in the docker compose file.
+
+Finally restart all the containers with:
+
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+## Adding new LDAP users
+
+You can connect to the LDAP container using your preferred LDAP GUI using `localhost:1389` with login `cn=admin,dc=example,dc=org` and password `admin`.
+
+When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`, and `ubcEdu` classes.
