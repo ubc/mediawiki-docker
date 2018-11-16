@@ -141,3 +141,9 @@ You may need to restart the container to load the change, use:
 docker-compose restart SERIVCE_NAME
 ```
 where the SERIVCE_NAME can be any service in docker-compose, e.g. nodeservices, web, db, etc. The changes in the container will persist.
+
+## Version and Release Tags
+
+The `REL*` branches track the upstream Mediawiki released versions. When something is updated in this repo and is ready to be deployed, a new tag should be created and the tag name should in the format of `BRANCH_NAME + BUILD NUMBER`, e.g. REL1_30_B2 or REL1_31_B5. The `BUILD_NUMBER` should be increased sequentially.
+
+The same rules apply to node-services repo as well.
