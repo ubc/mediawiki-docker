@@ -1,13 +1,12 @@
 {
     "minimum-stability": "stable",
     "require": {
-        "mediawiki/maps": "~4.3",
-        "mediawiki/semantic-maps": "~2.5",
+        "mediawiki/maps": "~6.0",
         "pear/mail": "1.4.1",
         "pear/mail_mime": "1.10.2",
         "pear/mail_mime-decode": "1.5.5.2",
-        "pear/net_smtp": "1.7.3",
-        "google/apiclient":"^2.0",
+        "pear/net_smtp": "1.8.1",
+        "google/apiclient":"^2.2",
         "imsglobal/caliper": "1.1.0"
     }
 }

@@ -1,15 +1,15 @@
-FROM php:5.6.35-apache
+FROM php:7.1-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.30
+ENV WIKI_VERSION_MAJOR_MINOR=1.31
 ENV WIKI_VERSION_BUGFIX=0
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_30
-ENV VECTOR_SKIN_VERSION=REL1_30-85a66bf
+ENV WIKI_VERSION_STR=1_31
+ENV VECTOR_SKIN_VERSION=REL1_31-f0327dc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
-        libpng12-dev \
+        libpng-dev \
         libmagickwand-dev \
         libicu-dev \
         libldap2-dev \
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-source extract
 
 # pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mysql mbstring xml intl mysqli ldap pcntl opcache \
+RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
@@ -64,21 +64,27 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
     done \
+    && echo "Installing https://github.com/ubc/EmbedPage/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
     && curl -Ls https://github.com/ubc/EmbedPage/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
+    && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
-    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.30.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
+    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
+    && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
     && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper
 
 RUN mkdir -p /data \
-   && chmod a+x /var/www/html/extensions/Scribunto/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
+   && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
    && chmod a+rw /var/www/html/extensions/Widgets/compiled_templates
 
 VOLUME /data
