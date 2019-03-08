@@ -326,6 +326,8 @@ $wgLocalisationCacheConf = array(
     'manualRecache' => filter_var(loadenv('MEDIAWIKI_LOCALISATION_CACHE_MANUALRECACHE', false), FILTER_VALIDATE_BOOLEAN),
 );
 
+$wgEnableBotPasswords = filter_var(loadenv('MEDIAWIKI_ENABLE_BOT_PASSWORDS', true), FILTER_VALIDATE_BOOLEAN);
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
