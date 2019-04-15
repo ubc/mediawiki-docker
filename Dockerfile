@@ -1,10 +1,11 @@
 FROM php:7.1-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.31
+ENV WIKI_VERSION_MAJOR_MINOR=1.32
 ENV WIKI_VERSION_BUGFIX=1
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_31
-ENV VECTOR_SKIN_VERSION=REL1_31-f0327dc
+ENV WIKI_VERSION_STR=1_32
+# https://www.mediawiki.org/wiki/Special:SkinDistributor/Vector
+ENV VECTOR_SKIN_VERSION=REL1_32-d3ed21a
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -73,9 +74,9 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
-    && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz" \
+    && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.33.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
-    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
+    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.33.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
     && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
     && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
