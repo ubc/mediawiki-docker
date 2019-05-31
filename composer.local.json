@@ -3,7 +3,6 @@
     "require": {
         "mediawiki/maps": "~6.0",
         "pear/mail_mime-decode": "1.5.5.2",
-        "google/apiclient":"^2.2",
-        "imsglobal/caliper": "1.1.0"
+        "google/apiclient":"^2.2"
     }
 }
