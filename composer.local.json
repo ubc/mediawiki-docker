@@ -2,7 +2,6 @@
     "minimum-stability": "stable",
     "require": {
         "mediawiki/maps": "~6.0",
-        "pear/mail_mime-decode": "1.5.5.2",
         "google/apiclient":"^2.2"
     }
 }
