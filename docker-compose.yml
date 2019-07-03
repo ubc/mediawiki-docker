@@ -9,7 +9,7 @@ services:
     ports:
       - 3306:3306
   web:
-    image: ubcctlt/mediawiki
+    image: ubcctlt/mediawiki:REL1_32
     build: .
     ports:
       - 8080:80
@@ -38,12 +38,12 @@ services:
       - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
-      - LDAP_DOMAIN=CWL
-      - LDAP_SERVER=ldap
-      - LDAP_SEARCH_ATTRS=cn
-      - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
-      - LDAP_PROXY_PASSWORD=admin
-      - LDAP_BASE_DN=dc=example,dc=org
+#      - LDAP_DOMAIN=CWL
+#      - LDAP_SERVER=ldap
+#      - LDAP_SEARCH_ATTRS=cn
+#      - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
+#      - LDAP_PROXY_PASSWORD=admin
+#      - LDAP_BASE_DN=dc=example,dc=org
       #- MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
       - MEDIAWIKI_MAIN_CACHE=CACHE_NONE
       #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
