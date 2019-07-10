@@ -328,6 +328,9 @@ $wgLocalisationCacheConf = array(
 
 $wgEnableBotPasswords = filter_var(loadenv('MEDIAWIKI_ENABLE_BOT_PASSWORDS', true), FILTER_VALIDATE_BOOLEAN);
 
+# allow canvas to embed wiki pages
+$wgEditPageFrameOptions = 'allow-from https://canvas.ubc.ca/';
+
 @include('CustomExtensions.php');
 
 # some sensible defaults
