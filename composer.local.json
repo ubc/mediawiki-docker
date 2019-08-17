@@ -1,5 +1,11 @@
 {
     "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/IMSGlobal/caliper-php.git"
+        }
+    ],
     "require": {
         "mediawiki/maps": "~6.0",
         "pear/mail_mime-decode": "1.5.5.2",
