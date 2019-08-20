@@ -537,6 +537,11 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'ca
     $wgCaliperAppBaseUrl = loadenv('CaliperAppBaseUrl', null);
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LinkTarget') !== false) {
+    require_once "$IP/extensions/LinkTarget/LinkTarget.php";
+    $wgLinkTargetParentClasses = array('linkexternal');
+}
+
 @include('/conf/CustomSettings.php');
 
 @include('CustomHooks.php');
