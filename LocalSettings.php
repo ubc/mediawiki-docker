@@ -553,3 +553,7 @@ if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     $wgCacheDirectory = false;
     $wgDebugLogFile = "/tmp/mw-debug-{$wgDBname}.log";
 }
+
+# UBC Wiki Books - a setting to allow books to be saved as collection of pages
+$wgGroupPermissions['user']['collectionsaveascommunitypage'] = true;
+$wgGroupPermissions['user']['collectionsaveasuserpage'] = true;
