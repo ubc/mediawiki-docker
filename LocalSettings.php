@@ -31,7 +31,7 @@ if (getenv('MEDIAWIKI_META_NAMESPACE') !== false) {
 ## https://www.mediawiki.org/wiki/Manual:Short_URL
 $wgScriptPath = loadenv('MEDIAWIKI_SCRIPT_PATH');
 $wgScriptExtension = ".php";
-$wgArticlePath = "/$1";
+$wgArticlePath = loadenv('MEDIAWIKI_ARTICLE_PATH', "/$1");
 
 ## The protocol and server name to use in fully-qualified URLs
 $wgServer = loadenv('MEDIAWIKI_SITE_SERVER', '//localhost');
