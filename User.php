@@ -27,12 +27,18 @@ use MediaWiki\Auth\AuthManager;
 use MediaWiki\Auth\AuthenticationResponse;
 use MediaWiki\Auth\AuthenticationRequest;
 use MediaWiki\User\UserIdentity;
-use MediaWiki\Logger\LoggerFactory;
 use Wikimedia\IPSet;
 use Wikimedia\ScopedCallback;
 use Wikimedia\Rdbms\Database;
 use Wikimedia\Rdbms\DBExpectedError;
 use Wikimedia\Rdbms\IDatabase;
+
+/**
+ * String Some punctuation to prevent editing from broken text-mangling proxies.
+ * @deprecated since 1.27, use \MediaWiki\Session\Token::SUFFIX
+ * @ingroup Constants
+ */
+define( 'EDIT_TOKEN_SUFFIX', Token::SUFFIX );
 
 /**
  * The User object encapsulates all of the user-specific settings (user_id,
@@ -60,7 +66,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * magic can be used.
 	 * @deprecated since 1.27, use \MediaWiki\Session\Token::SUFFIX
 	 */
-	const EDIT_TOKEN_SUFFIX = Token::SUFFIX;
+	const EDIT_TOKEN_SUFFIX = EDIT_TOKEN_SUFFIX;
 
 	/**
 	 * @const int Serialized record version.
@@ -148,9 +154,6 @@ class User implements IDBAccessObject, UserIdentity {
 		'editmyuserjs',
 		'editmywatchlist',
 		'editsemiprotected',
-		'editsitecss',
-		'editsitejson',
-		'editsitejs',
 		'editusercss',
 		'edituserjson',
 		'edituserjs',
@@ -418,8 +421,7 @@ class User implements IDBAccessObject, UserIdentity {
 				break;
 			case 'actor':
 				// Make sure this thread sees its own changes
-				$lb = MediaWikiServices::getInstance()->getDBLoadBalancer();
-				if ( $lb->hasOrMadeRecentMasterChanges() ) {
+				if ( wfGetLB()->hasOrMadeRecentMasterChanges() ) {
 					$flags |= self::READ_LATEST;
 					$this->queryFlagsUsed = $flags;
 				}
@@ -492,7 +494,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @param int $userId
 	 */
 	public static function purge( $wikiId, $userId ) {
-		$cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
+		$cache = ObjectCache::getMainWANInstance();
 		$key = $cache->makeGlobalKey( 'user', 'id', $wikiId, $userId );
 		$cache->delete( $key );
 	}
@@ -503,10 +505,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return string
 	 */
 	protected function getCacheKey( WANObjectCache $cache ) {
-		$cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
-		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
-
-		return $cache->makeGlobalKey( 'user', 'id', $lbFactory->getLocalDomainID(), $this->mId );
+		return $cache->makeGlobalKey( 'user', 'id', wfWikiID(), $this->mId );
 	}
 
 	/**
@@ -630,12 +629,9 @@ class User implements IDBAccessObject, UserIdentity {
 	public static function newFromActorId( $id ) {
 		global $wgActorTableSchemaMigrationStage;
 
-		// Technically we shouldn't allow this without SCHEMA_COMPAT_READ_NEW,
-		// but it does little harm and might be needed for write callers loading a User.
-		if ( !( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_NEW ) ) {
+		if ( $wgActorTableSchemaMigrationStage <= MIGRATION_OLD ) {
 			throw new BadMethodCallException(
-				'Cannot use ' . __METHOD__
-					. ' when $wgActorTableSchemaMigrationStage lacks SCHEMA_COMPAT_NEW'
+				'Cannot use ' . __METHOD__ . ' when $wgActorTableSchemaMigrationStage is MIGRATION_OLD'
 			);
 		}
 
@@ -644,27 +640,6 @@ class User implements IDBAccessObject, UserIdentity {
 		$u->mFrom = 'actor';
 		$u->setItemLoaded( 'actor' );
 		return $u;
-	}
-
-	/**
-	 * Returns a User object corresponding to the given UserIdentity.
-	 *
-	 * @since 1.32
-	 *
-	 * @param UserIdentity $identity
-	 *
-	 * @return User
-	 */
-	public static function newFromIdentity( UserIdentity $identity ) {
-		if ( $identity instanceof User ) {
-			return $identity;
-		}
-
-		return self::newFromAnyId(
-			$identity->getId() === 0 ? null : $identity->getId(),
-			$identity->getName() === '' ? null : $identity->getName(),
-			$identity->getActorId() === 0 ? null : $identity->getActorId()
-		);
 	}
 
 	/**
@@ -685,9 +660,7 @@ class User implements IDBAccessObject, UserIdentity {
 		$user = new User;
 		$user->mFrom = 'defaults';
 
-		// Technically we shouldn't allow this without SCHEMA_COMPAT_READ_NEW,
-		// but it does little harm and might be needed for write callers loading a User.
-		if ( ( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_NEW ) && $actorId !== null ) {
+		if ( $wgActorTableSchemaMigrationStage > MIGRATION_OLD && $actorId !== null ) {
 			$user->mActorId = (int)$actorId;
 			if ( $user->mActorId !== 0 ) {
 				$user->mFrom = 'actor';
@@ -771,8 +744,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * will be loaded once more from the database when accessing them.
 	 *
 	 * @param stdClass $row A row from the user table
-	 * @param array|null $data Further data to load into the object
-	 *  (see User::loadFromRow for valid keys)
+	 * @param array $data Further data to load into the object (see User::loadFromRow for valid keys)
 	 * @return User
 	 */
 	public static function newFromRow( $row, $data = null ) {
@@ -995,13 +967,13 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return bool
 	 */
 	public static function isValidUserName( $name ) {
-		global $wgMaxNameChars;
+		global $wgContLang, $wgMaxNameChars;
 
 		if ( $name == ''
 			|| self::isIP( $name )
 			|| strpos( $name, '/' ) !== false
 			|| strlen( $name ) > $wgMaxNameChars
-			|| $name != MediaWikiServices::getInstance()->getContentLanguage()->ucfirst( $name )
+			|| $name != $wgContLang->ucfirst( $name )
 		) {
 			return false;
 		}
@@ -1019,10 +991,10 @@ class User implements IDBAccessObject, UserIdentity {
 		// Should these be merged into the title char list?
 		$unicodeBlacklist = '/[' .
 			'\x{0080}-\x{009f}' . # iso-8859-1 control chars
-			'\x{00a0}' . # non-breaking space
+			'\x{00a0}' .          # non-breaking space
 			'\x{2000}-\x{200f}' . # various whitespace
 			'\x{2028}-\x{202f}' . # breaks and control chars
-			'\x{3000}' . # ideographic space
+			'\x{3000}' .          # ideographic space
 			'\x{e000}-\x{f8ff}' . # private use
 			']/u';
 		if ( preg_match( $unicodeBlacklist, $name ) ) {
@@ -1059,7 +1031,7 @@ class User implements IDBAccessObject, UserIdentity {
 		// Certain names may be reserved for batch processes.
 		foreach ( $reservedUsernames as $reserved ) {
 			if ( substr( $reserved, 0, 4 ) == 'msg:' ) {
-				$reserved = wfMessage( substr( $reserved, 4 ) )->inContentLanguage()->plain();
+				$reserved = wfMessage( substr( $reserved, 4 ) )->inContentLanguage()->text();
 			}
 			if ( $reserved == $name ) {
 				return false;
@@ -1075,7 +1047,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @param string|array $groups A single group name or an array of group names
 	 * @param int $limit Max number of users to return. The actual limit will never exceed 5000
 	 *   records; larger values are ignored.
-	 * @param int|null $after ID the user to start after
+	 * @param int $after ID the user to start after
 	 * @return UserArrayFromResult
 	 */
 	public static function findUsersByGroup( $groups, $limit = 5000, $after = null ) {
@@ -1237,7 +1209,8 @@ class User implements IDBAccessObject, UserIdentity {
 	 */
 	public static function getCanonicalName( $name, $validate = 'valid' ) {
 		// Force usernames to capital
-		$name = MediaWikiServices::getInstance()->getContentLanguage()->ucfirst( $name );
+		global $wgContLang;
+		$name = $wgContLang->ucfirst( $name );
 
 		# Reject names containing '#'; these will be cleaned up
 		# with title normalisation, but then it's too late to
@@ -1255,7 +1228,11 @@ class User implements IDBAccessObject, UserIdentity {
 			return false;
 		}
 
-		$name = $t->getText();
+		// Reject various classes of invalid names
+		#$name = AuthManager::callLegacyAuthPlugin(
+		#	'getCanonicalName', [ $t->getText() ], $t->getText()
+		#);
+                $name = $t->getText();
 
 		switch ( $validate ) {
 			case false:
@@ -1375,52 +1352,30 @@ class User implements IDBAccessObject, UserIdentity {
 		$user = $session->getUser();
 		if ( $user->isLoggedIn() ) {
 			$this->loadFromUserObject( $user );
-			if ( $user->isBlocked() ) {
-				// If this user is autoblocked, set a cookie to track the Block. This has to be done on
-				// every session load, because an autoblocked editor might not edit again from the same
-				// IP address after being blocked.
-				$this->trackBlockWithCookie();
+
+			// If this user is autoblocked, set a cookie to track the Block. This has to be done on
+			// every session load, because an autoblocked editor might not edit again from the same
+			// IP address after being blocked.
+			$config = RequestContext::getMain()->getConfig();
+			if ( $config->get( 'CookieSetOnAutoblock' ) === true ) {
+				$block = $this->getBlock();
+				$shouldSetCookie = $this->getRequest()->getCookie( 'BlockID' ) === null
+					&& $block
+					&& $block->getType() === Block::TYPE_USER
+					&& $block->isAutoblocking();
+				if ( $shouldSetCookie ) {
+					wfDebug( __METHOD__ . ': User is autoblocked, setting cookie to track' );
+					$block->setCookie( $this->getRequest()->response() );
+				}
 			}
 
 			// Other code expects these to be set in the session, so set them.
 			$session->set( 'wsUserID', $this->getId() );
 			$session->set( 'wsUserName', $this->getName() );
 			$session->set( 'wsToken', $this->getToken() );
-
 			return true;
 		}
-
 		return false;
-	}
-
-	/**
-	 * Set the 'BlockID' cookie depending on block type and user authentication status.
-	 */
-	public function trackBlockWithCookie() {
-		$block = $this->getBlock();
-		if ( $block && $this->getRequest()->getCookie( 'BlockID' ) === null ) {
-			$config = RequestContext::getMain()->getConfig();
-			$shouldSetCookie = false;
-
-			if ( $this->isAnon() && $config->get( 'CookieSetOnIpBlock' ) ) {
-				// If user is logged-out, set a cookie to track the Block
-				$shouldSetCookie = in_array( $block->getType(), [
-					Block::TYPE_IP, Block::TYPE_RANGE
-				] );
-				if ( $shouldSetCookie ) {
-					$block->setCookie( $this->getRequest()->response() );
-
-					// temporary measure the use of cookies on ip blocks
-					$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-					$stats->increment( 'block.ipblock.setCookie.success' );
-				}
-			} elseif ( $this->isLoggedIn() && $config->get( 'CookieSetOnAutoblock' ) ) {
-				$shouldSetCookie = $block->getType() === Block::TYPE_USER && $block->isAutoblocking();
-				if ( $shouldSetCookie ) {
-					$block->setCookie( $this->getRequest()->response() );
-				}
-			}
-		}
 	}
 
 	/**
@@ -1474,7 +1429,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * Initialize this object from a row from the user table.
 	 *
 	 * @param stdClass $row Row from the user table to load.
-	 * @param array|null $data Further user data to load into the object
+	 * @param array $data Further user data to load into the object
 	 *
 	 *  user_groups   Array of arrays or stdClass result rows out of the user_groups
 	 *                table. Previously you were supposed to pass an array of strings
@@ -1493,9 +1448,7 @@ class User implements IDBAccessObject, UserIdentity {
 
 		$this->mGroupMemberships = null; // deferred
 
-		// Technically we shouldn't allow this without SCHEMA_COMPAT_READ_NEW,
-		// but it does little harm and might be needed for write callers loading a User.
-		if ( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_NEW ) {
+		if ( $wgActorTableSchemaMigrationStage > MIGRATION_OLD ) {
 			if ( isset( $row->actor_id ) ) {
 				$this->mActorId = (int)$row->actor_id;
 				if ( $this->mActorId !== 0 ) {
@@ -1768,29 +1721,24 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return array Array of String options
 	 */
 	public static function getDefaultOptions() {
-		global $wgNamespacesToBeSearchedDefault, $wgDefaultUserOptions, $wgDefaultSkin;
+		global $wgNamespacesToBeSearchedDefault, $wgDefaultUserOptions, $wgContLang, $wgDefaultSkin;
 
 		static $defOpt = null;
 		static $defOptLang = null;
 
-		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
-		if ( $defOpt !== null && $defOptLang === $contLang->getCode() ) {
-			// The content language does not change (and should not change) mid-request, but the
-			// unit tests change it anyway, and expect this method to return values relevant to the
-			// current content language.
+		if ( $defOpt !== null && $defOptLang === $wgContLang->getCode() ) {
+			// $wgContLang does not change (and should not change) mid-request,
+			// but the unit tests change it anyway, and expect this method to
+			// return values relevant to the current $wgContLang.
 			return $defOpt;
 		}
 
 		$defOpt = $wgDefaultUserOptions;
 		// Default language setting
-		$defOptLang = $contLang->getCode();
+		$defOptLang = $wgContLang->getCode();
 		$defOpt['language'] = $defOptLang;
 		foreach ( LanguageConverter::$languagesWithVariants as $langCode ) {
-			if ( $langCode === $contLang->getCode() ) {
-				$defOpt['variant'] = $langCode;
-			} else {
-				$defOpt["variant-$langCode"] = $langCode;
-			}
+			$defOpt[$langCode == $wgContLang->getCode() ? 'variant' : "variant-$langCode"] = $langCode;
 		}
 
 		// NOTE: don't use SearchEngineConfig::getSearchableNamespaces here,
@@ -1828,7 +1776,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 *   Check when actually saving should be done against master.
 	 */
 	private function getBlockedStatus( $bFromSlave = true ) {
-		global $wgProxyWhitelist, $wgUser, $wgApplyIpBlocksToXff, $wgSoftBlockRanges;
+		global $wgProxyWhitelist, $wgApplyIpBlocksToXff, $wgSoftBlockRanges;
 
 		if ( -1 != $this->mBlockedby ) {
 			return;
@@ -1847,15 +1795,14 @@ class User implements IDBAccessObject, UserIdentity {
 		# user is not immune to autoblocks/hardblocks, and they are the current user so we
 		# know which IP address they're actually coming from
 		$ip = null;
-		if ( !$this->isAllowed( 'ipblock-exempt' ) ) {
-			// $wgUser->getName() only works after the end of Setup.php. Until
-			// then, assume it's a logged-out user.
-			$globalUserName = $wgUser->isSafeToLoad()
-				? $wgUser->getName()
-				: IP::sanitizeIP( $wgUser->getRequest()->getIP() );
-			if ( $this->getName() === $globalUserName ) {
-				$ip = $this->getRequest()->getIP();
-			}
+		$sessionUser = RequestContext::getMain()->getUser();
+		// the session user is set up towards the end of Setup.php. Until then,
+		// assume it's a logged-out user.
+		$globalUserName = $sessionUser->isSafeToLoad()
+			? $sessionUser->getName()
+			: IP::sanitizeIP( $sessionUser->getRequest()->getIP() );
+		if ( $this->getName() === $globalUserName && !$this->isAllowed( 'ipblock-exempt' ) ) {
+			$ip = $this->getRequest()->getIP();
 		}
 
 		// User/IP blocking
@@ -1872,14 +1819,14 @@ class User implements IDBAccessObject, UserIdentity {
 			if ( self::isLocallyBlockedProxy( $ip ) ) {
 				$block = new Block( [
 					'byText' => wfMessage( 'proxyblocker' )->text(),
-					'reason' => wfMessage( 'proxyblockreason' )->plain(),
+					'reason' => wfMessage( 'proxyblockreason' )->text(),
 					'address' => $ip,
 					'systemBlock' => 'proxy',
 				] );
 			} elseif ( $this->isAnon() && $this->isDnsBlacklisted( $ip ) ) {
 				$block = new Block( [
 					'byText' => wfMessage( 'sorbs' )->text(),
-					'reason' => wfMessage( 'sorbsreason' )->plain(),
+					'reason' => wfMessage( 'sorbsreason' )->text(),
 					'address' => $ip,
 					'systemBlock' => 'dnsbl',
 				] );
@@ -1900,7 +1847,7 @@ class User implements IDBAccessObject, UserIdentity {
 			if ( $block instanceof Block ) {
 				# Mangle the reason to alert the user that the block
 				# originated from matching the X-Forwarded-For header.
-				$block->mReason = wfMessage( 'xffblockreason', $block->mReason )->plain();
+				$block->mReason = wfMessage( 'xffblockreason', $block->mReason )->text();
 			}
 		}
 
@@ -1912,7 +1859,7 @@ class User implements IDBAccessObject, UserIdentity {
 			$block = new Block( [
 				'address' => $ip,
 				'byText' => 'MediaWiki default',
-				'reason' => wfMessage( 'softblockrangesreason', $ip )->plain(),
+				'reason' => wfMessage( 'softblockrangesreason', $ip )->text(),
 				'anonOnly' => true,
 				'systemBlock' => 'wgSoftBlockRanges',
 			] );
@@ -1934,9 +1881,9 @@ class User implements IDBAccessObject, UserIdentity {
 		}
 
 		// Avoid PHP 7.1 warning of passing $this by reference
-		$user = $this;
+		$thisUser = $this;
 		// Extensions
-		Hooks::run( 'GetBlockedStatus', [ &$user ] );
+		Hooks::run( 'GetBlockedStatus', [ &$thisUser ] );
 	}
 
 	/**
@@ -1955,24 +1902,12 @@ class User implements IDBAccessObject, UserIdentity {
 			// An ID was found in the cookie.
 			$tmpBlock = Block::newFromID( $blockCookieId );
 			if ( $tmpBlock instanceof Block ) {
+				// Check the validity of the block.
+				$blockIsValid = $tmpBlock->getType() == Block::TYPE_USER
+					&& !$tmpBlock->isExpired()
+					&& $tmpBlock->isAutoblocking();
 				$config = RequestContext::getMain()->getConfig();
-
-				switch ( $tmpBlock->getType() ) {
-					case Block::TYPE_USER:
-						$blockIsValid = !$tmpBlock->isExpired() && $tmpBlock->isAutoblocking();
-						$useBlockCookie = ( $config->get( 'CookieSetOnAutoblock' ) === true );
-						break;
-					case Block::TYPE_IP:
-					case Block::TYPE_RANGE:
-						// If block is type IP or IP range, load only if user is not logged in (T152462)
-						$blockIsValid = !$tmpBlock->isExpired() && !$this->isLoggedIn();
-						$useBlockCookie = ( $config->get( 'CookieSetOnIpBlock' ) === true );
-						break;
-					default:
-						$blockIsValid = false;
-						$useBlockCookie = false;
-				}
-
+				$useBlockCookie = ( $config->get( 'CookieSetOnAutoblock' ) === true );
 				if ( $blockIsValid && $useBlockCookie ) {
 					// Use the block.
 					return $tmpBlock;
@@ -2498,9 +2433,7 @@ class User implements IDBAccessObject, UserIdentity {
 	public function getActorId( IDatabase $dbw = null ) {
 		global $wgActorTableSchemaMigrationStage;
 
-		// Technically we should always return 0 without SCHEMA_COMPAT_READ_NEW,
-		// but it does little harm and might be needed for write callers loading a User.
-		if ( !( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_WRITE_NEW ) ) {
+		if ( $wgActorTableSchemaMigrationStage <= MIGRATION_OLD ) {
 			return 0;
 		}
 
@@ -2510,7 +2443,7 @@ class User implements IDBAccessObject, UserIdentity {
 
 		// Currently $this->mActorId might be null if $this was loaded from a
 		// cache entry that was written when $wgActorTableSchemaMigrationStage
-		// was SCHEMA_COMPAT_OLD. Once that is no longer a possibility (i.e. when
+		// was MIGRATION_OLD. Once that is no longer a possibility (i.e. when
 		// User::VERSION is incremented after $wgActorTableSchemaMigrationStage
 		// has been removed), that condition may be removed.
 		if ( $this->mActorId === null || !$this->mActorId && $dbw ) {
@@ -2717,7 +2650,7 @@ class User implements IDBAccessObject, UserIdentity {
 	/**
 	 * Update the 'You have new messages!' status.
 	 * @param bool $val Whether the user has new messages
-	 * @param Revision|null $curRev New, as yet unseen revision of the user talk
+	 * @param Revision $curRev New, as yet unseen revision of the user talk
 	 *   page. Ignored if null or !$val.
 	 */
 	public function setNewtalk( $val, $curRev = null ) {
@@ -2891,7 +2824,6 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return bool
 	 */
 	public function setPassword( $str ) {
-		wfDeprecated( __METHOD__, '1.27' );
 		return $this->setPasswordInternal( $str );
 	}
 
@@ -2904,7 +2836,6 @@ class User implements IDBAccessObject, UserIdentity {
 	 *  through the web interface.
 	 */
 	public function setInternalPassword( $str ) {
-		wfDeprecated( __METHOD__, '1.27' );
 		$this->setPasswordInternal( $str );
 	}
 
@@ -3160,7 +3091,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * Get the user's current setting for a given option.
 	 *
 	 * @param string $oname The option to check
-	 * @param string|array|null $defaultOverride A default value returned if the option does not exist
+	 * @param string|array $defaultOverride A default value returned if the option does not exist
 	 * @param bool $ignoreHidden Whether to ignore the effects of $wgHiddenPrefs
 	 * @return string|array|int|null User's current value for the option
 	 * @see getBoolOption()
@@ -3355,7 +3286,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 *
 	 * @see User::listOptionKinds
 	 * @param IContextSource $context
-	 * @param array|null $options Assoc. array with options keys to check as keys.
+	 * @param array $options Assoc. array with options keys to check as keys.
 	 *   Defaults to $this->mOptions.
 	 * @return array The key => kind mapping data
 	 */
@@ -3383,7 +3314,7 @@ class User implements IDBAccessObject, UserIdentity {
 			if ( ( isset( $info['type'] ) && $info['type'] == 'multiselect' ) ||
 					( isset( $info['class'] ) && $info['class'] == HTMLMultiSelectField::class ) ) {
 				$opts = HTMLFormField::flattenOptions( $info['options'] );
-				$prefix = $info['prefix'] ?? $name;
+				$prefix = isset( $info['prefix'] ) ? $info['prefix'] : $name;
 
 				foreach ( $opts as $value ) {
 					$multiselectOptions["$prefix$value"] = true;
@@ -3398,7 +3329,7 @@ class User implements IDBAccessObject, UserIdentity {
 					( isset( $info['class'] ) && $info['class'] == HTMLCheckMatrix::class ) ) {
 				$columns = HTMLFormField::flattenOptions( $info['columns'] );
 				$rows = HTMLFormField::flattenOptions( $info['rows'] );
-				$prefix = $info['prefix'] ?? $name;
+				$prefix = isset( $info['prefix'] ) ? $info['prefix'] : $name;
 
 				foreach ( $columns as $column ) {
 					foreach ( $rows as $row ) {
@@ -3557,7 +3488,6 @@ class User implements IDBAccessObject, UserIdentity {
 				}
 			}
 
-			Hooks::run( 'UserGetRightsRemove', [ $this, &$this->mRights ] );
 			// Force reindexation of rights when a hook has unset one of them
 			$this->mRights = array_values( array_unique( $this->mRights ) );
 
@@ -3718,7 +3648,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * never expire.)
 	 *
 	 * @param string $group Name of the group to add
-	 * @param string|null $expiry Optional expiry timestamp in any format acceptable to
+	 * @param string $expiry Optional expiry timestamp in any format acceptable to
 	 *   wfTimestamp(), or null if the group assignment should not expire
 	 * @return bool
 	 */
@@ -4096,7 +4026,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 *
 	 * @param WebRequest|null $request WebRequest object to use; $wgRequest will be used if null
 	 *        is passed.
-	 * @param bool|null $secure Whether to force secure/insecure cookies or use default
+	 * @param bool $secure Whether to force secure/insecure cookies or use default
 	 * @param bool $rememberMe Whether to add a Token cookie for elongated sessions
 	 */
 	public function setCookies( $request = null, $secure = null, $rememberMe = false ) {
@@ -4228,16 +4158,13 @@ class User implements IDBAccessObject, UserIdentity {
 				$this->clearSharedCache( 'refresh' );
 				// User was changed in the meantime or loaded with stale data
 				$from = ( $this->queryFlagsUsed & self::READ_LATEST ) ? 'master' : 'replica';
-				LoggerFactory::getInstance( 'preferences' )->warning(
-					"CAS update failed on user_touched for user ID '{user_id}' ({db_flag} read)",
-					[ 'user_id' => $this->mId, 'db_flag' => $from ]
-				);
-				throw new MWException( "CAS update failed on user_touched. " .
-					"The version of the user to be saved is older than the current version."
+				throw new MWException(
+					"CAS update failed on user_touched for user ID '{$this->mId}' (read from $from);" .
+					" the version of the user to be saved is older than the current version."
 				);
 			}
 
-			if ( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_WRITE_NEW ) {
+			if ( $wgActorTableSchemaMigrationStage > MIGRATION_OLD ) {
 				$dbw->update(
 					'actor',
 					[ 'actor_name' => $this->mName ],
@@ -4335,10 +4262,9 @@ class User implements IDBAccessObject, UserIdentity {
 			$dbw->insert( 'user', $fields, $fname, [ 'IGNORE' ] );
 			if ( $dbw->affectedRows() ) {
 				$newUser = self::newFromId( $dbw->insertId() );
-				$newUser->mName = $fields['user_name'];
-				$newUser->updateActorId( $dbw );
 				// Load the user from master to avoid replica lag
 				$newUser->load( self::READ_LATEST );
+				$newUser->updateActorId( $dbw );
 			} else {
 				$newUser = null;
 			}
@@ -4408,7 +4334,7 @@ class User implements IDBAccessObject, UserIdentity {
 					'user',
 					'user_id',
 					[ 'user_name' => $this->mName ],
-					$fname,
+					__METHOD__,
 					[ 'LOCK IN SHARE MODE' ]
 				);
 				$loaded = false;
@@ -4418,7 +4344,7 @@ class User implements IDBAccessObject, UserIdentity {
 					}
 				}
 				if ( !$loaded ) {
-					throw new MWException( $fname . ": hit a key conflict attempting " .
+					throw new MWException( __METHOD__ . ": hit a key conflict attempting " .
 						"to insert user '{$this->mName}' row, but it was not present in select!" );
 				}
 				return Status::newFatal( 'userexists' );
@@ -4447,7 +4373,7 @@ class User implements IDBAccessObject, UserIdentity {
 	private function updateActorId( IDatabase $dbw ) {
 		global $wgActorTableSchemaMigrationStage;
 
-		if ( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_WRITE_NEW ) {
+		if ( $wgActorTableSchemaMigrationStage > MIGRATION_OLD ) {
 			$dbw->insert(
 				'actor',
 				[ 'actor_user' => $this->mId, 'actor_name' => $this->mName ],
@@ -4564,8 +4490,6 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return bool True if the given password is correct, otherwise False
 	 */
 	public function checkPassword( $password ) {
-		wfDeprecated( __METHOD__, '1.27' );
-
 		$manager = AuthManager::singleton();
 		$reqs = AuthenticationRequest::loadRequestsFromSubmission(
 			$manager->getAuthenticationRequests( AuthManager::ACTION_LOGIN ),
@@ -4599,7 +4523,6 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @return bool True if matches, false otherwise
 	 */
 	public function checkTemporaryPassword( $plaintext ) {
-		wfDeprecated( __METHOD__, '1.27' );
 		// Can't check the temporary password individually.
 		return $this->checkPassword( $plaintext );
 	}
@@ -4650,9 +4573,9 @@ class User implements IDBAccessObject, UserIdentity {
 	 * site.
 	 *
 	 * @param string $val Input value to compare
-	 * @param string|array $salt Optional function-specific data for hashing
+	 * @param string $salt Optional function-specific data for hashing
 	 * @param WebRequest|null $request Object to use or null to use $wgRequest
-	 * @param int|null $maxage Fail tokens older than this, in seconds
+	 * @param int $maxage Fail tokens older than this, in seconds
 	 * @return bool Whether the token matches
 	 */
 	public function matchEditToken( $val, $salt = '', $request = null, $maxage = null ) {
@@ -4664,9 +4587,9 @@ class User implements IDBAccessObject, UserIdentity {
 	 * ignoring the suffix.
 	 *
 	 * @param string $val Input value to compare
-	 * @param string|array $salt Optional function-specific data for hashing
+	 * @param string $salt Optional function-specific data for hashing
 	 * @param WebRequest|null $request Object to use or null to use $wgRequest
-	 * @param int|null $maxage Fail tokens older than this, in seconds
+	 * @param int $maxage Fail tokens older than this, in seconds
 	 * @return bool Whether the token matches
 	 */
 	public function matchEditTokenNoSuffix( $val, $salt = '', $request = null, $maxage = null ) {
@@ -4717,7 +4640,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 * @param string $body Message body
 	 * @param User|null $from Optional sending user; if unspecified, default
 	 *   $wgPasswordSender will be used.
-	 * @param string|null $replyto Reply-To address
+	 * @param string $replyto Reply-To address
 	 * @return Status
 	 */
 	public function sendMail( $subject, $body, $from = null, $replyto = null ) {
@@ -5104,10 +5027,10 @@ class User implements IDBAccessObject, UserIdentity {
 	 */
 	public static function getAllGroups() {
 		global $wgGroupPermissions, $wgRevokePermissions;
-		return array_values( array_diff(
+		return array_diff(
 			array_merge( array_keys( $wgGroupPermissions ), array_keys( $wgRevokePermissions ) ),
 			self::getImplicitGroups()
-		) );
+		);
 	}
 
 	/**
@@ -5129,13 +5052,16 @@ class User implements IDBAccessObject, UserIdentity {
 
 	/**
 	 * Get a list of implicit groups
-	 * TODO: Should we deprecate this? It's trivial, but we don't want to encourage use of globals.
-	 *
 	 * @return array Array of Strings Array of internal group names
 	 */
 	public static function getImplicitGroups() {
 		global $wgImplicitGroups;
-		return $wgImplicitGroups;
+
+		$groups = $wgImplicitGroups;
+		# Deprecated, use $wgImplicitGroups instead
+		Hooks::run( 'UserGetImplicitGroups', [ &$groups ], '1.25' );
+
+		return $groups;
 	}
 
 	/**
@@ -5478,9 +5404,11 @@ class User implements IDBAccessObject, UserIdentity {
 	/**
 	 * Load the user options either from cache, the database or an array
 	 *
-	 * @param array|null $data Rows for the current user out of the user_properties table
+	 * @param array $data Rows for the current user out of the user_properties table
 	 */
 	protected function loadOptions( $data = null ) {
+		global $wgContLang;
+
 		$this->load();
 
 		if ( $this->mOptionsLoaded ) {
@@ -5494,7 +5422,7 @@ class User implements IDBAccessObject, UserIdentity {
 			// There's no need to do it for logged-in users: they can set preferences,
 			// and handling of page content is done by $pageLang->getPreferredVariant() and such,
 			// so don't override user's choice (especially when the user chooses site default).
-			$variant = MediaWikiServices::getInstance()->getContentLanguage()->getDefaultVariant();
+			$variant = $wgContLang->getDefaultVariant();
 			$this->mOptions['variant'] = $variant;
 			$this->mOptions['language'] = $variant;
 			$this->mOptionsLoaded = true;
@@ -5536,16 +5464,17 @@ class User implements IDBAccessObject, UserIdentity {
 				}
 			}
 
+			// Convert the email blacklist from a new line delimited string
+			// to an array of ids.
+			if ( isset( $data['email-blacklist'] ) && $data['email-blacklist'] ) {
+				$data['email-blacklist'] = array_map( 'intval', explode( "\n", $data['email-blacklist'] ) );
+			}
+
 			foreach ( $data as $property => $value ) {
 				$this->mOptionOverrides[$property] = $value;
 				$this->mOptions[$property] = $value;
 			}
 		}
-
-		// Replace deprecated language codes
-		$this->mOptions['language'] = LanguageCode::replaceDeprecatedCodes(
-			$this->mOptions['language']
-		);
 
 		$this->mOptionsLoaded = true;
 
@@ -5562,6 +5491,26 @@ class User implements IDBAccessObject, UserIdentity {
 
 		// Not using getOptions(), to keep hidden preferences in database
 		$saveOptions = $this->mOptions;
+
+		// Convert usernames to ids.
+		if ( isset( $this->mOptions['email-blacklist'] ) ) {
+			if ( $this->mOptions['email-blacklist'] ) {
+				$value = $this->mOptions['email-blacklist'];
+				// Email Blacklist may be an array of ids or a string of new line
+				// delimnated user names.
+				if ( is_array( $value ) ) {
+					$ids = array_filter( $value, 'is_numeric' );
+				} else {
+					$lookup = CentralIdLookup::factory();
+					$ids = $lookup->centralIdsFromNames( explode( "\n", $value ), $this );
+				}
+				$this->mOptions['email-blacklist'] = $ids;
+				$saveOptions['email-blacklist'] = implode( "\n", $this->mOptions['email-blacklist'] );
+			} else {
+				// If the blacklist is empty, set it to null rather than an empty string.
+				$this->mOptions['email-blacklist'] = null;
+			}
+		}
 
 		// Allow hooks to abort, for instance to save to a global profile.
 		// Reset options to default state before saving.
@@ -5669,18 +5618,14 @@ class User implements IDBAccessObject, UserIdentity {
 			],
 			'joins' => [],
 		];
-
-		// Technically we shouldn't allow this without SCHEMA_COMPAT_READ_NEW,
-		// but it does little harm and might be needed for write callers loading a User.
-		if ( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_NEW ) {
+		if ( $wgActorTableSchemaMigrationStage > MIGRATION_OLD ) {
 			$ret['tables']['user_actor'] = 'actor';
 			$ret['fields'][] = 'user_actor.actor_id';
 			$ret['joins']['user_actor'] = [
-				( $wgActorTableSchemaMigrationStage & SCHEMA_COMPAT_READ_NEW ) ? 'JOIN' : 'LEFT JOIN',
+				$wgActorTableSchemaMigrationStage === MIGRATION_NEW ? 'JOIN' : 'LEFT JOIN',
 				[ 'user_actor.actor_user = user_id' ]
 			];
 		}
-
 		return $ret;
 	}
 
@@ -5731,12 +5676,11 @@ class User implements IDBAccessObject, UserIdentity {
 	/**
 	 * Checks if two user objects point to the same user.
 	 *
-	 * @since 1.25 ; takes a UserIdentity instead of a User since 1.32
-	 * @param UserIdentity $user
+	 * @since 1.25
+	 * @param User $user
 	 * @return bool
 	 */
-	public function equals( UserIdentity $user ) {
-		// XXX it's not clear whether central ID providers are supposed to obey this
+	public function equals( User $user ) {
 		return $this->getName() === $user->getName();
 	}
 }
