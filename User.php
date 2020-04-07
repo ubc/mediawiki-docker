@@ -1776,7 +1776,7 @@ class User implements IDBAccessObject, UserIdentity {
 	 *   Check when actually saving should be done against master.
 	 */
 	private function getBlockedStatus( $bFromSlave = true ) {
-		global $wgProxyWhitelist, $wgApplyIpBlocksToXff, $wgSoftBlockRanges;
+		global $wgProxyWhitelist, $wgUser, $wgApplyIpBlocksToXff, $wgSoftBlockRanges;
 
 		if ( -1 != $this->mBlockedby ) {
 			return;
@@ -1795,14 +1795,15 @@ class User implements IDBAccessObject, UserIdentity {
 		# user is not immune to autoblocks/hardblocks, and they are the current user so we
 		# know which IP address they're actually coming from
 		$ip = null;
-		$sessionUser = RequestContext::getMain()->getUser();
-		// the session user is set up towards the end of Setup.php. Until then,
-		// assume it's a logged-out user.
-		$globalUserName = $sessionUser->isSafeToLoad()
-			? $sessionUser->getName()
-			: IP::sanitizeIP( $sessionUser->getRequest()->getIP() );
-		if ( $this->getName() === $globalUserName && !$this->isAllowed( 'ipblock-exempt' ) ) {
-			$ip = $this->getRequest()->getIP();
+		if ( !$this->isAllowed( 'ipblock-exempt' ) ) {
+			// $wgUser->getName() only works after the end of Setup.php. Until
+			// then, assume it's a logged-out user.
+			$globalUserName = $wgUser->isSafeToLoad()
+				? $wgUser->getName()
+				: IP::sanitizeIP( $wgUser->getRequest()->getIP() );
+			if ( $this->getName() === $globalUserName ) {
+				$ip = $this->getRequest()->getIP();
+			}
 		}
 
 		// User/IP blocking
@@ -1881,9 +1882,9 @@ class User implements IDBAccessObject, UserIdentity {
 		}
 
 		// Avoid PHP 7.1 warning of passing $this by reference
-		$thisUser = $this;
+		$user = $this;
 		// Extensions
-		Hooks::run( 'GetBlockedStatus', [ &$thisUser ] );
+		Hooks::run( 'GetBlockedStatus', [ &$user ] );
 	}
 
 	/**
@@ -2465,14 +2466,8 @@ class User implements IDBAccessObject, UserIdentity {
 					$this->mActorId = (int)$dbw->insertId();
 				} else {
 					// Outdated cache?
-					// Use LOCK IN SHARE MODE to bypass any MySQL REPEATABLE-READ snapshot.
-					$this->mActorId = (int)$dbw->selectField(
-						'actor',
-						'actor_id',
-						$q,
-						__METHOD__,
-						[ 'LOCK IN SHARE MODE' ]
-					);
+					list( , $options ) = DBAccessObjectUtils::getDBOptions( $this->queryFlagsUsed );
+					$this->mActorId = (int)$dbw->selectField( 'actor', 'actor_id', $q, __METHOD__, $options );
 					if ( !$this->mActorId ) {
 						throw new CannotCreateActorException(
 							"Cannot create actor ID for user_id={$this->getId()} user_name={$this->getName()}"
