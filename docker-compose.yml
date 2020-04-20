@@ -27,7 +27,7 @@ services:
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
     environment:
-      - MEDIAWIKI_SITE_SERVER=//localhost:8080
+      - MEDIAWIKI_SITE_SERVER=http://localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
       - MEDIAWIKI_DB_HOST=db
       - MEDIAWIKI_DB_PASSWORD=password
@@ -40,25 +40,20 @@ services:
       - RESTBASE_URL=http://nodeservices:7231
       - LDAP_DOMAIN=CWL
       - LDAP_SERVER=ldap
+      - LDAP_ENCRYPTION_TYPE=clear
       - LDAP_SEARCH_ATTRS=cn
       - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
       - LDAP_PROXY_PASSWORD=admin
       - LDAP_BASE_DN=dc=example,dc=org
+      - LDAP_USER_BASE_DN=dc=example,dc=org
+      - LDAP_USERNAME_ATTR=cn
+      - LDAP_REALNAME_ATTR=displayname
+      - LDAP_EMAIL_ATTR=mail
       #- MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
       - MEDIAWIKI_MAIN_CACHE=CACHE_NONE
       #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
       # uncomment to specify the wgUploadPath
       # - MEDIAWIKI_UPLOAD_PATH=
-      - LDAP_DEBUG=3
-      # the following variables are from shell environment or .env file
-      #- LDAP_SERVER
-      #- LDAP_PORT
-      #- LDAP_DOMAIN
-      #- LDAP_BASE_DN
-      #- LDAP_SEARCH_ATTRS
-      #- LDAP_PROXY_AGENT
-      #- LDAP_PROXY_PASSWORD
-      #- LDAP_ENCRYPTION_TYPE
       #- GOOGLE_ANALYTICS_UA=UA-XXXXXXX-XX
       # GoogleAnalyticsMetrics: https://www.mediawiki.org/wiki/Extension:GoogleAnalyticsMetrics
       #- GOOGLE_ANALYTICS_METRICS_ALLOWED
