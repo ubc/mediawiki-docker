@@ -28,14 +28,16 @@ Use the following environmental variables to generate a `LocalSettings.php` and 
  - `-e LDAP_DOMAIN` (defaults not set, LDAP domain, e.g. CWL)
  - `-e LDAP_SERVER` (defaults not set, LDAP server address)
  - `-e LDAP_PORT` (defaults to `389`, LDAP server port)
- - `-e LDAP_ENCRYPTION_TYPE` (defaults to `clear`, LDAP connection encryption type, possible values are `clear`, `tls` and `ssl`)
- - `-e LDAP_AUTO_CREATE` (defaults to `false`, auto create user account if not in MediaWiki)
- - `-e LDAP_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN)
+ - `-e LDAP_ENCRYPTION_TYPE` (defaults to `clear`, LDAP connection encryption type, possible values are `clear`, `ldapi`, `tls` and `ssl`)
+ - `-e LDAP_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN for searching)
+ - `-e LDAP_USER_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN for user info)
  - `-e LDAP_SEARCH_STRINGS` (defaults not set, LDAP search string)
  - `-e LDAP_SEARCH_ATTRS` (defaults not set, LDAP search attribute)
  - `-e LDAP_PROXY_AGENT` (defaults not set, LDAP proxy agent)
  - `-e LDAP_PROXY_PASSWORD` (defaults not set, LDAP proxy agent password)
- - `-e LDAP_DEBUG` (defaults to `0`, LDAP debug level, debug file is located /tmp/mw_ldap_debug.log)
+ - `-e LDAP_USERNAME_ATTR` (defaults to `cn`, LDAP attribute for user name)
+ - `-e LDAP_REALNAME_ATTR` (defaults to `displayname`, LDAP attribute for real name)
+ - `-e LDAP_EMAIL_ATTR` (defaults to `mail`, LDAP attribute for for email address)
  - `-e MEDIAWIKI_MAIN_CACHE` (defaults to `CACHE_NONE`, main cache)
  - `-e MEDIAWIKI_MEMCACHED_SERVERS` (defaults to `[]`, list of memcched servers, comma separated, e.g.["memcached:11211", "memcached1:11211"])
 
@@ -120,6 +122,12 @@ docker-compose up -d
 You can connect to the LDAP container using your preferred LDAP GUI using `localhost:1389` with login `cn=admin,dc=example,dc=org` and password `admin`.
 
 When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`, and `ubcEdu` classes.
+
+## Customizing the login page with LDAP authentication enabled
+
+Customize the login button by modifying the page `MediaWiki:Pluggableauth-loginbutton-label`.  The default is "Log in with PluggableAuth".
+
+Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2` and `MediaWiki:Helplogin-url`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
 
 ## Custom Caliper actor data
 

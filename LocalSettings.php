@@ -406,43 +406,41 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ma
     $wgMathFullRestbaseURL= $wgServer . '/api/rest_';
 }
 
-# If Ldap environment variables are defined, enabled ldap function
 if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRINGS') || getenv('LDAP_SEARCH_ATTRS')) {
-    require_once ("$IP/extensions/LdapAuthentication/LdapAuthentication.php");
-    $wgAuth = new LdapAuthenticationPlugin();
+    // load and configure LDAP Provider
+    wfLoadExtension( 'LDAPProvider' );
 
-    $wgLDAPUseLocal = getenv('LDAP_USE_LOCAL') ? getenv('LDAP_USE_LOCAL') == 'true' : true;
+    // define our LDAP authentication domain
+    $LDAPProviderDomainConfigProvider = function() {
+        $config = [
+            'CWL' => [
+                'connection' => [
+                    "server" => getenv('LDAP_SERVER') ? getenv('LDAP_SERVER') : 'localhost',
+                    "port" => getenv('LDAP_PORT') ? getenv('LDAP_PORT') : 389,
+                    "enctype" => getenv('LDAP_ENCRYPTION_TYPE') ? getenv('LDAP_ENCRYPTION_TYPE') : 'clear',
+                    "user" => getenv('LDAP_PROXY_AGENT') ? getenv('LDAP_PROXY_AGENT') : '',
+                    "pass" => getenv('LDAP_PROXY_PASSWORD') ? getenv('LDAP_PROXY_PASSWORD') : '',
+                    "basedn" => getenv('LDAP_BASE_DN') ? getenv('LDAP_BASE_DN') : 'ou=Users,ou=LOCAL,dc=domain,dc=local',
+                    "userbasedn" => getenv('LDAP_USER_BASE_DN') ? getenv('LDAP_USER_BASE_DN') : 'ou=Users,ou=LOCAL,dc=domain,dc=local',
+                    "searchstring" => getenv('LDAP_SEARCH_STRINGS') ? getenv('LDAP_SEARCH_STRINGS') : '',
+                    "searchattribute" => getenv('LDAP_SEARCH_ATTRS') ? getenv('LDAP_SEARCH_ATTRS') : 'cn',
+                    "usernameattribute" => getenv('LDAP_USERNAME_ATTR') ? getenv('LDAP_USERNAME_ATTR') : 'cn',
+                    "realnameattribute" => getenv('LDAP_REALNAME_ATTR') ? getenv('LDAP_REALNAME_ATTR') : 'displayname',
+                    "emailattribute" => getenv('LDAP_EMAIL_ATTR') ? getenv('LDAP_EMAIL_ATTR') : 'mail',
+                ]
+            ]
+        ];
 
-    $wgLDAPDebug = getenv('LDAP_DEBUG') ? getenv('LDAP_DEBUG') : 0;
-    $wgDebugLogGroups['ldap'] = '/tmp/mw_ldap_debug.log';
+        return new \MediaWiki\Extension\LDAPProvider\DomainConfigProvider\InlinePHPArray( $config );
+    };
 
-    $ldapDomain = getenv('LDAP_DOMAIN') ? getenv('LDAP_DOMAIN') : 'LOCAL';
-    $wgLDAPDomainNames       = array($ldapDomain);
-    $wgLDAPServerNames       = array($ldapDomain => getenv('LDAP_SERVER') ? getenv('LDAP_SERVER') : 'localhost');
-    $wgLDAPEncryptionType    = array($ldapDomain => loadenv('LDAP_ENCRYPTION_TYPE', 'clear'));
-    $wgMinimalPasswordLength = 1;
-    $wgLDAPBaseDNs           = array($ldapDomain => getenv('LDAP_BASE_DN') ? getenv('LDAP_BASE_DN') : 'ou=Users,ou=LOCAL,dc=domain,dc=local');
+    // load LDAP authentication extensions
+    wfLoadExtension( 'PluggableAuth' );
+    wfLoadExtension( 'LDAPAuthentication2' );
 
-    if (getenv('LDAP_SEARCH_STRINGS')) {
-        $wgLDAPSearchStrings     = array($ldapDomain => getenv('LDAP_SEARCH_STRINGS'));
-    }
-    if (getenv('LDAP_SEARCH_ATTRS')) {
-        $wgLDAPSearchAttributes  = array($ldapDomain => getenv('LDAP_SEARCH_ATTRS'));
-    }
-
-    $wgLDAPDisableAutoCreate = array($ldapDomain => getenv('LDAP_AUTO_CREATE') ? getenv('LDAP_AUTO_CREATE') == 'false' : true);
-    $wgLDAPPort              = array($ldapDomain => getenv('LDAP_PORT') ? getenv('LDAP_PORT') : 389);
-
-    if (getenv('LDAP_PROXY_AGENT')) {
-        $wgLDAPProxyAgent =  array($ldapDomain => getenv('LDAP_PROXY_AGENT'));
-    }
-    if (getenv('LDAP_PROXY_PASSWORD')) {
-        $wgLDAPProxyAgentPassword =  array($ldapDomain => getenv('LDAP_PROXY_PASSWORD'));
-    }
-
-    # set $wgLDAPLowerCaseUsername to false in order for the hook SetUsernameAttributeFromLDAP to work
-    # ref: https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/LdapAuthentication/+/master/LdapAuthenticationPlugin.php#1334
-    $wgLDAPLowerCaseUsername = array($ldapDomain => false);
+    # do not allow "local" pseudo-domain login against local user db
+    $LDAPAuthentication2AllowLocalLogin = false;
+    $wgPluggableAuth_EnableLocalLogin = false;
 
     # disable local wiki account creation page
     $wgGroupPermissions['*']['createaccount'] = false;
@@ -453,6 +451,10 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     # disable password resets entirely
     # ref: https://www.mediawiki.org/wiki/Manual:$wgPasswordResetRoutes
     $wgPasswordResetRoutes = false;
+
+    # enable local properties so users can edit their real name and email
+    # ref: https://www.mediawiki.org/wiki/Extension:PluggableAuth
+    $wgPluggableAuth_EnableLocalProperties = true;
 }
 
 

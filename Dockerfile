@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.3-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.31
 ENV WIKI_VERSION_BUGFIX=7
@@ -49,6 +49,7 @@ RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf \
     && a2enmod remoteip
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-startuptasks.sh /startuptasks.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
@@ -59,7 +60,7 @@ RUN curl -L https://getcomposer.org/installer | php \
 
 RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}.tar.gz | tar xz -C /var/www/html/skins \
     && EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DynamicPageList googleAnalytics DeleteBatch LinkTarget; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DynamicPageList googleAnalytics DeleteBatch LinkTarget; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \

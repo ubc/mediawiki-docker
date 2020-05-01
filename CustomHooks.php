@@ -1,81 +1,73 @@
 <?php
+use Exception;
+
+use MediaWiki\Auth\AuthManager;
+use MediaWiki\Extension\LDAPProvider\ClientFactory;
+use MediaWiki\Extension\LDAPAuthentication2\ExtraLoginFields;
+use MediaWiki\Extension\LDAPProvider\LDAPNoDomainConfigException as NoDomain;
 
 use IMSGlobal\Caliper\entities\agent\Person;
 use CaliperExtension\caliper\CaliperSensor;
 
-# If LDAP environment variables are defined, enabled additional customization
+# If LDAP environment variables are defined, enable additional customization
 if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRINGS') || getenv('LDAP_SEARCH_ATTRS')) {
-    // $wgDebugLogFile = "/tmp/debug-{$wgDBname}.log";
-    // $wgDebugDumpSql = true;
 
-    ///////////////////////////////////////////////////////////////////////////////
+    $LDAPAuthentication2UsernameNormalizer = 'ldapUserToCWL';
+    function ldapUserToCWL($ldapUserName) {
 
-    // link cwl login to wiki user
-    $wgHooks['SetUsernameAttributeFromLDAP'][] = 'SetUsernameAttribute';
-
-    // This is the username MediaWiki will use.
-    function SetUsernameAttribute(&$LDAPUsername, $info) {
-        global $wgDBprefix, $wgServer;
-
-        $puidFromLDAP = _puid_from_ldap($info);
-        if (empty($puidFromLDAP)) {
-            $LDAPUsername = '';
-            return true;
-        }
-
-        $LDAPUsername = _cwl_login_from_ldap($info);  // default wiki username
-
+        global $wgDBprefix;
+        $wiki_username = '';
         $existing_user_found = false;
 
-        // Change the username if found matching record in db with puid.
-        if ($puidFromLDAP) {
-            $dbr = wfGetDB(DB_REPLICA);
-            $res = $dbr->select(
-                array('ucead' => $wgDBprefix.'user_cwl_extended_account_data', 'u' => $wgDBprefix.'user'),   // tables
-                array('u.user_name'),       // fields
-                array('ucead.puid' => $puidFromLDAP, 'ucead.account_status' => 1),   // where clause
-                __METHOD__,     // caller function name
-                array('LIMIT' => 1),      // options. fetch first row only
-                array('u' => array('INNER JOIN', array(     // join the tables
-                    'ucead.user_id = u.user_id'
-                )))
-            );
-            foreach ($res as $row) {
-                $LDAPUsername = $row->user_name;
-                $existing_user_found = true;
-            }
-            $dbr->freeResult($res);
+        // find the existing wiki account based on ldap username
+        $dbr = wfGetDB(DB_REPLICA);
+        $res = $dbr->select(
+            array('ucead' => $wgDBprefix.'user_cwl_extended_account_data', 'u' => $wgDBprefix.'user'),   // tables
+            array('u.user_name'),       // fields
+            array('ucead.CWLLogin' => $ldapUserName, 'ucead.account_status' => 1),   // where clause
+            __METHOD__,     // caller function name
+            array('LIMIT' => 1),      // options. fetch first row only
+            array('u' => array('INNER JOIN', array(     // join the tables
+                'ucead.user_id = u.user_id'
+            )))
+        );
+        foreach ($res as $row) {
+            $wiki_username = $row->user_name;
+            $existing_user_found = true;
+        }
+        $dbr->freeResult($res);
+
+        if ($existing_user_found) {
+            return $wiki_username;
         }
 
-        // if no matching wiki account found, create one and link with cwl login
-        if (!$existing_user_found) {
-            // create new wiki user and insert record into cwl extended data table
-            $username = _generate_new_wiki_username($info);
-            $first_name = _first_name_from_ldap($info);
-            $last_name = _last_name_from_ldap($info);
-            $email = _email_from_ldap($info);
-            $puid = _puid_from_ldap($info);
-            $cwl_login_name = _cwl_login_from_ldap($info);
-            $ubcAffiliation = '';   // TODO still needed? where to get it from LDAP?
+        // if no existing wiki account found, create one and link with cwl login
 
-            try{
-                $new_user_id = _create_wiki_user($username, $first_name, $last_name, $email);
-                if (empty($new_user_id)) {
-                    throw new Exception('Failed to create new wiki user');
-                }
-                if (!_create_cwl_extended_account_data($new_user_id, $puid, $cwl_login_name, $ubcAffiliation, $first_name, $last_name)) {
-                    throw new Exception('Failed to create CWL extended data record');
-                }
+        // since the LDAP info is not passed in here, needed to retrieve again
+        $ldapInfo = _ldap_retrieve_info($ldapUserName);
+        // create new wiki user and insert record into cwl extended data table
+        $wiki_username = _generate_new_wiki_username($ldapInfo);
+        $real_name = _real_name_from_ldap($ldapInfo);
+        $puid = _puid_from_ldap($ldapInfo);
+        $cwl_login_name = _cwl_login_from_ldap($ldapInfo);
+        $email = _email_from_ldap($ldapInfo);
+        $ubcAffiliation = '';   // TODO still needed? where to get it from LDAP?
 
-                $LDAPUsername = $username;
-            } catch (Exception $e) {
-                // failed to create new user
-                wfDebugLog('error', $e->getTraceAsString());
-                throw new MWException('Failed to create new wiki user');
+        try {
+            $new_user_id = _create_wiki_user($wiki_username, $real_name, $email);
+            if (empty($new_user_id)) {
+                throw new Exception('Failed to create new wiki user');
             }
-        }
+            if (!_create_cwl_extended_account_data($new_user_id, $puid, $cwl_login_name, $ubcAffiliation, $real_name)) {
+                throw new Exception('Failed to create CWL extended data record');
+            }
 
-        return true;
+        } catch (Exception $e) {
+            // failed to create new user
+            wfDebugLog('error', $e->getTraceAsString());
+            throw new MWException('Failed to create new wiki user');
+        }
+        return $wiki_username;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -153,41 +145,67 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     ///////////////////////////////////////////////////////////////////////////////
     // helper functions
 
+    function _ldap_retrieve_info($ldapUserName) {
+        $authManager = AuthManager::singleton();
+        $extraLoginFields = $authManager->getAuthenticationSessionData(
+            PluggableAuthLogin::EXTRALOGINFIELDS_SESSION_KEY
+        );
+        $domain = $extraLoginFields[ExtraLoginFields::DOMAIN];
+
+        $ldapClient = null;
+        $ldapInfo = [];
+        try {
+            $ldapClient = ClientFactory::getInstance()->getForDomain( $domain );
+        } catch ( NoDomain $e ) {
+            wfDebugLog('error', 'LDAP doamin unavailable: '.$domain);
+            throw new Exception('LDAP doamin unavailable');
+        }
+
+        // get user info from LDAP
+        try {
+            $ldapInfo = $ldapClient->getUserInfo( $ldapUserName );
+        } catch ( Exception $ex ) {
+            // wfDebugLog('error', "Error fetching LDAP user info: {$ex->getMessage()}");
+            throw new Exception('Failed to retrieve user info from LDAP');
+        }
+        if (empty($ldapInfo)) {
+            throw new Exception('No user info found in LDAP');
+        }
+
+        return $ldapInfo;
+    }
+
     function _ldap_get_or_empty($info, $key) {
-        if ($info && array_key_exists(0, $info) &&
-            array_key_exists($key, $info[0]) &&
-            array_key_exists(0, $info[0][$key])) {
-            return $info[0][$key][0];
+        if ($info && array_key_exists($key, $info)) {
+            return $info[$key];
         }
         return '';
     }
 
     // user information from LDAP
     function _cwl_login_from_ldap($info) {
-        return _ldap_get_or_empty($info, getenv('LDAP_SEARCH_ATTRS')? getenv('LDAP_SEARCH_ATTRS') : 'uid');
+        return _ldap_get_or_empty($info, getenv('LDAP_SEARCH_ATTRS')? getenv('LDAP_SEARCH_ATTRS') : 'cn');
     }
-    function _first_name_from_ldap($info) {
-        return _ldap_get_or_empty($info, 'givenname');
-    }
-    function _last_name_from_ldap($info) {
-        return _ldap_get_or_empty($info, 'sn');
+    function _real_name_from_ldap($info) {
+        // based on display name
+        return _ldap_get_or_empty($info, getenv('LDAP_REALNAME_ATTR')? getenv('LDAP_REALNAME_ATTR') : 'displayname');
     }
     function _puid_from_ldap($info) {
         return _ldap_get_or_empty($info, 'ubceducwlpuid');
     }
     function _email_from_ldap($info) {
-        return _ldap_get_or_empty($info, 'mail');
+        return _ldap_get_or_empty($info, getenv('LDAP_EMAIL_ATTR')? getenv('LDAP_EMAIL_ATTR') : 'mail');
     }
 
     // create a new wiki user in DB and return the new user id
-    function _create_wiki_user($username, $first_name, $last_name, $email) {
+    function _create_wiki_user($username, $real_name, $email) {
         $u = User::newFromId(NULL);
         $u->setName($username);
         $u->addToDatabase();
         $u->setEmail($email);
-        $u->setRealName($first_name . " " . $last_name);
+        $u->setRealName($real_name);
         $u->setToken();
-        // leave the password as empty to prevent login with local wiki user
+        // leave the password empty to prevent login with local wiki user
         $u->saveSettings();
         return $u->getID();
     }
@@ -199,18 +217,17 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
      * @param string $puid user PUID
      * @param string $cwlLoginName
      * @param string $ubcAffiliation
-     * @param string $first_name
-     * @param string $last_name
+     * @param string $real_name
      * @return bool
      */
-    function _create_cwl_extended_account_data($user_id, $puid, $cwlLoginName, $ubcAffiliation, $first_name, $last_name) {
+    function _create_cwl_extended_account_data($user_id, $puid, $cwlLoginName, $ubcAffiliation, $real_name) {
         global $wgDBprefix;
 
         $dbw = wfGetDB(DB_MASTER);
         $table = $wgDBprefix."user_cwl_extended_account_data";
 
         $ubcAffiliation = preg_replace("/[^A-Za-z0-9 ]/", '', $ubcAffiliation);
-        $full_name = preg_replace("/[^A-Za-z0-9 ]/", '', $first_name . ' ' . $last_name);
+        $full_name = preg_replace("/[^A-Za-z0-9 ]/", '', $real_name);
 
         $insert_a = array(
             'user_id' => $user_id,
@@ -252,23 +269,32 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     // generate a new and unique wiki user name based on LDAP data
     function _generate_new_wiki_username($info) {
         // similar logic as existing CASAuth
-        $first_name = _first_name_from_ldap($info);
-        $last_name = _last_name_from_ldap($info);
-        $ucfirst_name = ucfirst(preg_replace("/[^A-Za-z0-9]/", '', $first_name));
-        $uclast_name  = ucfirst(preg_replace("/[^A-Za-z0-9]/", '', $last_name));
-        $username = $ucfirst_name.$uclast_name;
-        if (empty($username)) {
+        $real_name = _real_name_from_ldap($info);
+        $cwl_login = _cwl_login_from_ldap($info);
+        $uc_real_name = ucfirst(preg_replace("/[^A-Za-z0-9]/", '', $real_name));
+        $uc_cwl_login_name = ucfirst(preg_replace("/[^A-Za-z0-9]/", '', $cwl_login));
+
+        $username_base = $uc_real_name;
+        if (empty($username_base)) {
             // use cwl login if name is empty
-            return _cwl_login_from_ldap($info);
+            if (empty($uc_cwl_login_name)) {
+                throw new Exception('Failed to generate login name');
+            }
+            $username_base = $uc_cwl_login_name;
         }
 
-        $num = 1;
+        $num = 0;
+        $username = $username_base;
+        // TODO not the best way to generate unique username. possible race condition
         while (_wiki_user_exist($username)) {
-            $username = $ucfirst_name.$uclast_name.$num;
             if ($num++ > 9999) {
                 // avoid infinite loop
-                return _cwl_login_from_ldap($info);
+                if (! _wiki_user_exist($uc_cwl_login_name)) {
+                    return $uc_cwl_login_name;
+                }
+                throw new Exception('Failed to generate login name');
             }
+            $username = $username_base.$num;
         }
         return $username;
     }
