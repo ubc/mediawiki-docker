@@ -30,7 +30,6 @@ if (getenv('MEDIAWIKI_META_NAMESPACE') !== false) {
 ## (like /w/index.php/Page_title to /wiki/Page_title) please see:
 ## https://www.mediawiki.org/wiki/Manual:Short_URL
 $wgScriptPath = loadenv('MEDIAWIKI_SCRIPT_PATH');
-$wgScriptExtension = ".php";
 $wgArticlePath = "/$1";
 
 ## The protocol and server name to use in fully-qualified URLs
@@ -70,9 +69,6 @@ $wgDBprefix = loadenv('MEDIAWIKI_DB_PREFIX');
 
 # MySQL table options to use during installation or update
 $wgDBTableOptions = loadenv('MEDIAWIKI_DB_TABLE_OPTIONS', "ENGINE=InnoDB, DEFAULT CHARSET=binary");
-
-# Experimental charset support for MySQL 5.0.
-$wgDBmysql5 = false;
 
 ## Shared memory settings
 $wgMainCacheType = constant(loadenv('MEDIAWIKI_MAIN_CACHE', 'CACHE_NONE'));
@@ -559,3 +555,5 @@ if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
 # UBC Wiki Books - a setting to allow books to be saved as collection of pages
 $wgGroupPermissions['user']['collectionsaveascommunitypage'] = true;
 $wgGroupPermissions['user']['collectionsaveasuserpage'] = true;
+
+
