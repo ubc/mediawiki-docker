@@ -127,7 +127,7 @@ When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`
 
 Customize the login button by modifying the page `MediaWiki:Pluggableauth-loginbutton-label`.  The default is "Log in with PluggableAuth".
 
-Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
+Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2` and `MediaWiki:Helplogin-url`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
 
 ## Custom Caliper actor data
 

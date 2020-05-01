@@ -49,6 +49,7 @@ RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf \
     && a2enmod remoteip
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-startuptasks.sh /startuptasks.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
