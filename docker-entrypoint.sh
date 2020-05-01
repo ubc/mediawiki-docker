@@ -185,6 +185,7 @@ if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock"
 		--scriptpath "" \
 		--lang "$MEDIAWIKI_SITE_LANG" \
 		--pass "$MEDIAWIKI_ADMIN_PASS" \
+		--with-extensions \
 		"$MEDIAWIKI_SITE_NAME" \
 		"$MEDIAWIKI_ADMIN_USER"
 
