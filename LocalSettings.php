@@ -171,6 +171,13 @@ $wgUploadWizardConfig = array(
         'templates' => [ 'cc-by-sa-2.5-ca' ]
     ],
 
+    'cc-by-nc-sa-4.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-sa-4.0',
+        'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-nc-sa/4.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
     // Copyright Canadian Gov
     'cr-cdn-gov' => [
         'msg' => 'mwe-upwiz-license-cr-cdn-gov',
@@ -202,6 +209,19 @@ $wgUploadWizardConfig = array(
     ]
   ],
   'licensing' => [
+    'ownWork' => array(
+      'type' => 'or',
+      'template' => 'self',
+      'defaults' => 'cc-by-sa-4.0',
+      'licenses' => array(
+        'cc-by-sa-4.0',
+        'cc-by-sa-3.0',
+        'cc-by-4.0',
+        'cc-by-3.0',
+        'cc-zero',
+        'cc-by-nc-sa-4.0'
+      )
+    ),
     'thirdParty' => [
       'type' => 'or',
       'licenseGroups' => [
@@ -218,7 +238,8 @@ $wgUploadWizardConfig = array(
                   'cc-by-3.0',
                   'cc-by-2.5-ca',
                   'cc-by-2.5',
-                  'cc-zero'
+                  'cc-zero',
+                  'cc-by-nc-sa-4.0'
               ]
         ],
         // Canadian Gov license
