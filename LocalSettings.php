@@ -461,8 +461,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 
     # disable local wiki account creation page
     $wgGroupPermissions['*']['createaccount'] = false;
-    # allow auto creation, in case LDAP auto create is enabled
-    # ref: https://www.mediawiki.org/wiki/Topic:T6s2lkqumdyy0zqv
+    # allow auto creation
     $wgGroupPermissions['*']['autocreateaccount'] = true;
 
     # disable password resets entirely
@@ -472,6 +471,11 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     # enable local properties so users can edit their real name and email
     # ref: https://www.mediawiki.org/wiki/Extension:PluggableAuth
     $wgPluggableAuth_EnableLocalProperties = true;
+
+    // extension for UBC-specific authentication
+    if ( filter_var( getenv( 'UBC_AUTH_ENABLED' ), FILTER_VALIDATE_BOOLEAN ) ) {
+        wfLoadExtension( 'UBCAuth' );
+    }
 }
 
 
@@ -577,4 +581,9 @@ if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
 $wgGroupPermissions['user']['collectionsaveascommunitypage'] = true;
 $wgGroupPermissions['user']['collectionsaveasuserpage'] = true;
 
+# redirect auto created users to specific page when they login for the first time
+if ( getenv( 'AUTO_CREATED_USER_REDIRECT' ) ) {
+    wfLoadExtension( 'AutoCreatedUserRedirector' );
+    $wgAutoCreatedUserRedirect = getenv( 'AUTO_CREATED_USER_REDIRECT' );
+}
 

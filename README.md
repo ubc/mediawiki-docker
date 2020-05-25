@@ -40,6 +40,8 @@ Use the following environmental variables to generate a `LocalSettings.php` and 
  - `-e LDAP_EMAIL_ATTR` (defaults to `mail`, LDAP attribute for for email address)
  - `-e MEDIAWIKI_MAIN_CACHE` (defaults to `CACHE_NONE`, main cache)
  - `-e MEDIAWIKI_MEMCACHED_SERVERS` (defaults to `[]`, list of memcched servers, comma separated, e.g.["memcached:11211", "memcached1:11211"])
+ - `-e UBC_AUTH` (defaults not set. Set o `true` to enable the UBC-specific authentication extension)
+ - `-e AUTO_CREATED_USER_REDIRECT` (defaults not set.  Set it to a wiki page [e.g. `Main_page`] to redirect new users to a specific page when they first login via LDAP)
 
 As mentioned, this will generate the `LocalSettings.php` file that is required by MediaWiki. If you mounted a shared volume (see `Shared Volume` below), the generated `LocalSettings.php` will be automatically moved to your share volume allowing you to edit it. If a `CustomSettings.php` file exists in your data file, a `require('/data/CustomSettings.php');` will be appended to the generated `LocalSettings.php` file.
 
@@ -123,11 +125,13 @@ You can connect to the LDAP container using your preferred LDAP GUI using `local
 
 When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`, and `ubcEdu` classes.
 
-## Customizing the login page with LDAP authentication enabled
+## Customization with LDAP authentication enabled
 
 Customize the login button by modifying the page `MediaWiki:Pluggableauth-loginbutton-label`.  The default is "Log in with PluggableAuth".
 
 Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2` and `MediaWiki:Helplogin-url`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
+
+Customize the help message on `Preferences` page about email addresses by editing the page `MediaWiki:Prefs-help-email`.  The default help messages mentioned email addresses are used for password reset, which is irrelevant if mediawiki is setup with LDAP authentication. 
 
 ## Custom Caliper actor data
 
