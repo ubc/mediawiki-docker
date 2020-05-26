@@ -158,23 +158,100 @@ $wgUploadWizardConfig = array(
     // 2.5 Attribution Canada
     'cc-by-2.5-ca' => [
         'msg' => 'mwe-upwiz-license-cc-by-2.5-ca',
-        'icons' => [ 'cc-by' ],
+        'icons' => [ 'cc-by', 'cc-sa' ],
         'url' => '//creativecommons.org/licenses/by/2.5/ca/',
         'templates' => [ 'cc-by-2.5-ca' ]
+    ],
+
+    'cc-by-2.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-2.0',
+        'icons' => [ 'cc-by' ],
+        'url' => '//creativecommons.org/licenses/by/2.0/',
+        'templates' => [ 'cc-by-2.0' ]
     ],
 
     // 2.5 SA Canada
     'cc-by-sa-2.5-ca' => [
         'msg' => 'mwe-upwiz-license-cc-by-sa-2.5-ca',
-        'icons' => [ 'cc-by', 'cc-by-sa'],
+        'icons' => [ 'cc-by', 'cc-sa'],
         'url' => '//creativecommons.org/licenses/by-sa/2.5/ca/',
         'templates' => [ 'cc-by-sa-2.5-ca' ]
+    ],
+
+    'cc-by-sa-2.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-sa-2.0',
+        'icons' => [ 'cc-by', 'cc-sa'],
+        'url' => '//creativecommons.org/licenses/by-sa/2.0/',
+        'templates' => [ 'cc-by-sa-2.0' ]
+    ],
+
+    'cc-by-nc-4.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-4.0',
+        'icons' => [ 'cc-by', 'cc-nc' ],
+        'url' => '//creativecommons.org/licenses/by-nc/4.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-3.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-3.0',
+        'icons' => [ 'cc-by', 'cc-nc' ],
+        'url' => '//creativecommons.org/licenses/by-nc/3.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-2.5-ca' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-2.5-ca',
+        'icons' => [ 'cc-by', 'cc-nc' ],
+        'url' => '//creativecommons.org/licenses/by-nc/2.5/ca/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-2.5' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-2.5',
+        'icons' => [ 'cc-by', 'cc-nc' ],
+        'url' => '//creativecommons.org/licenses/by-nc/2.5/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-2.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-2.0',
+        'icons' => [ 'cc-by', 'cc-nc' ],
+        'url' => '//creativecommons.org/licenses/by-nc/2.0/',
+        'languageCodePrefix' => 'deed.'
     ],
 
     'cc-by-nc-sa-4.0' => [
         'msg' => 'mwe-upwiz-license-cc-by-nc-sa-4.0',
         'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
         'url' => '//creativecommons.org/licenses/by-nc-sa/4.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-sa-3.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-sa-3.0',
+        'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-nc-sa/3.0/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-sa-2.5-ca' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-sa-2.5-ca',
+        'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-nc-sa/2.5/ca/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-sa-2.5' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-sa-2.5',
+        'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-nc-sa/2.5/',
+        'languageCodePrefix' => 'deed.'
+    ],
+
+    'cc-by-nc-sa-2.0' => [
+        'msg' => 'mwe-upwiz-license-cc-by-nc-sa-2.0',
+        'icons' => [ 'cc-by', 'cc-nc', 'cc-sa' ],
+        'url' => '//creativecommons.org/licenses/by-nc-sa/2.0/',
         'languageCodePrefix' => 'deed.'
     ],
 
@@ -215,10 +292,9 @@ $wgUploadWizardConfig = array(
       'defaults' => 'cc-by-sa-4.0',
       'licenses' => array(
         'cc-by-sa-4.0',
-        'cc-by-sa-3.0',
         'cc-by-4.0',
-        'cc-by-3.0',
         'cc-zero',
+        'cc-by-nc-4.0',
         'cc-by-nc-sa-4.0'
       )
     ),
@@ -234,12 +310,23 @@ $wgUploadWizardConfig = array(
                   'cc-by-sa-3.0',
                   'cc-by-sa-2.5-ca',
                   'cc-by-sa-2.5',
+                  'cc-by-sa-2.0',
                   'cc-by-4.0',
                   'cc-by-3.0',
                   'cc-by-2.5-ca',
                   'cc-by-2.5',
+                  'cc-by-2.0',
                   'cc-zero',
-                  'cc-by-nc-sa-4.0'
+                  'cc-by-nc-4.0',
+                  'cc-by-nc-3.0',
+                  'cc-by-nc-2.5-ca',
+                  'cc-by-nc-2.5',
+                  'cc-by-nc-2.0',
+                  'cc-by-nc-sa-4.0',
+                  'cc-by-nc-sa-3.0',
+                  'cc-by-nc-sa-2.5-ca',
+                  'cc-by-nc-sa-2.5',
+                  'cc-by-nc-sa-2.0'
               ]
         ],
         // Canadian Gov license
