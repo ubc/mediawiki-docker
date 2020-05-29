@@ -85,7 +85,10 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
     && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
+    && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
