@@ -79,4 +79,3 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 #####################
 ## End LDAP customization
 #####################
-
