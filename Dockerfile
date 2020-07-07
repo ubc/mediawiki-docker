@@ -1,10 +1,9 @@
 FROM php:7.3-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.31
-ENV WIKI_VERSION_BUGFIX=7
+ENV WIKI_VERSION_BUGFIX=8
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_31
-ENV VECTOR_SKIN_VERSION=REL1_31-f0327dc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -58,8 +57,7 @@ COPY robots.txt /var/www/html/robots.txt
 RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
 
-RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}.tar.gz | tar xz -C /var/www/html/skins \
-    && EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
+RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
     && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DynamicPageList googleAnalytics DeleteBatch LinkTarget; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
