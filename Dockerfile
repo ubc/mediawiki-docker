@@ -30,7 +30,8 @@ RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcach
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
     && pecl install imagick-3.4.3 \
-    && docker-php-ext-enable imagick mysqli \
+    && pecl install redis \
+    && docker-php-ext-enable imagick mysqli redis \
     && a2enmod rewrite \
     && rm -rf /tmp/pear
 

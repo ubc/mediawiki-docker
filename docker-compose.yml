@@ -51,8 +51,12 @@ services:
       - LDAP_EMAIL_ATTR=mail
       - UBC_AUTH_ENABLED=true
       - AUTO_CREATED_USER_REDIRECT=UBC_Wiki:Welcome
-      #- MEDIAWIKI_MAIN_CACHE=CACHE_MEMCACHED
-      - MEDIAWIKI_MAIN_CACHE=CACHE_NONE
+      - MEDIAWIKI_MAIN_CACHE=redis
+      - MEDIAWIKI_REDIS_HOST=redis
+      - MEDIAWIKI_REDIS_PORT=6379
+      #- MEDIAWIKI_REDIS_PASSWORD=
+      - MEDIAWIKI_REDIS_PERSISTENT=true
+      #- MEDIAWIKI_MAIN_CACHE=CACHE_NONE
       #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
       # uncomment to specify the wgUploadPath
       # - MEDIAWIKI_UPLOAD_PATH=
@@ -98,5 +102,7 @@ services:
       - ./dev/ldapadd_ubcedu.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/ldapadd_ubcedu.ldif
       - ./.data/ldap:/var/lib/ldap
       - ./.data/slapd.d:/etc/ldap/slapd.d
-  memcached:
-    image: memcached:1.5-alpine
+#  memcached:
+#    image: memcached:1.5-alpine
+  redis:
+    image: redis:6.0-alpine

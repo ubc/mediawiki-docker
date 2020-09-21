@@ -71,8 +71,26 @@ $wgDBprefix = loadenv('MEDIAWIKI_DB_PREFIX');
 $wgDBTableOptions = loadenv('MEDIAWIKI_DB_TABLE_OPTIONS', "ENGINE=InnoDB, DEFAULT CHARSET=binary");
 
 ## Shared memory settings
-$wgMainCacheType = constant(loadenv('MEDIAWIKI_MAIN_CACHE', 'CACHE_NONE'));
-$wgMemCachedServers = json_decode(loadenv('MEDIAWIKI_MEMCACHED_SERVERS', '[]'));
+$mainCache = loadenv('MEDIAWIKI_MAIN_CACHE', 'CACHE_NONE');
+$wgMainCacheType = constant($mainCache) ? constant($mainCache) : $mainCache;
+switch ($wgMainCacheType) {
+    case CACHE_MEMCACHED:
+        $wgMemCachedServers = json_decode(loadenv('MEDIAWIKI_MEMCACHED_SERVERS', '[]'));
+        break;
+    case 'redis':
+        $wgObjectCaches['redis'] = [
+            'class' => 'RedisBagOStuff',
+            'servers' => [
+                loadenv('MEDIAWIKI_REDIS_HOST').':'.loadenv('MEDIAWIKI_REDIS_PORT', 6379)
+            ],
+            'persistent' => filter_var(loadenv('MEDIAWIKI_REDIS_PERSISTENT', false), FILTER_VALIDATE_BOOLEAN)
+
+        ];
+        if (!empty($redis_pwd = loadenv('MEDIAWIKI_REDIS_PASSWORD'))) {
+            $wgObjectCaches['redis']['password'] = $redis_pwd;
+        }
+        break;
+}
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
