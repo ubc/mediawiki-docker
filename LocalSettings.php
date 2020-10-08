@@ -17,7 +17,7 @@ function loadenv($envName, $default = "") {
 
 
 ## Uncomment this to disable output compression
-# $wgDisableOutputCompression = true;
+$wgDisableOutputCompression = true;
 
 $wgSitename = loadenv('MEDIAWIKI_SITE_NAME', 'MediaWiki');
 if (getenv('MEDIAWIKI_META_NAMESPACE') !== false) {
@@ -445,6 +445,7 @@ $wgLocalisationCacheConf = array(
     'class' => 'LocalisationCache',
     'store' => loadenv('MEDIAWIKI_LOCALISATION_CACHE_STORE', 'detect'),
     'storeClass' => false,
+    'storeDirectory' => false,
     'manualRecache' => filter_var(loadenv('MEDIAWIKI_LOCALISATION_CACHE_MANUALRECACHE', false), FILTER_VALIDATE_BOOLEAN),
 );
 
@@ -460,10 +461,8 @@ $wgEditPageFrameOptions = 'allow-from https://canvas.ubc.ca/';
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'VisualEditor') !== false) {
     # VisualEditor
     # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor
-
-    // Enable by default for everybody
-    $wgDefaultUserOptions['visualeditor-enable'] = 1;
-
+    wfLoadExtension( 'VisualEditor' );
+    $wgGroupPermissions['*']['writeapi'] = true;
     // Optional: Set VisualEditor as the default for anonymous users
     // otherwise they will have to switch to VE
     // $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
@@ -482,14 +481,17 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Vi
     #    "_merge_strategy" => "array_plus"
     #];
 
-    $wgVirtualRestConfig['modules']['parsoid'] = array(
-        // URL to the Parsoid instance
-        'url' => getenv('PARSOID_URL') ? getenv('PARSOID_URL') : 'http://localhost:8000',
-        // Parsoid "domain" (optional)
-        'domain' => getenv('PARSOID_DOMAIN') ? getenv('PARSOID_DOMAIN') : 'localhost',
-        // Parsoid "prefix" (optional)
-        'prefix' => getenv('PARSOID_PREFIX') ? getenv('PARSOID_PREFIX') : 'localhost'
-    );
+    # https://www.mediawiki.org/wiki/Parsoid#Linking_a_developer_checkout_of_Parsoid
+    $PARSOID_INSTALL_DIR = 'vendor/wikimedia/parsoid'; # bundled copy
+    wfLoadExtension( 'Parsoid', "$PARSOID_INSTALL_DIR/extension.json" );
+    // $wgVirtualRestConfig['modules']['parsoid'] = array(
+    //     // URL to the Parsoid instance
+    //     'url' => getenv('PARSOID_URL') ? getenv('PARSOID_URL') : 'http://localhost:8000',
+    //     // Parsoid "domain" (optional)
+    //     'domain' => getenv('PARSOID_DOMAIN') ? getenv('PARSOID_DOMAIN') : 'localhost',
+    //     // Parsoid "prefix" (optional)
+    //     'prefix' => getenv('PARSOID_PREFIX') ? getenv('PARSOID_PREFIX') : 'localhost'
+    // );
 }
 
 
@@ -505,8 +507,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
 
 if (getenv('RESTBASE_URL')) {
     # RESTBase
-    # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor
-
+    # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor#RESTBase_setup_for_switching
+    $wgVisualEditorParsoidAutoConfig = false;
     $wgVirtualRestConfig['modules']['restbase'] = [
             # used internally by wiki, so it can be docker/k8s service name
             'url' => getenv('RESTBASE_URL') ? getenv('RESTBASE_URL') : 'http://localhost:7231',
@@ -586,12 +588,12 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Scribunto') !== false) {
     # Scribunto
-    require_once "$IP/extensions/Scribunto/Scribunto.php";
+    wfLoadExtension( 'Scribunto' );
     $wgScribuntoDefaultEngine = 'luastandalone';
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Widgets') !== false) {
-    require_once "$IP/extensions/Widgets/Widgets.php";
+    wfLoadExtension( 'Widgets' );
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Maps') !== false) {
@@ -601,11 +603,11 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ma
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LiquidThreads') !== false) {
-    require_once "$IP/extensions/LiquidThreads/LiquidThreads.php";
+    wfLoadExtension( 'LiquidThreads' );
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Variables') !== false) {
-    require_once "$IP/extensions/Variables/Variables.php";
+    wfLoadExtension( 'Variables' );
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'RightFunctions') !== false) {
@@ -613,7 +615,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ri
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'UserPageEditProtection') !== false) {
-    require_once "$IP/extensions/UserPageEditProtection/UserPageEditProtection.php";
+    wfLoadExtension( 'UserPageEditProtection' );
     $wgOnlyUserEditUserPage = true;
 }
 

@@ -1,9 +1,9 @@
-FROM php:7.3-apache
+FROM php:7.4-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.31
-ENV WIKI_VERSION_BUGFIX=8
+ENV WIKI_VERSION_MAJOR_MINOR=1.35
+ENV WIKI_VERSION_BUGFIX=0
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_31
+ENV WIKI_VERSION_STR=1_35
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         imagemagick \
         unzip \
         vim.tiny \
+        libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/apt/archives/* \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
@@ -26,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # pcntl for Scribunto
 RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
     && pecl install imagick-3.4.3 \
@@ -54,8 +55,11 @@ COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
+COPY ParsoidHandler_custom_1_35.php /var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
 
-RUN curl -L https://getcomposer.org/installer | php \
+# FIXME temp hack to use lastest composer 1.x. composer 2.x version will break wikimedia/composer-merge-plugin
+#RUN curl -L https://getcomposer.org/installer | php \
+RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
@@ -67,9 +71,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/EmbedPage/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
     && curl -Ls https://github.com/ubc/EmbedPage/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.35.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \

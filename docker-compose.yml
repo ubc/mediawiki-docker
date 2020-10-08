@@ -26,6 +26,9 @@ services:
       # do not uncomment this when starting a new instance from scratch as
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
+      # FIXME this is a custom change on Parsoid PHP implementation since mw 1.35.
+      # the Parsoid domain is not configurable. so we needed to disable the check as we are using "localhost" in Restbase redirection
+      - ./ParsoidHandler_custom_1_35.php:/var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
     environment:
       - MEDIAWIKI_SITE_SERVER=http://localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
@@ -35,7 +38,6 @@ services:
       # - MEDIAWIKI_ENABLE_SSL=true
       - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,GoogleAnalyticsMetrics,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget
       - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
-      - PARSOID_URL=http://nodeservices:8142
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
       - LDAP_DOMAIN=CWL
@@ -50,6 +52,10 @@ services:
       - LDAP_REALNAME_ATTR=displayname
       - LDAP_EMAIL_ATTR=mail
       - UBC_AUTH_ENABLED=true
+      # FIXME skip domain checking in Parsoid. used in our own ParsoidHandler_custom_xxxx.php.
+      # in our Apache conf file, we are redirecting requests to restbase with domain "localhost",
+      # but the Parsoid domain is not configurable.  hence disable the check.
+      - PARSOID_SKIP_DOAMIN_CHECK=true
       - AUTO_CREATED_USER_REDIRECT=UBC_Wiki:Welcome
       - MEDIAWIKI_MAIN_CACHE=redis
       - MEDIAWIKI_REDIS_HOST=redis
@@ -90,6 +96,7 @@ services:
       - 7231:7231
     environment:
       - MEDIAWIKI_API_URL=http://web/api.php
+      - MEDIAWIKI_REST_URL=http://web/rest.php
       - LOG_LEVEL=debug
     volumes:
       - ./.data/services:/data
