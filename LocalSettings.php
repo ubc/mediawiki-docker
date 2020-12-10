@@ -627,10 +627,6 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Dy
     require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
 }
 
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'EmbedPage') !== false) {
-    require_once "$IP/extensions/EmbedPage/EmbedPage.php";
-}
-
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'googleAnalytics') !== false && loadenv('GOOGLE_ANALYTICS_UA')) {
     require_once "$IP/extensions/googleAnalytics/googleAnalytics.php";
     // Replace xxxxxxx-x with YOUR GoogleAnalytics UA number
