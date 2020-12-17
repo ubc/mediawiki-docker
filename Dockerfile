@@ -63,7 +63,7 @@ RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DynamicPageList googleAnalytics DeleteBatch LinkTarget; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
@@ -91,7 +91,11 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
+    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz" \
+    && mkdir -p /var/www/html/extensions/DynamicPageList \
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \

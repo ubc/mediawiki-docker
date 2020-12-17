@@ -624,7 +624,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Co
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DynamicPageList') !== false) {
-    require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
+    wfLoadExtension( 'DynamicPageList' );
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'googleAnalytics') !== false && loadenv('GOOGLE_ANALYTICS_UA')) {
