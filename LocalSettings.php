@@ -664,7 +664,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'ca
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LinkTarget') !== false) {
-    require_once "$IP/extensions/LinkTarget/LinkTarget.php";
+    wfLoadExtension( 'LinkTarget' );
     $wgLinkTargetParentClasses = array('linkexternal');
 }
 
