@@ -63,7 +63,7 @@ RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
@@ -94,7 +94,10 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
     && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
-    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
+    && echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
+    && mkdir -p /var/www/html/extensions/Math \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
 
 
 RUN mkdir -p /data \
