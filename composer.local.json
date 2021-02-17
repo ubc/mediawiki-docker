@@ -1,10 +1,17 @@
 {
     "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/IMSGlobal/caliper-php"
+        }
+    ],
     "require": {
         "mediawiki/maps": "~6.0",
         "pear/mail": "1.4.1",
         "pear/mail_mime": "1.10.8",
         "pear/mail_mime-decode": "1.5.5.2",
-        "google/apiclient":"^2.2"
+        "google/apiclient":"^2.2",
+        "imsglobal/caliper": "dev-develop#c7e34e230abc7bbb647f8f94245cb649f6191bcd as 1.2.0"
     }
 }

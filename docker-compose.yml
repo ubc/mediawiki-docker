@@ -8,7 +8,7 @@ services:
       - ./.data/db:/var/lib/mysql
     ports:
       - 3306:3306
-  web:
+  web: &app
     image: ubcctlt/mediawiki
     build: .
     ports:
@@ -26,6 +26,7 @@ services:
       # do not uncomment this when starting a new instance from scratch as
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
+      #- ./CustomHooks.php:/var/www/html/CustomHooks.php
       # FIXME this is a custom change on Parsoid PHP implementation since mw 1.35.
       # the Parsoid domain is not configurable. so we needed to disable the check as we are using "localhost" in Restbase redirection
       - ./ParsoidHandler_custom_1_35.php:/var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
@@ -76,6 +77,11 @@ services:
       # - CaliperAPIKey=PUT_TEST_BEARER_TOKEN_HERE
       # - CaliperAppBaseUrl=http://localhost:8888/test_url/
       # - CaliperLDAPActorHomepage=http://media_wiki_ldap_homepage
+  job_runner:
+    <<: *app
+    command: php /var/www/html/maintenance/runJobs.php --wait
+    ports:
+      - 8081:80
 
 # use combined image for now
 #  parsoid:
