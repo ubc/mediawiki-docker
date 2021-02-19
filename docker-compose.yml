@@ -73,10 +73,10 @@ services:
       #- GOOGLE_ANALYTICS_METRICS_PATH
       #- GOOGLE_ANALYTICS_METRICS_VIEWID
       - DEBUG=true
-      # - CaliperHost=https://caliper.imsglobal.org/caliper/PUT_TEST_BEARER_TOKEN_HERE/message
-      # - CaliperAPIKey=PUT_TEST_BEARER_TOKEN_HERE
-      # - CaliperAppBaseUrl=http://localhost:8888/test_url/
-      # - CaliperLDAPActorHomepage=http://media_wiki_ldap_homepage
+      # - CALIPER_HOST=https://caliper.imsglobal.org/caliper/PUT_TEST_BEARER_TOKEN_HERE/message
+      # - CALIPER_API_KEY=PUT_TEST_BEARER_TOKEN_HERE
+      # - CALIPER_BASE_URL=http://localhost:8888/test_url/
+      # - CALIPER_LDAP_ACTOR_HOMEPAGE=http://media_wiki_ldap_homepage
   job_runner:
     <<: *app
     command: php /var/www/html/maintenance/runJobs.php --wait

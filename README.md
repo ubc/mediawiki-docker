@@ -129,7 +129,7 @@ Customize the login button by modifying the page `MediaWiki:Pluggableauth-loginb
 
 Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2` and `MediaWiki:Helplogin-url`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
 
-Customize the help message on `Preferences` page about email addresses by editing the page `MediaWiki:Prefs-help-email`.  The default help messages mentioned email addresses are used for password reset, which is irrelevant if mediawiki is setup with LDAP authentication. 
+Customize the help message on `Preferences` page about email addresses by editing the page `MediaWiki:Prefs-help-email`.  The default help messages mentioned email addresses are used for password reset, which is irrelevant if mediawiki is setup with LDAP authentication.
 
 ## Custom Caliper actor data
 
@@ -137,7 +137,7 @@ See the [mediawiki-extensions-caliper](https://github.com/ubc/mediawiki-extensio
 
 You can customize the Caliper actor by using the `SetCaliperActorObject` hook. This container has uses this hook with the `SetCaliperActor` function inside of `CustomHooks.php`.
 
-By default, the `SetCaliperActor` function will use UBC `puid` for the identifier and `CaliperLDAPActorHomepage` environment variable as the base string so the actor identifier will take the form of `CaliperLDAPActorHomepage/LDAP_PUID` (ex: `https://www.ubc.ca/SOME_PUID`). you can instead remove this function and create your own depending on your institution needs, deployment settings, and/or authorization methods.
+By default, the `SetCaliperActor` function will use UBC `puid` for the identifier and `CALIPER_LDAP_ACTOR_HOMEPAGE` environment variable as the base string so the actor identifier will take the form of `CaliperLDAPActorHomepage/LDAP_PUID` (ex: `https://www.ubc.ca/SOME_PUID`). you can instead remove this function and create your own depending on your institution needs, deployment settings, and/or authorization methods.
 
 ## Debugging with Containers
 

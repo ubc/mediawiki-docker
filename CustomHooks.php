@@ -33,7 +33,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
      }
 
     # if Caliper is setup, use a custom actor with puid from LDAP
-    if (getenv('CaliperHost') && getenv('CaliperAPIKey')) {
+    if (getenv('CALIPER_HOST') && getenv('CALIPER_API_KEY')) {
         $wgHooks['SetCaliperActorObject'][] = 'SetCaliperActor';
 
         // This is the username MediaWiki will use.
@@ -65,7 +65,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
                 return false;
             }
 
-            $caliperLDAPActorHomepage = rtrim(loadenv('CaliperLDAPActorHomepage', ''), '/');
+            $caliperLDAPActorHomepage = rtrim(loadenv('CALIPER_LDAP_ACTOR_HOMEPAGE', ''), '/');
 
             $actor = (new Person( $caliperLDAPActorHomepage . "/" . $puid ))
                 ->setName($user->getName())

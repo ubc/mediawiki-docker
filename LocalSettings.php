@@ -657,10 +657,10 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'go
 }
 
 # setup caliper settings if enabled
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'caliper') !== false && loadenv('CaliperHost') && loadenv('CaliperAPIKey')) {
-    $wgCaliperHost = loadenv('CaliperHost');
-    $wgCaliperAPIKey = loadenv('CaliperAPIKey');
-    $wgCaliperAppBaseUrl = loadenv('CaliperAppBaseUrl', null);
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'caliper') !== false && loadenv('CALIPER_HOST') && loadenv('CALIPER_API_KEY')) {
+    $wgCaliperHost = loadenv('CALIPER_HOST');
+    $wgCaliperAPIKey = loadenv('CALIPER_API_KEY');
+    $wgCaliperAppBaseUrl = loadenv('CALIPER_BASE_URL', null);
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LinkTarget') !== false) {
