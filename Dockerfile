@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.35
-ENV WIKI_VERSION_BUGFIX=0
+ENV WIKI_VERSION_BUGFIX=2
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_35
 
@@ -83,9 +83,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
     && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.0.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.1.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
     && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
