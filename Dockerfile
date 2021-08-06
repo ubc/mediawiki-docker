@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.35
-ENV WIKI_VERSION_BUGFIX=2
+ENV WIKI_VERSION_BUGFIX=3
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_35
 
@@ -63,7 +63,7 @@ RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget HitCounters; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \

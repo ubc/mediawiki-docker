@@ -37,7 +37,7 @@ services:
       - MEDIAWIKI_DB_PASSWORD=password
       # uncomment 'MEDIAWIKI_ENABLE_SSL' to enable SSL support
       # - MEDIAWIKI_ENABLE_SSL=true
-      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,GoogleAnalyticsMetrics,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget
+      - MEDIAWIKI_EXTENSIONS=VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget,HitCounters
       - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
