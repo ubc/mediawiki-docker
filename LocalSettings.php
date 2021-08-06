@@ -690,3 +690,5 @@ if ( getenv( 'AUTO_CREATED_USER_REDIRECT' ) ) {
     $wgAutoCreatedUserRedirect = getenv( 'AUTO_CREATED_USER_REDIRECT' );
 }
 
+# Give Bureaucrats delete permission
+$wgGroupPermissions[‘bureaucrat']['delete'] = true;
