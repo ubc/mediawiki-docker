@@ -691,4 +691,4 @@ if ( getenv( 'AUTO_CREATED_USER_REDIRECT' ) ) {
 }
 
 # Give Bureaucrats delete permission
-$wgGroupPermissions[‘bureaucrat']['delete'] = true;
+$wgGroupPermissions['bureaucrat']['delete'] = true;
