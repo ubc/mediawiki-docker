@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libldap2-dev \
         libldap-2.4-2 \
+        libldap-common \
         netcat \
         git \
         imagemagick \
