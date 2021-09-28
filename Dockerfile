@@ -1,11 +1,9 @@
-FROM php:7.1-apache
+FROM php:7.4-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.32
-ENV WIKI_VERSION_BUGFIX=1
+ENV WIKI_VERSION_MAJOR_MINOR=1.35
+ENV WIKI_VERSION_BUGFIX=3
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_32
-# https://www.mediawiki.org/wiki/Special:SkinDistributor/Vector
-ENV VECTOR_SKIN_VERSION=REL1_32-d3ed21a
+ENV WIKI_VERSION_STR=1_35
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -15,11 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libldap2-dev \
         libldap-2.4-2 \
+        libldap-common \
         netcat \
         git \
         imagemagick \
         unzip \
         vim.tiny \
+        libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/apt/archives/* \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
@@ -28,11 +28,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # pcntl for Scribunto
 RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
     && pecl install imagick-3.4.3 \
-    && docker-php-ext-enable imagick mysqli \
+    && pecl install redis \
+    && docker-php-ext-enable imagick mysqli redis \
     && a2enmod rewrite \
     && rm -rf /tmp/pear
 
@@ -50,27 +51,30 @@ RUN echo "Include /etc/apache2/mediawiki.conf" >> /etc/apache2/apache2.conf \
     && a2enmod remoteip
 
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-startuptasks.sh /startuptasks.sh
 COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
+COPY ParsoidHandler_custom_1_35.php /var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
 
-RUN curl -L https://getcomposer.org/installer | php \
+# FIXME temp hack to use lastest composer 1.x. composer 2.x version will break wikimedia/composer-merge-plugin
+#RUN curl -L https://getcomposer.org/installer | php \
+RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
-RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}.tar.gz | tar xz -C /var/www/html/skins \
-    && EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LdapAuthentication ParserFunctions TemplateData InputBox Widgets Math Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DynamicPageList googleAnalytics; do \
+RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection googleAnalytics DeleteBatch LinkTarget HitCounters; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
     done \
-    && echo "Installing https://github.com/ubc/EmbedPage/archive/master.tar.gz" \
+    && echo "Installing https://github.com/ubc/EmbedPage/archive/v2.0.2.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
-    && curl -Ls https://github.com/ubc/EmbedPage/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz" \
+    && curl -Ls https://github.com/ubc/EmbedPage/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.35.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
@@ -80,9 +84,22 @@ RUN curl -L https://extdist.wmflabs.org/dist/skins/Vector-${VECTOR_SKIN_VERSION}
     && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
     && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.2.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.2.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
+    && mkdir -p /var/www/html/extensions/UBCAuth\
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
+    && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
+    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz" \
+    && mkdir -p /var/www/html/extensions/DynamicPageList \
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
+    && echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
+    && mkdir -p /var/www/html/extensions/Math \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
+
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \

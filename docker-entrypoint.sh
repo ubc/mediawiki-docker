@@ -5,9 +5,8 @@ set -e
 : ${MEDIAWIKI_SITE_NAME:=MediaWiki}
 : ${MEDIAWIKI_SITE_LANG:=en}
 : ${MEDIAWIKI_ADMIN_USER:=admin}
-: ${MEDIAWIKI_ADMIN_PASS:=admin1234}
+: ${MEDIAWIKI_ADMIN_PASS:=admin12345}
 : ${MEDIAWIKI_DB_TYPE:=mysql}
-: ${MEDIAWIKI_DB_SCHEMA:=mediawiki}
 : ${MEDIAWIKI_ENABLE_SSL:=false}
 : ${MEDIAWIKI_UPDATE:=false}
 
@@ -175,7 +174,6 @@ if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock"
 	php maintenance/install.php \
 		--confpath /var/www/html \
 		--dbname "$MEDIAWIKI_DB_NAME" \
-		--dbschema "$MEDIAWIKI_DB_SCHEMA" \
 		--dbport "$MEDIAWIKI_DB_PORT" \
 		--dbserver "$MEDIAWIKI_DB_HOST" \
 		--dbtype "$MEDIAWIKI_DB_TYPE" \
@@ -187,6 +185,7 @@ if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock"
 		--scriptpath "" \
 		--lang "$MEDIAWIKI_SITE_LANG" \
 		--pass "$MEDIAWIKI_ADMIN_PASS" \
+		--with-extensions \
 		"$MEDIAWIKI_SITE_NAME" \
 		"$MEDIAWIKI_ADMIN_USER"
 
@@ -227,6 +226,10 @@ if [ -e "LocalSettings.php" -a "$MEDIAWIKI_UPDATE" = 'true' -a ! -f "$MEDIAWIKI_
 	php maintenance/update.php --quick --conf ./LocalSettings.php
     rm $MEDIAWIKI_SHARED/update.lock
 fi
+
+# Run custom startup tasks
+chmod 755 /startuptasks.sh
+/startuptasks.sh
 
 # Ensure images folder exists
 mkdir -p images

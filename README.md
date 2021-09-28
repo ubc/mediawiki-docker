@@ -21,23 +21,25 @@ Use the following environmental variables to generate a `LocalSettings.php` and 
  - `-e MEDIAWIKI_UPDATE=true` (defaults to `false`; run `php maintenance/update.php`)
  - `-e MEDIAWIKI_SLEEP=` (defaults to `0`; delays startup of container, useful when using Docker Compose)
  - `-e MEDIAWIKI_EXTENSIONS` (defaults to empty; specify which extensions to enable, comma separated. Extensions are installed through docker image build)
- - `-e PARSOID_URL` (defaults to `http://localhost:8000`, parsoid instance URL)
  - `-e PARSOID_DOMAIN` (defaults to `localhost`, parsoid domain)
- - `-e PARSOID_PREFIX` (defaults to `localhost`, parsoid prefix)
  - `-e RESTBASE_URL` (defaults not set, RestBase instance URL, if not set, no RestBase will be configured)
  - `-e LDAP_DOMAIN` (defaults not set, LDAP domain, e.g. CWL)
  - `-e LDAP_SERVER` (defaults not set, LDAP server address)
  - `-e LDAP_PORT` (defaults to `389`, LDAP server port)
- - `-e LDAP_ENCRYPTION_TYPE` (defaults to `clear`, LDAP connection encryption type, possible values are `clear`, `tls` and `ssl`)
- - `-e LDAP_AUTO_CREATE` (defaults to `false`, auto create user account if not in MediaWiki)
- - `-e LDAP_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN)
+ - `-e LDAP_ENCRYPTION_TYPE` (defaults to `clear`, LDAP connection encryption type, possible values are `clear`, `ldapi`, `tls` and `ssl`)
+ - `-e LDAP_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN for searching)
+ - `-e LDAP_USER_BASE_DN` (defaults to `ou=Users,ou=LOCAL,dc=domain,dc=local`, LDAP base DN for user info)
  - `-e LDAP_SEARCH_STRINGS` (defaults not set, LDAP search string)
  - `-e LDAP_SEARCH_ATTRS` (defaults not set, LDAP search attribute)
  - `-e LDAP_PROXY_AGENT` (defaults not set, LDAP proxy agent)
  - `-e LDAP_PROXY_PASSWORD` (defaults not set, LDAP proxy agent password)
- - `-e LDAP_DEBUG` (defaults to `0`, LDAP debug level, debug file is located /tmp/mw_ldap_debug.log)
+ - `-e LDAP_USERNAME_ATTR` (defaults to `cn`, LDAP attribute for user name)
+ - `-e LDAP_REALNAME_ATTR` (defaults to `displayname`, LDAP attribute for real name)
+ - `-e LDAP_EMAIL_ATTR` (defaults to `mail`, LDAP attribute for for email address)
  - `-e MEDIAWIKI_MAIN_CACHE` (defaults to `CACHE_NONE`, main cache)
  - `-e MEDIAWIKI_MEMCACHED_SERVERS` (defaults to `[]`, list of memcched servers, comma separated, e.g.["memcached:11211", "memcached1:11211"])
+ - `-e UBC_AUTH` (defaults not set. Set o `true` to enable the UBC-specific authentication extension)
+ - `-e AUTO_CREATED_USER_REDIRECT` (defaults not set.  Set it to a wiki page [e.g. `Main_page`] to redirect new users to a specific page when they first login via LDAP)
 
 As mentioned, this will generate the `LocalSettings.php` file that is required by MediaWiki. If you mounted a shared volume (see `Shared Volume` below), the generated `LocalSettings.php` will be automatically moved to your share volume allowing you to edit it. If a `CustomSettings.php` file exists in your data file, a `require('/data/CustomSettings.php');` will be appended to the generated `LocalSettings.php` file.
 
@@ -121,13 +123,21 @@ You can connect to the LDAP container using your preferred LDAP GUI using `local
 
 When adding a new user, make sure to use `simpleSecurityObject`, `inetOrgPerson`, and `ubcEdu` classes.
 
+## Customization with LDAP authentication enabled
+
+Customize the login button by modifying the page `MediaWiki:Pluggableauth-loginbutton-label`.  The default is "Log in with PluggableAuth".
+
+Customize the login help message by modifying the page `MediaWiki:Userlogin-helplink2` and `MediaWiki:Helplogin-url`.  The default is a hyperlink "Help with logging in" that links to mediawiki help page.
+
+Customize the help message on `Preferences` page about email addresses by editing the page `MediaWiki:Prefs-help-email`.  The default help messages mentioned email addresses are used for password reset, which is irrelevant if mediawiki is setup with LDAP authentication.
+
 ## Custom Caliper actor data
 
 See the [mediawiki-extensions-caliper](https://github.com/ubc/mediawiki-extensions-caliper/blob/master/caliper/actor.php) repo's `CaliperActor` object for the default logged in and logged out users.
 
 You can customize the Caliper actor by using the `SetCaliperActorObject` hook. This container has uses this hook with the `SetCaliperActor` function inside of `CustomHooks.php`.
 
-By default, the `SetCaliperActor` function will use UBC `puid` for the identifier and `CaliperLDAPActorHomepage` environment variable as the base string so the actor identifier will take the form of `CaliperLDAPActorHomepage/LDAP_PUID` (ex: `https://www.ubc.ca/SOME_PUID`). you can instead remove this function and create your own depending on your institution needs, deployment settings, and/or authorization methods.
+By default, the `SetCaliperActor` function will use UBC `puid` for the identifier and `CALIPER_LDAP_ACTOR_HOMEPAGE` environment variable as the base string so the actor identifier will take the form of `CaliperLDAPActorHomepage/LDAP_PUID` (ex: `https://www.ubc.ca/SOME_PUID`). you can instead remove this function and create your own depending on your institution needs, deployment settings, and/or authorization methods.
 
 ## Debugging with Containers
 
