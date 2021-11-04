@@ -598,7 +598,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Maps') !== false) {
     if (loadenv('GOOGLE_MAP_API_KEY')) {
-        $GLOBALS['egMapsGMaps3ApiKey'] = loadenv('GOOGLE_MAP_API_KEY');
+        $egMapsGMaps3ApiKey = loadenv('GOOGLE_MAP_API_KEY');
     }
 }
 
