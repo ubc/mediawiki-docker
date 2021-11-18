@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libldap2-dev \
         libldap-2.4-2 \
         libldap-common \
+        libpq-dev \
         netcat \
         git \
         imagemagick \
@@ -27,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-source extract
 
 # pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
+RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache pdo pdo_pgsql \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
