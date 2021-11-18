@@ -1,17 +1,5 @@
 FROM php:7.4-apache
 
-
-
-FROM php:7.4-fpm
-RUN apt-get update && apt-get install -y libpq-dev
-RUN docker-php-ext-install pdo pdo_pgsql pgsql
-RUN ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
-RUN sed -i -e 's/;extension=pgsql/extension=pgsql/' /usr/local/etc/php/php.ini
-RUN sed -i -e 's/;extension=pdo_pgsql/extension=pdo_pgsql/' /usr/local/etc/php/php.ini
-
-
-
-
 ENV WIKI_VERSION_MAJOR_MINOR=1.35
 ENV WIKI_VERSION_BUGFIX=3
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
