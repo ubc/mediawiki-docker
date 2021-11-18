@@ -1,5 +1,17 @@
 FROM php:7.4-apache
 
+
+
+FROM php:7.4-fpm
+RUN apt-get update && apt-get install -y libpq-dev
+RUN docker-php-ext-install pdo pdo_pgsql pgsql
+RUN ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN sed -i -e 's/;extension=pgsql/extension=pgsql/' /usr/local/etc/php/php.ini
+RUN sed -i -e 's/;extension=pdo_pgsql/extension=pdo_pgsql/' /usr/local/etc/php/php.ini
+
+
+
+
 ENV WIKI_VERSION_MAJOR_MINOR=1.35
 ENV WIKI_VERSION_BUGFIX=3
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
@@ -28,7 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-source extract
 
 # pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache pdo pdo_pgsql \
+RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
@@ -37,6 +49,12 @@ RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcach
     && docker-php-ext-enable imagick mysqli redis \
     && a2enmod rewrite \
     && rm -rf /tmp/pear
+
+# pgsql
+RUN docker-php-ext-install pdo pdo_pgsql pgsql \
+    && ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini \
+    && sed -i -e 's/;extension=pgsql/extension=pgsql/' /usr/local/etc/php/php.ini \
+    && sed -i -e 's/;extension=pdo_pgsql/extension=pdo_pgsql/' /usr/local/etc/php/php.ini
 
 WORKDIR /var/www/html
 
