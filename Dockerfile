@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.35
-ENV WIKI_VERSION_BUGFIX=3
+ENV WIKI_VERSION_BUGFIX=6
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_35
 
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-source extract
 
 # pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache \
+RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache calendar \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-source delete \
@@ -78,9 +78,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
-    && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz" \
+    && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
-    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.31.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
+    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
     && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
     && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
