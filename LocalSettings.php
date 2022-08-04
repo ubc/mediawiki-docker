@@ -627,7 +627,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Dy
     wfLoadExtension( 'DynamicPageList' );
 }
 
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'googleAnalytics') !== false && loadenv('GOOGLE_ANALYTICS_UA')) {
+/*if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'googleAnalytics') !== false && loadenv('GOOGLE_ANALYTICS_UA')) {
     require_once "$IP/extensions/googleAnalytics/googleAnalytics.php";
     // Replace xxxxxxx-x with YOUR GoogleAnalytics UA number
     $wgGoogleAnalyticsAccount = loadenv('GOOGLE_ANALYTICS_UA');
@@ -654,7 +654,19 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'go
     $wgGoogleAnalyticsMetricsAllowed = $t == '*' ? '*' : explode(',', $t);
     $wgGoogleAnalyticsMetricsPath = loadenv('GOOGLE_ANALYTICS_METRICS_PATH', NULL);
     $wgGoogleAnalyticsMetricsViewId = loadenv('GOOGLE_ANALYTICS_METRICS_VIEWID', '');
+}*/
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'GTag') !== false && loadenv('GOOGLE_ANALYTICS_ID')) {
+    wfLoadExtension( 'GTag' );
+    $wgGTagAnalyticsId = loadenv('GOOGLE_ANALYTICS_ID');
+
+    # Google Analyics Metrics
+    $t = loadenv('GOOGLE_ANALYTICS_METRICS_ALLOWED', '*');
+    $wgGoogleAnalyticsMetricsAllowed = $t == '*' ? '*' : explode(',', $t);
+    $wgGoogleAnalyticsMetricsPath = loadenv('GOOGLE_ANALYTICS_METRICS_PATH', NULL);
+    $wgGoogleAnalyticsMetricsViewId = loadenv('GOOGLE_ANALYTICS_METRICS_VIEWID', '');
 }
+
 
 # setup caliper settings if enabled
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'caliper') !== false && loadenv('CALIPER_HOST') && loadenv('CALIPER_API_KEY')) {
