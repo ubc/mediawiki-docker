@@ -659,12 +659,6 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Dy
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'GTag') !== false && loadenv('GOOGLE_ANALYTICS_ID')) {
     wfLoadExtension( 'GTag' );
     $wgGTagAnalyticsId = loadenv('GOOGLE_ANALYTICS_ID');
-
-    # Google Analyics Metrics
-    $t = loadenv('GOOGLE_ANALYTICS_METRICS_ALLOWED', '*');
-    $wgGoogleAnalyticsMetricsAllowed = $t == '*' ? '*' : explode(',', $t);
-    $wgGoogleAnalyticsMetricsPath = loadenv('GOOGLE_ANALYTICS_METRICS_PATH', NULL);
-    $wgGoogleAnalyticsMetricsViewId = loadenv('GOOGLE_ANALYTICS_METRICS_VIEWID', '');
 }
 
 

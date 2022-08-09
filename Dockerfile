@@ -84,9 +84,6 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GTag \
     && curl -Ls https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GTag\
-    && echo "Installing https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz" \
-    && mkdir -p /var/www/html/extensions/GoogleAnalyticsMetrics \
-    && curl -Ls https://github.com/wikimedia/mediawiki-extensions-GoogleAnalyticsMetrics/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GoogleAnalyticsMetrics \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.3.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.3.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
