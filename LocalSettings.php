@@ -625,7 +625,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Co
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DynamicPageList') !== false) {
     wfLoadExtension( 'DynamicPageList' );
-    $wgDplSettings['maxResultCount'] = 800
+    $wgDplSettings['maxResultCount'] = 800;
 }
 
 /*if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'googleAnalytics') !== false && loadenv('GOOGLE_ANALYTICS_UA')) {
