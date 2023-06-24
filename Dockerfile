@@ -1,9 +1,9 @@
 FROM php:7.4-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.35
-ENV WIKI_VERSION_BUGFIX=10
+ENV WIKI_VERSION_MAJOR_MINOR=1.39
+ENV WIKI_VERSION_BUGFIX=3
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_35
+ENV WIKI_VERSION_STR=1_39
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -56,15 +56,15 @@ COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
-COPY ParsoidHandler_custom_1_35.php /var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
+#COPY ParsoidHandler_custom_1_35.php /var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
 
 # FIXME temp hack to use lastest composer 1.x. composer 2.x version will break wikimedia/composer-merge-plugin
-#RUN curl -L https://getcomposer.org/installer | php \
-RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
+RUN curl -L https://getcomposer.org/installer | php \
+#RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters; do \
+    && for i in VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
@@ -93,12 +93,12 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
-    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz" \
+    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
-    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList \
-    && echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
-    && mkdir -p /var/www/html/extensions/Math \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+    #&& echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
+    #&& mkdir -p /var/www/html/extensions/Math \
+    #&& curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
 
 
 RUN mkdir -p /data \

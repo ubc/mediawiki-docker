@@ -15,7 +15,6 @@ function loadenv($envName, $default = "") {
     return getenv($envName) ? getenv($envName) : $default;
 }
 
-
 ## Uncomment this to disable output compression
 $wgDisableOutputCompression = true;
 
@@ -70,9 +69,18 @@ $wgDBprefix = loadenv('MEDIAWIKI_DB_PREFIX');
 # MySQL table options to use during installation or update
 $wgDBTableOptions = loadenv('MEDIAWIKI_DB_TABLE_OPTIONS', "ENGINE=InnoDB, DEFAULT CHARSET=binary");
 
+# setup debug environment
+if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
+    error_reporting(-1);
+    ini_set( 'display_errors', 1  );
+    $wgShowExceptionDetails = true;
+    $wgCacheDirectory = false;
+    $wgDebugLogFile = "/tmp/mw-debug-{$wgDBname}.log";
+}
+
 ## Shared memory settings
 $mainCache = loadenv('MEDIAWIKI_MAIN_CACHE', 'CACHE_NONE');
-$wgMainCacheType = constant($mainCache) ? constant($mainCache) : $mainCache;
+$wgMainCacheType = defined("$mainCache") ? constant($mainCache) : $mainCache;
 switch ($wgMainCacheType) {
     case CACHE_MEMCACHED:
         $wgMemCachedServers = json_decode(loadenv('MEDIAWIKI_MEMCACHED_SERVERS', '[]'));
@@ -482,8 +490,9 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Vi
     #];
 
     # https://www.mediawiki.org/wiki/Parsoid#Linking_a_developer_checkout_of_Parsoid
-    $PARSOID_INSTALL_DIR = 'vendor/wikimedia/parsoid'; # bundled copy
-    wfLoadExtension( 'Parsoid', "$PARSOID_INSTALL_DIR/extension.json" );
+    #$PARSOID_INSTALL_DIR = 'vendor/wikimedia/parsoid'; # bundled copy
+    #wfLoadExtension( 'Parsoid', "$PARSOID_INSTALL_DIR/extension.json" );
+    wfLoadExtension( 'Parsoid', "$IP/vendor/wikimedia/parsoid/extension.json" );
     // $wgVirtualRestConfig['modules']['parsoid'] = array(
     //     // URL to the Parsoid instance
     //     'url' => getenv('PARSOID_URL') ? getenv('PARSOID_URL') : 'http://localhost:8000',
@@ -573,7 +582,10 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 
     # disable password resets entirely
     # ref: https://www.mediawiki.org/wiki/Manual:$wgPasswordResetRoutes
-    $wgPasswordResetRoutes = false;
+    $wgPasswordResetRoutes = array(
+        'username' => false,
+        'email' => false,
+    );
 
     # enable local properties so users can edit their real name and email
     # ref: https://www.mediawiki.org/wiki/Extension:PluggableAuth
@@ -611,7 +623,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Va
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'RightFunctions') !== false) {
-    require_once "$IP/extensions/RightFunctions/RightFunctions.php";
+   wfLoadExtension( 'RightFunctions' );
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'UserPageEditProtection') !== false) {
@@ -619,9 +631,9 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Us
     $wgOnlyUserEditUserPage = true;
 }
 
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Collection') !== false) {
+/*if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Collection') !== false) {
     require_once "$IP/extensions/Collection/Collection.php";
-}
+}*/
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DynamicPageList') !== false) {
     wfLoadExtension( 'DynamicPageList' );
@@ -678,14 +690,6 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Li
 @include('/conf/CustomSettings.php');
 
 @include('CustomHooks.php');
-
-if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
-    error_reporting(-1);
-    ini_set( 'display_errors', 1  );
-    $wgShowExceptionDetails = true;
-    $wgCacheDirectory = false;
-    $wgDebugLogFile = "/tmp/mw-debug-{$wgDBname}.log";
-}
 
 # UBC Wiki Books - a setting to allow books to be saved as collection of pages
 $wgGroupPermissions['user']['collectionsaveascommunitypage'] = true;

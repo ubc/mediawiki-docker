@@ -7,9 +7,9 @@
         }
     ],
     "require": {
-        "mediawiki/maps": "~9.0",
+        "mediawiki/maps": "~10.0",
         "pear/mail_mime-decode": "1.5.5.2",
         "google/apiclient":"^2.2",
-        "imsglobal/caliper": "dev-develop#c7e34e230abc7bbb647f8f94245cb649f6191bcd as 1.2.0"
+        "imsglobal/caliper": "develop#c7e34e230abc7bbb647f8f94245cb649f6191bcd as 1.2.0"
     }
 }
