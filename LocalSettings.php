@@ -687,6 +687,13 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Li
     $wgLinkTargetParentClasses = array('linkexternal');
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), '3D') !== false) {
+    wfLoadExtension( '3D' );
+    wfLoadExtension( 'MultimediaViewer' );
+    $wgTrustedMediaFormats[] = 'application/sla';
+    $wgFileExtensions[] = 'stl';
+}
+
 @include('/conf/CustomSettings.php');
 
 @include('CustomHooks.php');
