@@ -150,7 +150,7 @@ $wgDiff3 = "/usr/bin/diff3";
 
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'vector', 'monobook':
-$wgDefaultSkin = loadenv('MEDIAWIKI_DEFAULT_SKIN', "vector");
+$wgDefaultSkin = loadenv('MEDIAWIKI_DEFAULT_SKIN', "vector-2022");
 
 # Enabled skins.
 # The following skins were automatically enabled:
