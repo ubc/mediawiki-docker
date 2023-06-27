@@ -694,6 +694,10 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), '3D
     $wgFileExtensions[] = 'stl';
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'TimedMediaHandler') !== false) {
+    wfLoadExtension( 'TimedMediaHandler' );
+}
+
 @include('/conf/CustomSettings.php');
 
 @include('CustomHooks.php');
