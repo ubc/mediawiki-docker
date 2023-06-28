@@ -42,7 +42,7 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
 
             if ($actor !== null) {
                 return true;
-            } else if (!$user->isLoggedIn() || !$user->getId()) {
+            } else if (!$user->isRegistered() || !$user->getId()) {
                 return false;
             }
 
