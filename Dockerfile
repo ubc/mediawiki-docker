@@ -60,6 +60,8 @@ COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
 #COPY ParsoidHandler_custom_1_35.php /var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
 
+# composer won't load plugins if we don't explicitly allow executing as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
 # FIXME temp hack to use lastest composer 1.x. composer 2.x version will break wikimedia/composer-merge-plugin
 RUN curl -L https://getcomposer.org/installer | php \
 #RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
@@ -86,9 +88,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GTag \
     && curl -Ls https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GTag\
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.3.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.4.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.3.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.4.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
     && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
@@ -102,6 +104,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     #&& mkdir -p /var/www/html/extensions/Math \
     #&& curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
 
+# composer.local.json merges in composer.json from caliper extension, so we
+# need to run composer update after getting the extensions.
+RUN php composer.phar update --no-dev
 
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
