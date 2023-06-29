@@ -544,9 +544,11 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     wfLoadExtension( 'LDAPProvider' );
 
     // define our LDAP authentication domain
-    $LDAPProviderDomainConfigProvider = function() {
+    global $ubcLDAPDomain;
+    $ubcLDAPDomain = getenv('LDAP_DOMAIN');
+    $LDAPProviderDomainConfigProvider = function() use($ubcLDAPDomain) {
         $config = [
-            'CWL' => [
+            $ubcLDAPDomain => [
                 'connection' => [
                     "server" => getenv('LDAP_SERVER') ? getenv('LDAP_SERVER') : 'localhost',
                     "port" => getenv('LDAP_PORT') ? getenv('LDAP_PORT') : 389,
@@ -574,6 +576,13 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     # do not allow "local" pseudo-domain login against local user db
     $LDAPAuthentication2AllowLocalLogin = false;
     $wgPluggableAuth_EnableLocalLogin = false;
+
+    $wgPluggableAuth_Config['CWL Log In'] = [
+        'plugin' => 'LDAPAuthentication2',
+        'data' => [
+            'domain' => $ubcLDAPDomain
+        ]
+    ];
 
     # disable local wiki account creation page
     $wgGroupPermissions['*']['createaccount'] = false;
