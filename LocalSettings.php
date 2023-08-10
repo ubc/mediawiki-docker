@@ -707,6 +707,18 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ti
     wfLoadExtension( 'TimedMediaHandler' );
 }
 
+
+# testing smitespam
+wfLoadExtension( 'SmiteSpam' );
+
+##SmiteSpam assigns a probability, from 0 to 1, that any specific page holds spam.
+#$wgSmiteSpamThreshold = 0.9;
+#$wgSmiteSpamIgnoreSmallPages = false;
+#$wgSmiteSpamIgnorePagesWithNoExternalLinks = false;
+# Moved to values.yaml
+
+
+
 @include('/conf/CustomSettings.php');
 
 @include('CustomHooks.php');

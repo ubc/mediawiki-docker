@@ -239,4 +239,7 @@ mkdir -p images
 chown -R www-data: cache
 chmod 755 images
 
+# Tue test remove of installed
+rm -rf /data/installed
+
 exec "$@"
