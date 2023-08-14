@@ -514,7 +514,8 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
     $wgDefaultUserOptions['usebetatoolbar-cgd'] = 1;
 }
 
-if (getenv('RESTBASE_URL')) {
+// disable restbase for now as it broken after 1.39 upgrade
+/*if (getenv('RESTBASE_URL')) {
     # RESTBase
     # ref: https://www.mediawiki.org/wiki/Extension:VisualEditor#RESTBase_setup_for_switching
     $wgVisualEditorParsoidAutoConfig = false;
@@ -527,7 +528,7 @@ if (getenv('RESTBASE_URL')) {
     # used in browser, so it has to be public accessible, using proxy to forward request to Restbase
     $wgVisualEditorFullRestbaseURL = $wgServer . '/api/rest_';
     $wgVisualEditorRestbaseURL = $wgVisualEditorFullRestbaseURL . 'v1/page/html/';
-}
+}*/
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
     # Math
