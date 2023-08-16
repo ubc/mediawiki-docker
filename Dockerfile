@@ -97,12 +97,17 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
+    # WARNING: if updating DynamicPageList3 from 3.5.1, check if fix below is still required \
     && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
     && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
     #&& echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
     #&& mkdir -p /var/www/html/extensions/Math \
     #&& curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
+
+# WARNING: Below fix is only for DynamicPageList3 3.5.1
+# Patch to fix Math Exam Resources DPL
+COPY ./extensions/DynamicPageList/includes/Query.php /var/www/html/extensions/DynamicPageList/includes/Query.php
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.
