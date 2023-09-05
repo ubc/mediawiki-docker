@@ -690,6 +690,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'ca
     $wgCaliperHost = loadenv('CALIPER_HOST');
     $wgCaliperAPIKey = loadenv('CALIPER_API_KEY');
     $wgCaliperAppBaseUrl = loadenv('CALIPER_BASE_URL', null);
+    $wgCaliperUseJobQueue = loadenv('CALIPER_USE_JOB_QUEUE', true);
 }
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LinkTarget') !== false) {
