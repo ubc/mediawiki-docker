@@ -708,15 +708,16 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ti
 }
 
 
-#add contion to check for extension.... see above.
-# testing smitespam
-wfLoadExtension( 'SmiteSpam' );
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'SmiteSpam') !== false) {
+    wfLoadExtension( 'SmiteSpam' );
 
-##SmiteSpam assigns a probability, from 0 to 1, that any specific page holds spam.
-$wgSmiteSpamThreshold = 0.9;
-$wgSmiteSpamIgnoreSmallPages = false;
-$wgSmiteSpamIgnorePagesWithNoExternalLinks = false;
-# Moved to values.yaml
+    ##SmiteSpam assigns a probability, from 0 to 1, that any specific page holds spam.
+    $wgSmiteSpamThreshold = 0.9;
+    $wgSmiteSpamIgnoreSmallPages = false;
+    $wgSmiteSpamIgnorePagesWithNoExternalLinks = false;
+
+}
+
 
 
 
