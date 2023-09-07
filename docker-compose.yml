@@ -39,6 +39,11 @@ services:
       # - MEDIAWIKI_ENABLE_SSL=true
       - MEDIAWIKI_EXTENSIONS=SmiteSpam,VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget,HitCounters,GTag,3D,TimedMediaHandler
       - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
+      # Add a logo to the wiki, can be relative paths to uploaded wiki images
+      # Note: ICON (required) used by newer themes, LEGACY (optional) by older
+      #- MEDIAWIKI_LOGO_ICON=/path/to/100x100/image/or/50x50/svg.svg
+      #- MEDIAWIKI_LOGO_LEGACY1X=/path/to/135px_wide/image.png
+      #- MEDIAWIKI_LOGO_LEGACY2X=/images/d/d5/Ubcwiki_logo_2x.png
       - PARSOID_DOMAIN=localhost
       - RESTBASE_URL=http://nodeservices:7231
       - LDAP_DOMAIN=CWL

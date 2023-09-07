@@ -39,7 +39,17 @@ $wgResourceBasePath = $wgScriptPath;
 
 ## The URL path to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
-$wgLogo = loadenv('MEDIAWIKI_LOGO', "$wgResourceBasePath/resources/assets/wiki.png");
+if (getenv('MEDIAWIKI_LOGO_ICON') !== false) {
+    $wgLogos = [
+        # square 50x50 pixel SVG or 100x100 pixel regular image, used by new themes
+        'icon' => loadenv('MEDIAWIKI_LOGO_ICON'),
+        # used by old themes, will be deprecated in the future
+        '1x' => loadenv('MEDIAWIKI_LOGO_LEGACY1X',
+                        "$wgResourceBasePath/resources/assets/wiki.png"),
+        '2x' => loadenv('MEDIAWIKI_LOGO_LEGACY2X',
+                        "$wgResourceBasePath/resources/assets/wiki.png"),
+    ];
+}
 
 ## UPO means: this is also a user preference option
 
