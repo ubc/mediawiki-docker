@@ -239,5 +239,7 @@ mkdir -p images
 chown -R www-data: cache
 chmod 755 images
 
+#Tue to remove
+rm /data/installed
 
 exec "$@"
