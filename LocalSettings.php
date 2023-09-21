@@ -732,6 +732,105 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Sm
 
 
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Lockdown') !== false) {
+
+    wfLoadExtension( 'Lockdown' );
+
+    ##Test Page Lockdown
+    $wgSpecialPageLockdown['DeadendPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['DoubleRedirects'] = [ 'user' ];
+    $wgSpecialPageLockdown['LongPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['AncientPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['LonelyPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['FewestRevisions'] = [ 'user' ];
+    $wgSpecialPageLockdown['WithoutInterwiki'] = [ 'user' ];
+    $wgSpecialPageLockdown['ProtectedPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['ProtectedTitles'] = [ 'user' ];
+    $wgSpecialPageLockdown['ShortPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['UncategorizedCategories'] = [ 'user' ];
+    $wgSpecialPageLockdown['UncategorizedFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['UncategorizedPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['UncategorizedTemplates'] = [ 'user' ];
+    $wgSpecialPageLockdown['UnusedCategories'] = [ 'user' ];
+    $wgSpecialPageLockdown['UnusedFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['UnusedTemplates'] = [ 'user' ];
+    $wgSpecialPageLockdown['WantedCategories'] = [ 'user' ];
+    $wgSpecialPageLockdown['WantedFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['WantedPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['WantedTemplates'] = [ 'user' ];
+    $wgSpecialPageLockdown['AllPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['PrefixIndex'] = [ 'user' ];
+    $wgSpecialPageLockdown['Categories'] = [ 'user' ];
+    $wgSpecialPageLockdown['CategoryTree'] = [ 'user' ];
+    $wgSpecialPageLockdown['LinkSearch'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListRedirects'] = [ 'user' ];
+    $wgSpecialPageLockdown['PagesWithProp'] = [ 'user' ];
+    $wgSpecialPageLockdown['Search'] = [ 'user' ];
+    $wgSpecialPageLockdown['TrackingCategories'] = [ 'user' ];
+    ##$wgSpecialPageLockdown['UserLogin'] = [ 'user' ];
+    $wgSpecialPageLockdown['ActiveUsers'] = [ 'user' ];
+    $wgSpecialPageLockdown['AutoblockList'] = [ 'user' ];
+    $wgSpecialPageLockdown['BlockList'] = [ 'user' ];
+    $wgSpecialPageLockdown['ChangeEmail'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListGrants'] = [ 'user' ];
+    $wgSpecialPageLockdown['LinkAccounts'] = [ 'user' ];
+    $wgSpecialPageLockdown['PasswordPolicies'] = [ 'user' ];
+    $wgSpecialPageLockdown['Preferences'] = [ 'user' ];
+    $wgSpecialPageLockdown['ResetTokens'] = [ 'user' ];
+    $wgSpecialPageLockdown['UnlinkAccounts'] = [ 'user' ];
+    $wgSpecialPageLockdown['Contributions'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListGroupRights'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListUsers'] = [ 'user' ];
+    $wgSpecialPageLockdown['UserRights'] = [ 'user' ];
+    $wgSpecialPageLockdown['NewFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['Log'] = [ 'user' ];
+    $wgSpecialPageLockdown['NewPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['RecentChanges'] = [ 'user' ];
+    $wgSpecialPageLockdown['RecentChangesLinked'] = [ 'user' ];
+    $wgSpecialPageLockdown['Tags'] = [ 'user' ];
+    $wgSpecialPageLockdown['Watchlist'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['ListDuplicatedFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['MIMESearch'] = [ 'user' ];
+    $wgSpecialPageLockdown['MediaStatistics'] = [ 'user' ];
+    $wgSpecialPageLockdown['OrphanedTimedText'] = [ 'user' ];
+    $wgSpecialPageLockdown['FileDuplicateSearch'] = [ 'user' ];
+    $wgSpecialPageLockdown['Campaigns'] = [ 'user' ];
+    $wgSpecialPageLockdown['ApiSandbox'] = [ 'user' ];
+    $wgSpecialPageLockdown['BookSources'] = [ 'user' ];
+    $wgSpecialPageLockdown['ExpandTemplates'] = [ 'user' ];
+    $wgSpecialPageLockdown['NewMessages'] = [ 'user' ];
+    $wgSpecialPageLockdown['PopularPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['Statistics'] = [ 'user' ];
+    $wgSpecialPageLockdown['AllMessages'] = [ 'user' ];
+    $wgSpecialPageLockdown['Version'] = [ 'user' ];
+    $wgSpecialPageLockdown['DeletePage'] = [ 'user' ];
+    $wgSpecialPageLockdown['Diff'] = [ 'user' ];
+    $wgSpecialPageLockdown['EditPage'] = [ 'user' ];
+    $wgSpecialPageLockdown['NewSection'] = [ 'user' ];
+    $wgSpecialPageLockdown['PageHistory'] = [ 'user' ];
+    $wgSpecialPageLockdown['PageInfo'] = [ 'user' ];
+    $wgSpecialPageLockdown['PermanentLink'] = [ 'user' ];
+    $wgSpecialPageLockdown['ProtectPage'] = [ 'user' ];
+    $wgSpecialPageLockdown['Purge'] = [ 'user' ];
+    $wgSpecialPageLockdown['Random'] = [ 'user' ];
+    $wgSpecialPageLockdown['RandomInCategory'] = [ 'user' ];
+    $wgSpecialPageLockdown['RandomRedirect'] = [ 'user' ];
+    $wgSpecialPageLockdown['RandomRootpage'] = [ 'user' ];
+    $wgSpecialPageLockdown['Redirect'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostLinkedCategories'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostLinkedFiles'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostLinkedPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostTranscludedPages'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostCategories'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostInterwikis'] = [ 'user' ];
+    $wgSpecialPageLockdown['MostRevisions'] = [ 'user' ];
+    $wgSpecialPageLockdown['ComparePages'] = [ 'user' ];
+    $wgSpecialPageLockdown['Export'] = [ 'user' ];
+    $wgSpecialPageLockdown['WhatLinksHere'] = [ 'user' ];
+
+
+}
 
 @include('/conf/CustomSettings.php');
 
