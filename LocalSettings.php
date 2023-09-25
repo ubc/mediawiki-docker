@@ -736,6 +736,13 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Lo
 
     wfLoadExtension( 'Lockdown' );
 
+    $wgActionLockdown['edit'] = array( 'sysop','bureaucrat','user');
+    $wgActionLockdown['delete'] = array( 'sysop','bureaucrat','user');
+    $wgActionLockdown['move'] = array('sysop','bureaucrat','user');
+    $wgActionLockdown['protect'] = array( 'sysop','bureaucrat','user');
+    $wgActionLockdown['history'] = array( 'sysop','bureaucrat','user');
+    $wgActionLockdown['createtalk'] = array('sysop','bureaucrat','user');
+
     ##Test Page Lockdown
     $wgSpecialPageLockdown['DeadendPages'] = [ 'user' ];
     $wgSpecialPageLockdown['DoubleRedirects'] = [ 'user' ];
