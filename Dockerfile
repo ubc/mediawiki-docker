@@ -93,7 +93,7 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.5.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/refs/heads/wikistg07.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
