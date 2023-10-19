@@ -730,6 +730,26 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Sm
 
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Echo') !== false) {
+    wfLoadExtension( 'Echo' );
+
+    ##$wgEchoAgentBlacklist = [ 'SampleBot', 'SampleUser' ];
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Linter') !== false) {
+    wfLoadExtension( 'Linter' );
+
+    $wgParsoidSettings = [
+        'linting' => true
+    ];
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DiscussionTools') !== false) {
+    wfLoadExtension( 'DiscussionTools' );
+
+}
+
+
 
 
 
