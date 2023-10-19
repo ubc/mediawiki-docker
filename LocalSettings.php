@@ -634,9 +634,10 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Ma
     }
 }
 
-if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LiquidThreads') !== false) {
-    wfLoadExtension( 'LiquidThreads' );
-}
+#Removed 19oct2023
+#if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'LiquidThreads') !== false) {
+#    wfLoadExtension( 'LiquidThreads' );
+#}
 
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Variables') !== false) {
     wfLoadExtension( 'Variables' );
@@ -729,6 +730,26 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Sm
     $wgSmiteSpamIgnorePagesWithNoExternalLinks = false;
 
 }
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Echo') !== false) {
+    wfLoadExtension( 'Echo' );
+
+    ##$wgEchoAgentBlacklist = [ 'SampleBot', 'SampleUser' ];
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Linter') !== false) {
+    wfLoadExtension( 'Linter' );
+
+    $wgParsoidSettings = [
+        'linting' => true
+    ];
+}
+
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'DiscussionTools') !== false) {
+    wfLoadExtension( 'DiscussionTools' );
+
+}
+
 
 
 
