@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libldap2-dev \
         libldap-2.4-2 \
         libldap-common \
+        libpq-dev \
         netcat \
         git \
         imagemagick \
@@ -36,6 +37,12 @@ RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcach
     && docker-php-ext-enable imagick mysqli redis \
     && a2enmod rewrite \
     && rm -rf /tmp/pear
+
+# pgsql
+RUN docker-php-ext-install pdo pdo_pgsql pgsql \
+    && ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini \
+    && sed -i -e 's/;extension=pgsql/extension=pgsql/' /usr/local/etc/php/php.ini \
+    && sed -i -e 's/;extension=pdo_pgsql/extension=pdo_pgsql/' /usr/local/etc/php/php.ini
 
 WORKDIR /var/www/html
 
