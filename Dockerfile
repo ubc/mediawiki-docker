@@ -113,6 +113,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
 # WARNING: Below fix is only for DynamicPageList3 3.5.1
 # Patch to fix Math Exam Resources DPL
 COPY ./extensions/DynamicPageList/includes/Query.php /var/www/html/extensions/DynamicPageList/includes/Query.php
+# TODO: Remove if >REL1_40, as this is a backport from Vector REL1_40
+# Add login button next to "..." menu in top-right corner
+COPY skins/Vector/includes/Hooks.php /var/www/html/skins/Vector/includes/Hooks.php
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.
