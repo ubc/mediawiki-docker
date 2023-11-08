@@ -115,6 +115,7 @@ COPY ./extensions/DynamicPageList/includes/Query.php /var/www/html/extensions/Dy
 # TODO: Remove if >REL1_40, as this is a backport from Vector REL1_40
 # Add login button next to "..." menu in top-right corner
 COPY skins/Vector/includes/Hooks.php /var/www/html/skins/Vector/includes/Hooks.php
+COPY skins/Vector/includes/SkinVector.php /var/www/html/skins/Vector/includes/SkinVector.php
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.

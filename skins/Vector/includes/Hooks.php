@@ -322,12 +322,16 @@ class Hooks implements
 				'icon' => '',
 			] );
 		}
+        # TODO: remove customization after 1.40+
+        # ubc custom: backport from 1.40, add login button to the overflow menu
+        # we're hiding the user links button, so the login button cannot be
+        # allowed to collapse
         if ( isset( $content_navigation['user-menu']['login'] ) ) {
             $content_navigation[$overflow]['login'] = array_merge(
                 $content_navigation['user-menu']['login'], [
                     'id' => 'pt-login-2',
                     'button' => true,
-                    'collapsible' => true,
+                    'collapsible' => false,
                     // Remove icon
                     //'icon' => '',
                 ] );
