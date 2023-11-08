@@ -27,9 +27,6 @@ services:
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
       #- ./CustomHooks.php:/var/www/html/CustomHooks.php
-      # FIXME this is a custom change on Parsoid PHP implementation since mw 1.35.
-      # the Parsoid domain is not configurable. so we needed to disable the check as we are using "localhost" in Restbase redirection
-      - ./ParsoidHandler_custom_1_35.php:/var/www/html/vendor/wikimedia/parsoid/extension/src/Rest/Handler/ParsoidHandler.php
     environment:
       - MEDIAWIKI_SITE_SERVER=http://localhost:8080
       - MEDIAWIKI_SITE_NAME=My Awesome Wiki
