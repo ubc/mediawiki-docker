@@ -4,10 +4,17 @@ services:
     image: mariadb:10.6
     environment:
       - MYSQL_ROOT_PASSWORD=password
+      - MARIADB_DATABASE=mediawiki
     volumes:
       - ./.data/db:/var/lib/mysql
     ports:
       - 3306:3306
+  adminer:
+      image: "adminer:4"
+      ports:
+        - "8089:8080"
+      depends_on:
+        - db
   web: &app
     image: ubcctlt/mediawiki
     build: .
@@ -79,6 +86,7 @@ services:
       # - CALIPER_API_KEY=PUT_TEST_BEARER_TOKEN_HERE
       # - CALIPER_BASE_URL=http://localhost:8888/test_url/
       # - CALIPER_LDAP_ACTOR_HOMEPAGE=http://media_wiki_ldap_homepage
+      - MEDIAWIKI_UPGRADE_KEY=upgrade
   job_runner:
     <<: *app
     command: php /var/www/html/maintenance/runJobs.php --wait

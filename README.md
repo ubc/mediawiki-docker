@@ -89,8 +89,9 @@ Additionally if a `composer.lock` **and** a `composer.json` are detected, the co
 
 ## Accessing MediaWiki
 
-
 Access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
+
+Database frontend Adminer is available at `http://localhost:8089`.
 
 
 ## Setting up instance for development
@@ -157,3 +158,24 @@ where the SERIVCE_NAME can be any service in docker-compose, e.g. nodeservices, 
 The `REL*` branches track the upstream Mediawiki released versions. When something is updated in this repo and is ready to be deployed, a new tag should be created and the tag name should in the format of `BRANCH_NAME + BUILD NUMBER`, e.g. REL1_30_B2 or REL1_31_B5. The `BUILD_NUMBER` should be increased sequentially.
 
 The same rules apply to node-services repo as well.
+
+## Upgrading
+
+When upgrading to a newer version, we can run the web updater, this requires
+setting an upgrade key. A default upgrade key with value 'value' is set in
+docker-compose.yml
+
+    http://localhost:8080/mw-config/index.php?page=Upgrade
+
+There is also an maintenance update script that must be run, this can be done manually:
+
+    php maintenance/update.php
+
+Alternatively, setting the env var `MEDIAWIKI_UPDATE` to true will run the
+maintenance update script on container startup.
+
+## Admin Access
+
+Promote a existing user to have all admin permissions:
+
+    php maintenance/createAndPromote.php Admin1 --force --bureaucrat --sysop --interface-admin
