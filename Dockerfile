@@ -116,6 +116,14 @@ COPY ./extensions/DynamicPageList/includes/Query.php /var/www/html/extensions/Dy
 # Add login button next to "..." menu in top-right corner
 COPY skins/Vector/includes/Hooks.php /var/www/html/skins/Vector/includes/Hooks.php
 COPY skins/Vector/includes/SkinVector.php /var/www/html/skins/Vector/includes/SkinVector.php
+# TODO: Also remove on upgrade, this is a Vector customization to make the main
+# menu behave more like current Wikipedia (dropdown over the page)
+COPY skins/Vector/resources/skins.vector.styles/components/Sidebar.less \
+     /var/www/html/skins/Vector/resources/skins.vector.styles/components/Sidebar.less
+COPY skins/Vector/resources/skins.vector.styles/components/TableOfContents.less \
+     /var/www/html/skins/Vector/resources/skins.vector.styles/components/TableOfContents.less
+COPY skins/Vector/resources/skins.vector.styles/layouts/screen.less \
+     /var/www/html/skins/Vector/resources/skins.vector.styles/layouts/screen.less
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.
