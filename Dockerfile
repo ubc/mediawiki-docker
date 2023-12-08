@@ -129,6 +129,14 @@ COPY skins/Vector/resources/skins.vector.styles/layouts/screen.less \
 # need to run composer update after getting the extensions.
 RUN php composer.phar update --no-dev
 
+# TODO: Once we move past 1.39, test if patch is still necessary, create a page
+# with source:
+# [[File:Hunga Tonga–Hunga Ha'apai volcanic eruption captured at December 30, 2021.webm|thumb|test]]
+# See if VisualEditor throws an when you tried to edit the page.
+# Patch from: https://phabricator.wikimedia.org/T350594
+COPY AddMediaInfo.patch ./AddMediaInfo.patch
+RUN git apply AddMediaInfo.patch
+
 RUN mkdir -p /data \
    && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
    && chmod a+rw /var/www/html/extensions/Widgets/compiled_templates
