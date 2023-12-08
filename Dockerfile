@@ -138,7 +138,6 @@ COPY AddMediaInfo.patch ./AddMediaInfo.patch
 RUN git apply AddMediaInfo.patch
 
 RUN mkdir -p /data \
-   && chmod a+x /var/www/html/extensions/Scribunto/includes/engines/LuaStandalone/binaries/lua5_1_5_linux_64_generic/lua \
    && chmod a+rw /var/www/html/extensions/Widgets/compiled_templates
 
 VOLUME /data
