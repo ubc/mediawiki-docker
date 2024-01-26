@@ -124,6 +124,12 @@ COPY skins/Vector/resources/skins.vector.styles/components/TableOfContents.less 
      /var/www/html/skins/Vector/resources/skins.vector.styles/components/TableOfContents.less
 COPY skins/Vector/resources/skins.vector.styles/layouts/screen.less \
      /var/www/html/skins/Vector/resources/skins.vector.styles/layouts/screen.less
+COPY skins/Vector/includes/templates/Sidebar.mustache \
+     /var/www/html/skins/Vector/includes/templates/Sidebar.mustache
+COPY skins/Vector/includes/templates/skin.mustache \
+     /var/www/html/skins/Vector/includes/templates/skin.mustache
+COPY skins/Vector/resources/skins.vector.styles/components/MenuTabs.less \
+     /var/www/html/skins/Vector/resources/skins.vector.styles/components/MenuTabs.less
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.
