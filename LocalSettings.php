@@ -730,7 +730,9 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Sm
 
 }
 
-
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Nuke') !== false) {
+    wfLoadExtension( 'Nuke' );
+}
 
 
 @include('/conf/CustomSettings.php');
