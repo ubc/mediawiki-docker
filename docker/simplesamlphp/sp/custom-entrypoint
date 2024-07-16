@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+cd /var/www
+cp -urf simplesamlphp-base/* simplesamlphp/
+
+# run the cron job tagged startup, this grabs the IDP's metadata
+# we don't need a real cron job for this, since the IDP is pretty static,
+# hence why we only need to do this on startup
+php /var/www/simplesamlphp/modules/cron/bin/cron.php -t startup
+
+# call the parent entrypoint
+exec docker-php-entrypoint "$@"

@@ -1,10 +1,10 @@
-version: '2'
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MARIADB_DATABASE=mediawiki
+      - MARIADB_AUTO_UPGRADE=1
     volumes:
       - ./.data/db:/var/lib/mysql
     ports:
@@ -15,11 +15,49 @@ services:
         - "8089:8080"
       depends_on:
         - db
-  web: &app
-    image: ubcctlt/mediawiki
-    build: .
+  idp: # dev use only
+    build:
+      context: ./docker/simplesamlphp/idp/
+      dockerfile: Dockerfile.idp
     ports:
-      - 8080:80
+      - "8190:80"
+   # direct internal docker network traffic from idp external port 8190 to idp internal port 80
+  socat:
+    image: alpine/socat:1.8.0.0
+    depends_on:
+      - idp
+    command: "TCP-LISTEN:8190,fork,reuseaddr TCP:idp:80"
+    networks:
+      default:
+        aliases:
+          - idp.docker
+  sp:
+    build:
+      context: ./docker/simplesamlphp/sp/
+      dockerfile: Dockerfile.sp
+    volumes:
+      - simplesamlphp:/var/www/simplesamlphp
+      # dev cert, do not use for prod
+      - ./docker/simplesamlphp/sp/cert/:/var/www/simplesamlphp/cert/
+    environment: &simplesamlphpVars
+      SIMPLESAMLPHP_DEV: 1
+      SIMPLESAMLPHP_MEMCACHED_SERVER: memcached
+      SIMPLESAMLPHP_TRUSTED_DOMAIN: wiki.docker:8080
+      SIMPLESAMLPHP_BASEURL: '_saml2/'
+      SIMPLESAMLPHP_SP_ENTITY_ID: 'http://wiki.docker:8080/_saml2'
+      SIMPLESAMLPHP_IDP_ENTITY_ID: 'http://idp.docker:8190'
+      SIMPLESAMLPHP_IDP_METADATA_URL: 'http://idp.docker:8190/simplesaml/module.php/saml/idp/metadata'
+      SIMPLESAMLPHP_CRON_SECRET: IWEUMmYowDIpyJ4QgV4Pnis81AUxEsnY
+    depends_on:
+      - idp
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sp.rule=PathPrefix(`/_saml2`)"
+      - "traefik.http.routers.sp.entrypoints=wiki"
+      - "traefik.http.services.sp.loadBalancer.server.port=80"
+  web: &app
+    #image: ubcctlt/mediawiki
+    build: .
     # use the links section if you want to use a container for a database.
     # if not, and you want to use an external database server, configure
     # if with the environment variables in the 'environment' section.
@@ -34,64 +72,78 @@ services:
       # init script won't be able to move this file
       #- ./LocalSettings.php:/var/www/html/LocalSettings.php
       #- ./CustomHooks.php:/var/www/html/CustomHooks.php
+      - simplesamlphp:/var/www/simplesamlphp:ro
     environment:
-      - MEDIAWIKI_SITE_SERVER=http://localhost:8080
-      - MEDIAWIKI_SITE_NAME=My Awesome Wiki
-      - MEDIAWIKI_DB_HOST=db
-      - MEDIAWIKI_DB_PASSWORD=password
+      MEDIAWIKI_SITE_SERVER: http://wiki.docker:8080
+      MEDIAWIKI_SITE_NAME: My Awesome Wiki
+      MEDIAWIKI_DB_HOST: db
+      MEDIAWIKI_DB_PASSWORD: password
       # uncomment 'MEDIAWIKI_ENABLE_SSL' to enable SSL support
-      # - MEDIAWIKI_ENABLE_SSL=true
-      - MEDIAWIKI_EXTENSIONS=SmiteSpam,VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget,HitCounters,GTag,3D,TimedMediaHandler,Nuke
-      - MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES=true
+      # MEDIAWIKI_ENABLE_SSL: true
+      MEDIAWIKI_EXTENSIONS: SmiteSpam,VisualEditor,WikiEditor,ParserFunctions,Cite,TemplateData,Scribunto,InputBox,Widgets,Maps,Math,LiquidThreads,Variables,RightFunctions,PageInCat,CategoryTree,LabeledSectionTransclusion,UserPageEditProtection,Quiz,UploadWizard,Collection,DynamicPageList,EmbedPage,UWUBCMessages,googleAnalytics,Renameuser,caliper,DeleteBatch,LinkTarget,HitCounters,GTag,3D,TimedMediaHandler,Nuke
+      MEDIAWIKI_ALLOW_SITE_CSS_ON_RESTRICTED_PAGES: true
       # Add a logo to the wiki, can be relative paths to uploaded wiki images
       # Note: ICON (required) used by newer themes, LEGACY (optional) by older
-      #- MEDIAWIKI_LOGO_ICON=/path/to/100x100/image/or/50x50/svg.svg
-      #- MEDIAWIKI_LOGO_LEGACY1X=/path/to/135px_wide/image.png
-      #- MEDIAWIKI_LOGO_LEGACY2X=/images/d/d5/Ubcwiki_logo_2x.png
-      - PARSOID_DOMAIN=localhost
-      - RESTBASE_URL=http://nodeservices:7231
-      - LDAP_DOMAIN=CWL
-      - LDAP_SERVER=ldap
-      - LDAP_ENCRYPTION_TYPE=clear
-      - LDAP_SEARCH_ATTRS=cn
-      - LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
-      - LDAP_PROXY_PASSWORD=admin
-      - LDAP_BASE_DN=dc=example,dc=org
-      - LDAP_USER_BASE_DN=dc=example,dc=org
-      - LDAP_USERNAME_ATTR=cn
-      - LDAP_REALNAME_ATTR=displayname
-      - LDAP_EMAIL_ATTR=mail
-      - UBC_AUTH_ENABLED=true
+      #MEDIAWIKI_LOGO_ICON: /path/to/100x100/image/or/50x50/svg.svg
+      #MEDIAWIKI_LOGO_LEGACY1X: /path/to/135px_wide/image.png
+      #MEDIAWIKI_LOGO_LEGACY2X: /images/d/d5/Ubcwiki_logo_2x.png
+      PARSOID_DOMAIN: localhost
+      RESTBASE_URL: http://nodeservices:7231
+      #LDAP_DOMAIN=CWL
+      #LDAP_SERVER=ldap
+      #LDAP_ENCRYPTION_TYPE=clear
+      #LDAP_SEARCH_ATTRS=cn
+      #LDAP_PROXY_AGENT=cn=admin,dc=example,dc=org
+      #LDAP_PROXY_PASSWORD=admin
+      #LDAP_BASE_DN=dc=example,dc=org
+      #LDAP_USER_BASE_DN=dc=example,dc=org
+      #LDAP_USERNAME_ATTR=cn
+      #LDAP_REALNAME_ATTR=displayname
+      #LDAP_EMAIL_ATTR=mail
+      #UBC_AUTH_ENABLED=true
       # FIXME skip domain checking in Parsoid. used in our own ParsoidHandler_custom_xxxx.php.
       # in our Apache conf file, we are redirecting requests to restbase with domain "localhost",
       # but the Parsoid domain is not configurable.  hence disable the check.
-      - PARSOID_SKIP_DOAMIN_CHECK=true
-      - AUTO_CREATED_USER_REDIRECT=UBC_Wiki:Welcome
-      - MEDIAWIKI_MAIN_CACHE=redis
-      - MEDIAWIKI_REDIS_HOST=redis
-      - MEDIAWIKI_REDIS_PORT=6379
-      #- MEDIAWIKI_REDIS_PASSWORD=
-      - MEDIAWIKI_REDIS_PERSISTENT=true
-      #- MEDIAWIKI_MAIN_CACHE=CACHE_NONE
-      #- MEDIAWIKI_MEMCACHED_SERVERS=["memcached:11211"]
+      PARSOID_SKIP_DOAMIN_CHECK: true
+      AUTO_CREATED_USER_REDIRECT: UBC_Wiki:Welcome
+      # use Redis for cache
+      #MEDIAWIKI_MAIN_CACHE: redis
+      #MEDIAWIKI_REDIS_HOST: redis
+      #MEDIAWIKI_REDIS_PORT: 6379
+      #MEDIAWIKI_REDIS_PASSWORD:
+      #MEDIAWIKI_REDIS_PERSISTENT: true
+      # Use Memcache for cache
+      MEDIAWIKI_MAIN_CACHE: CACHE_MEMCACHED
+      MEDIAWIKI_MEMCACHED_SERVERS: '["memcached:11211"]'
+      # Use nothing for cache
+      #MEDIAWIKI_MAIN_CACHE: CACHE_NONE
       # uncomment to specify the wgUploadPath
-      # - MEDIAWIKI_UPLOAD_PATH=
-      #- GOOGLE_ANALYTICS_ID=UA-XXXXXXX-XX
+      # MEDIAWIKI_UPLOAD_PATH:
+      #GOOGLE_ANALYTICS_ID: UA-XXXXXXX-XX
       # GoogleAnalyticsMetrics: https://www.mediawiki.org/wiki/Extension:GoogleAnalyticsMetrics
-      #- GOOGLE_ANALYTICS_METRICS_ALLOWED
-      #- GOOGLE_ANALYTICS_METRICS_PATH
-      #- GOOGLE_ANALYTICS_METRICS_VIEWID
-      - DEBUG=true
-      # - CALIPER_HOST=https://caliper.imsglobal.org/caliper/PUT_TEST_BEARER_TOKEN_HERE/message
-      # - CALIPER_API_KEY=PUT_TEST_BEARER_TOKEN_HERE
-      # - CALIPER_BASE_URL=http://localhost:8888/test_url/
-      # - CALIPER_LDAP_ACTOR_HOMEPAGE=http://media_wiki_ldap_homepage
-      - MEDIAWIKI_UPGRADE_KEY=upgrade
+      #GOOGLE_ANALYTICS_METRICS_ALLOWED:
+      #GOOGLE_ANALYTICS_METRICS_PATH:
+      #GOOGLE_ANALYTICS_METRICS_VIEWID:
+      DEBUG: true
+      # CALIPER_HOST: https://caliper.imsglobal.org/caliper/PUT_TEST_BEARER_TOKEN_HERE/message
+      # CALIPER_API_KEY: PUT_TEST_BEARER_TOKEN_HERE
+      # CALIPER_BASE_URL: http://localhost:8888/test_url/
+      # CALIPER_LDAP_ACTOR_HOMEPAGE: http://media_wiki_ldap_homepage
+      MEDIAWIKI_UPGRADE_KEY: upgrade
+      MEMCACHED_SERVER: memcached
+      SIMPLESAMLPHP_ENABLED: true
+      UBC_AUTH_ENABLED: true
+      <<: *simplesamlphpVars
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wiki.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.wiki.entrypoints=wiki"
   job_runner:
     <<: *app
     command: php /var/www/html/maintenance/runJobs.php --wait
     ports:
       - 8081:80
+    labels: []
 
 # use combined image for now
 #  parsoid:
@@ -116,6 +168,19 @@ services:
       - LOG_LEVEL=debug
     volumes:
       - ./.data/services:/data
+  traefik:
+    image: "traefik:v3.1"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.wiki.address=:8080"
+      - "--entryPoints.traefik.address=:8195" # dashboard and api port
+    ports:
+      - "8080:8080"
+      - "8195:8195"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   ldap:
     image: osixia/openldap:1.1.9
     command: --copy-service
@@ -125,7 +190,11 @@ services:
       - ./dev/ldapadd_ubcedu.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/ldapadd_ubcedu.ldif
       - ./.data/ldap:/var/lib/ldap
       - ./.data/slapd.d:/etc/ldap/slapd.d
-#  memcached:
-#    image: memcached:1.5-alpine
-  redis:
-    image: redis:6.0-alpine
+  memcached:
+    image: memcached:1.6-alpine
+#  redis:
+#    image: redis:6.0-alpine
+
+volumes:
+  nslaveCache:
+  simplesamlphp:

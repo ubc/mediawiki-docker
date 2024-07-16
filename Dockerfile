@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 ENV WIKI_VERSION_MAJOR_MINOR=1.39
-ENV WIKI_VERSION_BUGFIX=7
+ENV WIKI_VERSION_BUGFIX=8
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
 ENV WIKI_VERSION_STR=1_39
 
@@ -18,8 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         imagemagick \
         unzip \
-        vim.tiny \
+        vim \
         libonig-dev \
+        # for simpleSAMLphp
+        libzip-dev \
         # for TimedMediaHandler
         ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
@@ -28,16 +30,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && docker-php-source extract
 
-# pcntl for Scribunto
-RUN docker-php-ext-install -j$(nproc) mbstring xml intl mysqli ldap pcntl opcache calendar \
-    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-source delete \
-    && pecl install imagick-3.4.3 \
-    && pecl install redis \
-    && docker-php-ext-enable imagick mysqli redis \
-    && a2enmod rewrite \
-    && rm -rf /tmp/pear
+# install php extensions
+# pcntl for Scribunto, zip for SimpleSAMLphp
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions mbstring xml intl mysqli ldap pcntl opcache calendar zip imagick redis memcached
+
+RUN a2enmod rewrite
 
 WORKDIR /var/www/html
 
@@ -61,13 +59,11 @@ COPY robots.txt /var/www/html/robots.txt
 
 # composer won't load plugins if we don't explicitly allow executing as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
-# FIXME temp hack to use lastest composer 1.x. composer 2.x version will break wikimedia/composer-merge-plugin
 RUN curl -L https://getcomposer.org/installer | php \
-#RUN curl -L https://getcomposer.org/composer-1.phar --output composer.phar \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in SmiteSpam VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math 3D MultimediaViewer TimedMediaHandler; do \
+    && for i in SmiteSpam VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math 3D MultimediaViewer TimedMediaHandler SimpleSAMLphp; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \

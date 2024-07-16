@@ -85,7 +85,13 @@ if (filter_var(loadenv('DEBUG', false), FILTER_VALIDATE_BOOLEAN)) {
     ini_set( 'display_errors', 1  );
     $wgShowExceptionDetails = true;
     $wgCacheDirectory = false;
+    $wgCachePages = false;
     $wgDebugLogFile = "/tmp/mw-debug-{$wgDBname}.log";
+    $wgDebugLogGroups = [
+        "SimpleSAMLphp" => "/tmp/mw-debug-SimpleSAMLphp.log",
+        "PluggableAuth" => "/tmp/mw-debug-PluggableAuth.log",
+        "UBCAuth" => "/tmp/mw-debug-UBCAuth.log",
+    ];
 }
 
 ## Shared memory settings
@@ -614,6 +620,55 @@ if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRIN
     // extension for UBC-specific authentication
     if ( filter_var( getenv( 'UBC_AUTH_ENABLED' ), FILTER_VALIDATE_BOOLEAN ) ) {
         wfLoadExtension( 'UBCAuth' );
+    }
+}
+
+if (filter_var( getenv( 'SIMPLESAMLPHP_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
+    wfLoadExtension( 'PluggableAuth' );
+    wfLoadExtension( 'SimpleSAMLphp' );
+    $wgSimpleSAMLphp_InstallDir = '/var/www/simplesamlphp';
+    $wgPluggableAuth_EnableLocalLogin = false;
+
+    $wgPluggableAuth_Config['CWL Log In'] = [
+        'plugin' => 'SimpleSAMLphp',
+        'data' => [
+            'authSourceId' => 'wiki-sp',
+            # standardized attributes with commonly used OIDs
+            # uid attribute, which in Shib is the CWL login name
+            'usernameAttribute' => 'urn:oid:0.9.2342.19200300.100.1.1',
+            # displayName attribute, aka preferred name
+            'realNameAttribute' => 'urn:oid:2.16.840.1.113730.3.1.241',
+            # mail attribute, email address
+            'emailAttribute' => 'urn:oid:0.9.2342.19200300.100.1.3',
+            # eduPersonAffiliation, an array of (staff, student, faculty, etc)
+            'eduPersonAffiliationAttribute' => 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1',
+            # non-standard attributes, uncertain OIDs
+            # ubc's puid
+            'puidAttribute' => 'ubcEduCwlPuid',
+        ]
+    ];
+
+    # disable local wiki account creation page
+    $wgGroupPermissions['*']['createaccount'] = false;
+    # allow auto creation
+    $wgGroupPermissions['*']['autocreateaccount'] = true;
+
+    # disable password resets entirely
+    # ref: https://www.mediawiki.org/wiki/Manual:$wgPasswordResetRoutes
+    $wgPasswordResetRoutes = array(
+        'username' => false,
+        'email' => false,
+    );
+
+    # enable local properties so users can edit their real name and email
+    # ref: https://www.mediawiki.org/wiki/Extension:PluggableAuth
+    $wgPluggableAuth_EnableLocalProperties = true;
+
+    if ( filter_var( getenv( 'UBC_AUTH_ENABLED' ), FILTER_VALIDATE_BOOLEAN ) ) {
+        wfLoadExtension( 'UBCAuth' );
+        $wgSimpleSAMLphp_MandatoryUserInfoProviders['username'] = [
+            'class' => 'MediaWiki\Extension\UBCAuth\UsernameInfoProvider'
+        ];
     }
 }
 

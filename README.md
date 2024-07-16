@@ -118,7 +118,54 @@ docker-compose down
 docker-compose up -d
 ```
 
-## Adding new LDAP users
+### Setting up SAML2 auth using the SimpleSAMLphp Extension.
+
+The dev docker compose configuration expects the wiki to be located at
+`wiki.docker` and the IDP to be located at `idp.docker`. This can be easily
+configured by editing the hosts file and mapping both `wiki.docker` and
+`idp.docker` to `127.0.0.1`.
+
+#### Generate Key & Cert
+
+**WARNING** the certs provided in `docker/simplesamlphp/sp/cert/` must NOT be
+used in any kind of prod environment. They are only there for easier setup of
+the docker compose dev environment.
+
+To generate your own cert and key:
+
+```bash
+openssl req -newkey rsa:3072 -new -x509 -days 3652 -nodes -out wiki-sp.crt -keyout wiki-sp.pem
+```
+
+The key and cert can replace the ones in `docker/simplesamlphp/sp/cert/` which
+will get mounted into the simplesamlphp container's
+/var/www/simplesamlphp/cert/ directory.
+
+#### SP Required Environment Variables
+
+Deployment of the SimpleSAMLphp SP is required if you want to use the
+SimpleSAMLphp extension. Note the IDP provided in docker compose is only for
+development purposes.
+
+The SP pulls metadata from the target IDP's metadata URL.
+
+Required SP environment variables:
+
+* SIMPLESAMLPHP_SECRET_SALT - Cryptographically secured random string used for salting purposes.
+* SIMPLESAMLPHP_ADMIN_PASSWORD - Password for the default admin user.
+* SIMPLESAMLPHP_MEMCACHED_SERVER - SimpleSAMLphp's SP cannot use the cookie cache as the wiki side SimpleSAMLphp extension will conflict with it. So we need to use a separate cache. For this purpose, we can just use the same Memcached server that the wiki uses.
+* SIMPLESAMLPHP_TRUSTED_DOMAIN - Enter the wiki's domain here so that the SP knows it is safe.
+* SIMPLESAMLPHP_BASEURL - Base URL for the SP. The SP needs to share the same domain as the wiki (or you run into cookie domain issues), so the base URL should be a path under the wiki domain.
+* SIMPLESAMLPHP_SP_ENTITY_ID - The identifier that the SP uses to identify itself
+* SIMPLESAMLPHP_IDP_ENTITY_ID - The target IDP's identifier.
+* SIMPLESAMLPHP_IDP_METADATA_URL - URL where we can get the IDP's metadata.
+* SIMPLESAMLPHP_CRON_SECRET - Random alphanumeric string for cron security.
+
+Optional SP environment variables:
+
+* SIMPLESAMLPHP_DEV - This turns on dev mode which enables the admin interface at `<SIMPLESAMLPHP_BASEURL>/module.php/admin/`. It also allows SIMPLESAMLPHP_SECRET_SALT to default to 'secretsalt' if unset and SIMPLESAMLPHP_ADMIN_PASSWORD to default to 'admin' if unset.
+
+### Adding new LDAP users
 
 You can connect to the LDAP container using your preferred LDAP GUI using `localhost:1389` with login `cn=admin,dc=example,dc=org` and password `admin`.
 

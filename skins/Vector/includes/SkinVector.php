@@ -337,7 +337,11 @@ abstract class SkinVector extends SkinMustache {
             $userMenuData = [];
 		} else {
 			// Appending as to not override data potentially set by the onSkinAfterPortlet hook.
-			$userMenuData[ 'html-after-portal' ] .= $this->getLogoutHTML();
+            # UBC Custom: SimpleSAMLphp extension creates another logout button
+            # so we need to hide the default one if we're using SimpleSAMLphp
+            if (!filter_var( getenv( 'SIMPLESAMLPHP_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
+                $userMenuData[ 'html-after-portal' ] .= $this->getLogoutHTML();
+            }
 		}
 
 		$moreItems = substr_count( $userMenuOverflowData['html-items'], '<li' );

@@ -196,6 +196,7 @@ if [ ! -e "$MEDIAWIKI_SHARED/installed" -a ! -f "$MEDIAWIKI_SHARED/install.lock"
     rm $MEDIAWIKI_SHARED/install.lock
 fi
 
+# TODO: Is this necessary?
 # Install extensions
 if [[ $MEDIAWIKI_EXTENSIONS ]]; then
     echo "<?php" > CustomExtensions.php
