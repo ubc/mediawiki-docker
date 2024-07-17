@@ -54,7 +54,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sp.rule=PathPrefix(`/_saml2`)"
       - "traefik.http.routers.sp.entrypoints=wiki"
-      - "traefik.http.services.sp.loadBalancer.server.port=80"
+      - "traefik.http.services.sp.loadBalancer.server.port=8080"
   web: &app
     #image: ubcctlt/mediawiki
     build: .

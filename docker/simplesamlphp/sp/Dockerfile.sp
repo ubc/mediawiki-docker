@@ -33,9 +33,12 @@ RUN composer install && \
 COPY config/ config/
 
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
+COPY ports.conf /etc/apache2/ports.conf
 
 # copy our custom entrypoint
 COPY custom-entrypoint /usr/local/bin/
+
+EXPOSE 8080
 
 # The wiki extension expects the simplesamlphp SP to be installed on the same
 # server and will import modules from the running SP. But we want the SP to run

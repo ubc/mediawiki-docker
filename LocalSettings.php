@@ -640,6 +640,7 @@ if (filter_var( getenv( 'SIMPLESAMLPHP_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
             'realNameAttribute' => 'urn:oid:2.16.840.1.113730.3.1.241',
             # mail attribute, email address
             'emailAttribute' => 'urn:oid:0.9.2342.19200300.100.1.3',
+            # UBCAuth required attributes:
             # eduPersonAffiliation, an array of (staff, student, faculty, etc)
             'eduPersonAffiliationAttribute' => 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1',
             # non-standard attributes, uncertain OIDs
