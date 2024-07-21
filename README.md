@@ -155,7 +155,8 @@ Required SP environment variables:
 * SIMPLESAMLPHP_ADMIN_PASSWORD - Password for the default admin user.
 * SIMPLESAMLPHP_MEMCACHED_SERVER - SimpleSAMLphp's SP cannot use the cookie cache as the wiki side SimpleSAMLphp extension will conflict with it. So we need to use a separate cache. For this purpose, we can just use the same Memcached server that the wiki uses.
 * SIMPLESAMLPHP_TRUSTED_DOMAIN - Enter the wiki's domain here so that the SP knows it is safe.
-* SIMPLESAMLPHP_BASEURL - Base URL for the SP. The SP needs to share the same domain as the wiki (or you run into cookie domain issues), so the base URL should be a path under the wiki domain.
+* SIMPLESAMLPHP_BASEURL - Base URL for the SP (no path). The SP needs to share the same domain as the wiki (or you run into cookie domain issues), so the base URL should just be the wiki domain with an http:// or https:// prefix. This config lets SimpleSAMLphp knows it's running externally on https even if internally the backend server is plain http, such as when behind a load balancer/reverse proxy.
+* SIMPLESAMLPHP_BASEURLPATH - Base URL plus the path for the SP.
 * SIMPLESAMLPHP_SP_ENTITY_ID - The identifier that the SP uses to identify itself
 * SIMPLESAMLPHP_IDP_ENTITY_ID - The target IDP's identifier.
 * SIMPLESAMLPHP_IDP_METADATA_URL - URL where we can get the IDP's metadata.

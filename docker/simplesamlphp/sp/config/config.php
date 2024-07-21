@@ -18,7 +18,10 @@ if (!isset($_ENV['SIMPLESAMLPHP_TRUSTED_DOMAIN'])) {
     exit("Set env var SIMPLESAMLPHP_TRUSTED_DOMAIN to the wiki's domain so SimpleSAMLphp knows it's safe.");
 }
 if (!isset($_ENV['SIMPLESAMLPHP_BASEURL'])) {
-    exit("Set env var SIMPLESAMLPHP_BASEURL to the SP's expected base url, e.g.: https://wiki.ubc.ca/_saml2/");
+    exit("Set env var SIMPLESAMLPHP_BASEURL to the SP's expected base url, e.g.: https://wiki.ubc.ca");
+}
+if (!isset($_ENV['SIMPLESAMLPHP_BASEURLPATH'])) {
+    exit("Set env var SIMPLESAMLPHP_BASEURLPATH to the SP's expected path, e.g.: https://wiki.ubc.ca/_saml2/");
 }
 if (!is_dir('/var/www/simplesamlphp/cert')) {
     exit("Missing cert directory, generate key+cert and mount them into /var/www/simplesamlphp/cert");
@@ -55,7 +58,7 @@ $config = [
      * external url, no matter where you come from (direct access or via the
      * reverse proxy).
      */
-    'baseurlpath' => $_ENV['SIMPLESAMLPHP_BASEURL'],
+    'baseurlpath' => $_ENV['SIMPLESAMLPHP_BASEURLPATH'],
 
     /*
      * The 'application' configuration array groups a set configuration options
@@ -76,7 +79,7 @@ $config = [
          * need to compute the right URLs yourself and pass them dynamically
          * to SimpleSAMLphp's API.
          */
-        //'baseURL' => 'https://example.com',
+        'baseURL' => $_ENV['SIMPLESAMLPHP_BASEURL'],
     ],
 
     /*
@@ -389,8 +392,8 @@ $config = [
      * must exist and be writable for SimpleSAMLphp. If set to something else, set
      * loggingdir above to 'null'.
      */
-    'logging.level' => SimpleSAML\Logger::NOTICE,
-    'logging.handler' => 'syslog',
+    'logging.level' => SimpleSAML\Logger::INFO,
+    'logging.handler' => 'stderr',
 
     /*
      * Specify the format of the logs. Its use varies depending on the log handler used (for instance, you cannot
@@ -656,7 +659,7 @@ $config = [
      *
      * If unset, SimpleSAMLphp will try to automatically determine the right value
      */
-    //'session.cookie.secure' => true,
+    'session.cookie.secure' => str_starts_with($_ENV['SIMPLESAMLPHP_BASEURL'], 'https') ? true : false,
 
     /*
      * Set the SameSite attribute in the cookie.

@@ -43,7 +43,8 @@ services:
       SIMPLESAMLPHP_DEV: 1
       SIMPLESAMLPHP_MEMCACHED_SERVER: memcached
       SIMPLESAMLPHP_TRUSTED_DOMAIN: wiki.docker:8080
-      SIMPLESAMLPHP_BASEURL: '_saml2/'
+      SIMPLESAMLPHP_BASEURL: 'http://wiki.docker:8080'
+      SIMPLESAMLPHP_BASEURLPATH: 'http://wiki.docker:8080/_saml2'
       SIMPLESAMLPHP_SP_ENTITY_ID: 'http://wiki.docker:8080/_saml2'
       SIMPLESAMLPHP_IDP_ENTITY_ID: 'http://idp.docker:8190'
       SIMPLESAMLPHP_IDP_METADATA_URL: 'http://idp.docker:8190/simplesaml/module.php/saml/idp/metadata'
