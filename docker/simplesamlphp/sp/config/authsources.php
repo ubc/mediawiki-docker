@@ -75,6 +75,9 @@ $config = [
             'urn:oid:x.x.x.x',
         ],
         */
+
+        // IDP message security error on singlelogout without this
+        'sign.logout' => true,
     ],
 
 
