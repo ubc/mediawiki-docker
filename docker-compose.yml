@@ -159,6 +159,9 @@ services:
 #      - MEDIAWIKI_API_URL=http://web/w/api.php
 #      - PARSOID_DOMAIN=localhost
 #      - PARSOID_URL=http://parsoid:8000
+# parsoid is now integrated into mediawiki since 1.35
+# restbase is being deprecated
+# TODO: we might not need nodeservices anymore in the next lts
   nodeservices:
     image: ubcctlt/mediawiki-node-services
     ports:

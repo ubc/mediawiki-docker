@@ -643,9 +643,8 @@ if (filter_var( getenv( 'SIMPLESAMLPHP_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
             # UBCAuth required attributes:
             # eduPersonAffiliation, an array of (staff, student, faculty, etc)
             'eduPersonAffiliationAttribute' => 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1',
-            # non-standard attributes, uncertain OIDs
-            # ubc's puid
-            'puidAttribute' => 'ubcEduCwlPuid',
+            # ubc's puid, non-standard attribute/OID
+            'puidAttribute' => 'urn:mace:dir:attribute-def:ubcEduCwlPuid',
         ]
     ];
 

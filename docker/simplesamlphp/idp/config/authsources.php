@@ -100,30 +100,30 @@ $config = [
             'student01:student01' => [
                 'uid' => ['student01'],
                 'displayName' => 'Student 01',
-                'ubcEduCwlPuid' => 'PUIDST01',
-                'eduPersonAffiliation' => ['member', 'student'],
+                'urn:mace:dir:attribute-def:ubcEduCwlPuid' => 'PUIDST01',
+                'eduPersonAffiliation' => ['student'],
                 'mail' => 'student01@example.edu'
             ],
             'instructor01:instructor01' => [
                 'uid' => ['instructor01'],
                 'displayName' => 'Instructor 01',
-                'ubcEduCwlPuid' => 'PUIDIN01',
+                'urn:mace:dir:attribute-def:ubcEduCwlPuid' => 'PUIDIN01',
                 'alt' => '51092d7f-2f38-4a91-bfb0-13a021c02df3',
-                'eduPersonAffiliation' => ['member', 'student'],
+                'eduPersonAffiliation' => ['faculty', 'student'],
                 'mail' => 'instructor01@example.edu'
             ],
             'employee:employeepass' => [
                 'uid' => ['employee'],
                 'displayName' => 'Employee 00',
-                'ubcEduCwlPuid' => 'PUIDEM00',
-                'eduPersonAffiliation' => ['member', 'employee'],
+                'urn:mace:dir:attribute-def:ubcEduCwlPuid' => 'PUIDEM00',
+                'eduPersonAffiliation' => ['staff', 'alumni'],
                 'mail' => 'employee@example.edu'
             ],
             # intended to simulate a basic CWL account
             'blockme01:blockme01' => [
                 'uid' => ['blockme01'],
                 'displayName' => 'Block Me01',
-                'ubcEduCwlPuid' => 'PUIDBM01',
+                'urn:mace:dir:attribute-def:ubcEduCwlPuid' => 'PUIDBM01',
                 'eduPersonAffiliation' => [],
                 'mail' => 'blockme01@example.edu'
             ],
