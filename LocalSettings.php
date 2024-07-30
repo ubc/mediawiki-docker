@@ -628,6 +628,10 @@ if (filter_var( getenv( 'SIMPLESAMLPHP_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
     wfLoadExtension( 'SimpleSAMLphp' );
     $wgSimpleSAMLphp_InstallDir = '/var/www/simplesamlphp';
     $wgPluggableAuth_EnableLocalLogin = false;
+    # allow background post request logout instead of requiring an additional
+    # user form post submit click. Seems to work despite possible
+    # incompatibility with SLO noted in docs.
+    $wgPluggableAuth_EnableFastLogout = true;
 
     $wgPluggableAuth_Config['CWL Log In'] = [
         'plugin' => 'SimpleSAMLphp',

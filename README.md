@@ -134,7 +134,7 @@ the docker compose dev environment.
 To generate your own cert and key:
 
 ```bash
-openssl req -newkey rsa:3072 -new -x509 -days 3652 -nodes -out wiki-sp.crt -keyout wiki-sp.pem
+openssl req -newkey rsa:4096 -new -x509 -days 3652 -nodes -out wiki-sp.crt -keyout wiki-sp.pem
 ```
 
 The key and cert can replace the ones in `docker/simplesamlphp/sp/cert/` which
