@@ -806,6 +806,7 @@ $wgGroupPermissions['user']['collectionsaveasuserpage'] = true;
 if ( getenv( 'AUTO_CREATED_USER_REDIRECT' ) ) {
     wfLoadExtension( 'AutoCreatedUserRedirector' );
     $wgAutoCreatedUserRedirect = getenv( 'AUTO_CREATED_USER_REDIRECT' );
+    $wgAutoBlockedUserRedirect = getenv( 'AUTO_BLOCKED_USER_REDIRECT' );
 }
 
 # Give Bureaucrats delete permission

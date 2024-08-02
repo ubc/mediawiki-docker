@@ -107,6 +107,7 @@ services:
       # but the Parsoid domain is not configurable.  hence disable the check.
       PARSOID_SKIP_DOAMIN_CHECK: true
       AUTO_CREATED_USER_REDIRECT: UBC_Wiki:Welcome
+      AUTO_BLOCKED_USER_REDIRECT: UBC_Wiki:Blocked
       # use Redis for cache
       #MEDIAWIKI_MAIN_CACHE: redis
       #MEDIAWIKI_REDIS_HOST: redis
