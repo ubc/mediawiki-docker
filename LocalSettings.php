@@ -450,6 +450,7 @@ $wgFilterLogTypes['renameuser'] = true;
 $wgLogRestrictions['renameuser'] = 'renameuser';
 
 if (getenv('SMTP_HOST')) {
+    $wgSMTP = [];
     $wgSMTP['host'] = loadenv('SMTP_HOST');
     if (getenv('SMTP_HOST_ID')) {
         $wgSMTP['IDHost'] = loadenv('SMTP_HOST_ID');
