@@ -812,3 +812,7 @@ if ( getenv( 'AUTO_CREATED_USER_REDIRECT' ) ) {
 
 # Give Bureaucrats delete permission
 $wgGroupPermissions['bureaucrat']['delete'] = true;
+
+# CookieExpiration in seconds
+$wgCookieExpiration = 43200;
+$wgExtendedLoginCookieExpiration = 43200;
