@@ -92,9 +92,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
     # WARNING: if updating DynamicPageList3 from 3.5.1, check if fix below is still required \
-    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz" \
+    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.0.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
-    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
     ##Comment out to use with MW Extension method
     ##&& echo "Installing SmiteSpam https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip" \
     ##&& curl -L -o smitespam.zip https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip \
