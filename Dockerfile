@@ -70,9 +70,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/EmbedPage/archive/v2.0.2.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
     && curl -Ls https://github.com/ubc/EmbedPage/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.39.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.39.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
     && mkdir /var/www/html/extensions/UWUBCMessages \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
