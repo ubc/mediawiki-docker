@@ -55,7 +55,7 @@ COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
-COPY resourcesCustom /var/www/html
+COPY resourcesCustom /var/www/html/resourcesCustom
 
 # composer won't load plugins if we don't explicitly allow executing as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
