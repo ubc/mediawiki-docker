@@ -599,7 +599,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
     # Math
     # ref: https://www.mediawiki.org/wiki/Extension:Mat://www.mediawiki.org/wiki/Extension:Math
-
+    $wgMathValidModes[] = 'mathml';
     $wgDefaultUserOptions['math'] = 'mathml';
 
     # used in browser, so it has to be public accessible, using proxy to forward request to Restbase
