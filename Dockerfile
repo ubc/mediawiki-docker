@@ -55,6 +55,7 @@ COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
+COPY resourcesCustom /var/www/html
 
 # composer won't load plugins if we don't explicitly allow executing as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -73,9 +74,6 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
-    && mkdir /var/www/html/extensions/UWUBCMessages \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
     && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
