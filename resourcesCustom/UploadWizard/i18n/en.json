@@ -1,0 +1,27 @@
+{
+    "@metadata": {
+        "authors": ["Pan Luo"]
+    },
+    "mwe-upwiz-license-cc-by-2.0": "Creative Commons Attribution 2.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-2.5-ca": "Creative Commons Attribution 2.5 Canada ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-sa-2.0": "Creative Commons Attribution ShareAlike 2.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-sa-2.5-ca": "Creative Commons Attribution ShareAlike 2.5 Canada ([$2 legal code])",
+    "mwe-upwiz-license-cdngov-head": "The work was created by the Government of Canada, is under Crown Copyright, and a requirement for permission to reproduce is not specified in the material.",
+    "mwe-upwiz-license-cr-cdn-gov": "This is an original work of the Government of Canada.",
+    "mwe-upwiz-license-cr-cdn-exp-head": "The copyright for this work has definitely expired in Canada. (see http://copyright.ubc.ca for more information about public domain)",
+    "mwe-upwiz-license-cr-cdn-exp": "I understand that if the file is determined to not be in the public domain, it will be deleted.",
+    "mwe-upwiz-license-ubc-head": "The copyright for this work is owned by UBC.",
+    "mwe-upwiz-license-cr-ubc": "I have indicated the UBC copyright holder in the source above.",
+    "mwe-upwiz-license-cc-by-nc-4.0": "Creative Commons Attribution NonCommercial 4.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-3.0": "Creative Commons Attribution NonCommercial 3.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-2.5-ca": "Creative Commons Attribution NonCommercial 2.5 Canada ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-2.5": "Creative Commons Attribution NonCommercial 2.5 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-2.0": "Creative Commons Attribution NonCommercial 2.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-sa-4.0": "Creative Commons Attribution NonCommercial ShareAlike 4.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-sa-3.0": "Creative Commons Attribution NonCommercial ShareAlike 3.0 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-sa-2.5-ca": "Creative Commons Attribution NonCommercial ShareAlike 2.5 Canada ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-sa-2.5": "Creative Commons Attribution NonCommercial ShareAlike 2.5 ([$2 legal code])",
+    "mwe-upwiz-license-cc-by-nc-sa-2.0": "Creative Commons Attribution NonCommercial ShareAlike 2.0 ([$2 legal code])",
+    "mwe-upwiz-source-ownwork-assert-cc-by-nc-sa-4.0": "I, $2, {{GENDER:$4|the copyright holder}} of {{PLURAL:$1|this work|these works}}, irrevocably grant anyone the right to use {{PLURAL:$1|this work|these works}} under the Creative Commons Attribution NonCommercial ShareAlike 4.0 license ([$3 legal code]).",
+    "mwe-upwiz-source-ownwork-cc-by-nc-sa-4.0-explain": "(Anyone may use, share or remix {{PLURAL:$1|this work|these works}} with NonCommercial purposes, as long as they credit me and share any derivative work under this license.)"
+}

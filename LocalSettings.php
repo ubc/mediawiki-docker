@@ -181,6 +181,55 @@ $wgExtensionFunctions[] = function() {
     return true;
 };
 
+// The section below is to add additional licenses for uploadWizard. Was using UWUBCMessages
+// extension, but not working anymore. (wfMessage() function in php still works, but it seems
+// jqueryMsg doesn't support cross extension interface message.
+//
+// register a ResourceLoader module...
+$wgResourceModules['myUploadWizardResources'] = array(
+	//'scripts' => array( 'resourcesCustom/UploadWizard/myUploadWizard.js' ),
+
+	'styles' => array( 'resourcesCustom/UploadWizard/myUploadWizard.css' ),
+
+	'messages' => array(
+		"mwe-upwiz-license-cc-by-2.0",
+		"mwe-upwiz-license-cc-by-2.5-ca",
+		"mwe-upwiz-license-cc-by-sa-2.0",
+		"mwe-upwiz-license-cc-by-sa-2.5-ca",
+		"mwe-upwiz-license-cr-cdn-gov",
+		"mwe-upwiz-license-cdngov-head",
+		"mwe-upwiz-license-cr-cdn-exp-head",
+		"mwe-upwiz-license-cr-cdn-exp",
+		"mwe-upwiz-license-ubc-head",
+		"mwe-upwiz-license-cr-ubc",
+		"mwe-upwiz-license-cc-by-nc-4.0",
+		"mwe-upwiz-license-cc-by-nc-3.0",
+		"mwe-upwiz-license-cc-by-nc-2.5-ca",
+		"mwe-upwiz-license-cc-by-nc-2.5",
+		"mwe-upwiz-license-cc-by-nc-2.0",
+		"mwe-upwiz-license-cc-by-nc-sa-4.0",
+		"mwe-upwiz-license-cc-by-nc-sa-3.0",
+		"mwe-upwiz-license-cc-by-nc-sa-2.5-ca",
+		"mwe-upwiz-license-cc-by-nc-sa-2.5",
+		"mwe-upwiz-license-cc-by-nc-sa-2.0",
+		"mwe-upwiz-source-ownwork-assert-cc-by-nc-sa-4.0",
+		"mwe-upwiz-source-ownwork-cc-by-nc-sa-4.0-explain"
+	),
+
+);
+
+// The content of the messages (based on  $IP/extensions/UploadWizard/i18n/*.json)
+$wgMessagesDirs['myUploadWizardResources'] = 'resourcesCustom/UploadWizard/i18n';
+
+// Set up a hook to add our resource loader module to every page
+function myUploadWizardResourcesLoader( &$out ) {
+        $out->addModules( 'myUploadWizardResources' );
+        return true;
+}
+
+// Register the hook
+$wgHooks['BeforePageDisplay'][] = 'myUploadWizardResourcesLoader';
+
 // UploadWizard License Customization
 $wgUploadWizardConfig = array(
   'feedbackLink' => false,
@@ -191,7 +240,7 @@ $wgUploadWizardConfig = array(
   ],
   'licenses' => [
     'cc-by-sa-4.0' => [
-        'msg' => 'mwe-upwiz-license-cc-by-sa-4.0',
+        'msg' => 'mwe-upwiz-license-cc-by-sa-4.0-text',
         'icons' => [ 'cc-by', 'cc-sa' ],
         'url' => '//creativecommons.org/licenses/by-sa/4.0/',
         'languageCodePrefix' => 'deed.'
@@ -450,6 +499,7 @@ $wgFilterLogTypes['renameuser'] = true;
 $wgLogRestrictions['renameuser'] = 'renameuser';
 
 if (getenv('SMTP_HOST')) {
+    $wgSMTP = [];
     $wgSMTP['host'] = loadenv('SMTP_HOST');
     if (getenv('SMTP_HOST_ID')) {
         $wgSMTP['IDHost'] = loadenv('SMTP_HOST_ID');
@@ -549,7 +599,7 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
     # Math
     # ref: https://www.mediawiki.org/wiki/Extension:Mat://www.mediawiki.org/wiki/Extension:Math
-
+    $wgMathValidModes[] = 'mathml';
     $wgDefaultUserOptions['math'] = 'mathml';
 
     # used in browser, so it has to be public accessible, using proxy to forward request to Restbase

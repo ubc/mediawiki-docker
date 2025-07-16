@@ -1,9 +1,9 @@
-FROM php:7.4-apache
+FROM php:8.3-apache
 
-ENV WIKI_VERSION_MAJOR_MINOR=1.39
-ENV WIKI_VERSION_BUGFIX=12
+ENV WIKI_VERSION_MAJOR_MINOR=1.43
+ENV WIKI_VERSION_BUGFIX=2
 ENV WIKI_VERSION=$WIKI_VERSION_MAJOR_MINOR.$WIKI_VERSION_BUGFIX
-ENV WIKI_VERSION_STR=1_39
+ENV WIKI_VERSION_STR=1_43
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -11,10 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev \
         libmagickwand-dev \
         libicu-dev \
-        libldap2-dev \
-        libldap-2.4-2 \
+        libldap-dev \
         libldap-common \
-        netcat \
+        netcat-traditional \
         git \
         imagemagick \
         unzip \
@@ -56,6 +55,7 @@ COPY LocalSettings.php /var/www/html/LocalSettings.php
 COPY CustomHooks.php /var/www/html/CustomHooks.php
 COPY composer.local.json /var/www/html/composer.local.json
 COPY robots.txt /var/www/html/robots.txt
+COPY resourcesCustom /var/www/html/resourcesCustom
 
 # composer won't load plugins if we don't explicitly allow executing as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -63,7 +63,7 @@ RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
 
 RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
-    && for i in SmiteSpam VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions PageInCat CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math 3D MultimediaViewer TimedMediaHandler SimpleSAMLphp; do \
+    && for i in SmiteSpam VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math 3D MultimediaViewer TimedMediaHandler SimpleSAMLphp; do \
       FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
       curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
@@ -71,12 +71,9 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/EmbedPage/archive/v2.0.2.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
     && curl -Ls https://github.com/ubc/EmbedPage/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.39.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/mw1.39.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz" \
-    && mkdir /var/www/html/extensions/UWUBCMessages \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UWUBCMessages/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UWUBCMessages \
+    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
     && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
     && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
@@ -86,16 +83,16 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.5.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.0.5.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
-    && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz" \
+    && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/REL1_43.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
     && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
     && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
     # WARNING: if updating DynamicPageList3 from 3.5.1, check if fix below is still required \
-    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz" \
+    && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.4.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
-    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.5.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.4.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
     ##Comment out to use with MW Extension method
     ##&& echo "Installing SmiteSpam https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip" \
     ##&& curl -L -o smitespam.zip https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip \
@@ -104,28 +101,6 @@ RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = 
     #&& echo "Installing patched Math extension from https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz" \
     #&& mkdir -p /var/www/html/extensions/Math \
     #&& curl -Ls https://github.com/ubc/mediawiki-extensions-Math/archive/REL1_35.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Math
-
-# WARNING: Below fix is only for DynamicPageList3 3.5.1
-# Patch to fix Math Exam Resources DPL
-COPY ./extensions/DynamicPageList/includes/Query.php /var/www/html/extensions/DynamicPageList/includes/Query.php
-# TODO: Remove if >REL1_40, as this is a backport from Vector REL1_40
-# Add login button next to "..." menu in top-right corner
-COPY skins/Vector/includes/Hooks.php /var/www/html/skins/Vector/includes/Hooks.php
-COPY skins/Vector/includes/SkinVector.php /var/www/html/skins/Vector/includes/SkinVector.php
-# TODO: Also remove on upgrade, this is a Vector customization to make the main
-# menu behave more like current Wikipedia (dropdown over the page)
-COPY skins/Vector/resources/skins.vector.styles/components/Sidebar.less \
-     /var/www/html/skins/Vector/resources/skins.vector.styles/components/Sidebar.less
-COPY skins/Vector/resources/skins.vector.styles/components/TableOfContents.less \
-     /var/www/html/skins/Vector/resources/skins.vector.styles/components/TableOfContents.less
-COPY skins/Vector/resources/skins.vector.styles/layouts/screen.less \
-     /var/www/html/skins/Vector/resources/skins.vector.styles/layouts/screen.less
-COPY skins/Vector/includes/templates/Sidebar.mustache \
-     /var/www/html/skins/Vector/includes/templates/Sidebar.mustache
-COPY skins/Vector/includes/templates/skin.mustache \
-     /var/www/html/skins/Vector/includes/templates/skin.mustache
-COPY skins/Vector/resources/skins.vector.styles/components/MenuTabs.less \
-     /var/www/html/skins/Vector/resources/skins.vector.styles/components/MenuTabs.less
 
 # composer.local.json merges in composer.json from caliper extension, so we
 # need to run composer update after getting the extensions.
