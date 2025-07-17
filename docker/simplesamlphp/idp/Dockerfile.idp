@@ -17,7 +17,7 @@ RUN chown www-data. simplesamlphp/ /var/cache/simplesamlphp
 USER www-data
 
 # Install simplesamlphp
-ARG SIMPLESAMLPHP_TAG=v2.2.1
+ARG SIMPLESAMLPHP_TAG=v2.4.2
 RUN git clone --branch $SIMPLESAMLPHP_TAG https://github.com/simplesamlphp/simplesamlphp.git
 WORKDIR /var/www/simplesamlphp
 

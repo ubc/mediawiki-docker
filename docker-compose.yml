@@ -38,7 +38,7 @@ services:
     volumes:
       - simplesamlphp:/var/www/simplesamlphp
       # dev cert, do not use for prod
-      - ./docker/simplesamlphp/sp/cert/:/var/www/simplesamlphp/cert/
+      - ./docker/simplesamlphp/sp/cert/:/var/www/simplesamlphp-base/cert/
     environment: &simplesamlphpVars
       SIMPLESAMLPHP_DEV: 1
       SIMPLESAMLPHP_MEMCACHED_SERVER: memcached
