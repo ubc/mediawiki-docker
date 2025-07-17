@@ -2,6 +2,7 @@
 set -e
 
 cd /var/www
+rm -rf simplesamlphp/* # only rm directory contents
 cp -urf simplesamlphp-base/* simplesamlphp/
 
 # run the cron job tagged startup, this grabs the IDP's metadata

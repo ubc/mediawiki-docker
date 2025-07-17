@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.3-apache
 WORKDIR /var/www
 
 # Install composer & php extension installer
@@ -17,7 +17,7 @@ USER www-data
 
 # Install simplesamlphp, note we're using an older version for compatibility
 # as the wiki simplesamlphp extension is in a php7 environment
-ARG SIMPLESAMLPHP_TAG=v2.0.13
+ARG SIMPLESAMLPHP_TAG=v2.4.2
 RUN git clone --branch $SIMPLESAMLPHP_TAG https://github.com/simplesamlphp/simplesamlphp.git simplesamlphp-base
 WORKDIR /var/www/simplesamlphp-base
 
