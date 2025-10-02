@@ -186,6 +186,26 @@ services:
       - "8195:8195"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+#  restbase:
+#    image: restbase
+#    restart: always
+#    ports:
+#      - 7231:7231
+#    environment:
+#      - RB_CONF_NUM_WORKERS=0
+#      - RB_CONF_DOMAIN_web=http://web/w/api.php
+#      - RB_CONF_PARSOID_HOST=http://parsoid:8000
+#      - RB_CONF_BASE_URI_TEMPLATE=http://web/api/rest_v1
+#      - RB_CONF_API_URI_TEMPLATE=http://web/api.php
+#      - RB_CONF_LOGGING_LEVEL=debug #trace
+#      - RB_CONF_PDF_URI=http://pdf:3000
+#  parsoid:
+#    image: thenets/parsoid:0.10
+#    ports:
+#      - 8142:8000
+#    environment:
+#      - PARSOID_DOMAIN_web=http://web/api.php
+#      - PARSOID_LOGGING_LEVEL=debug
   ldap:
     image: osixia/openldap:1.1.9
     command: --copy-service
