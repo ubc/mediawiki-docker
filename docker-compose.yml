@@ -65,6 +65,9 @@ services:
     # see README.md for more details.
     links:
       - db
+    depends_on:
+      - idp
+      - sp
     # uncomment the 'volumes' section to enable a shared volume with docker-compose
     volumes:
       - ./.data/web:/data:rw
@@ -174,7 +177,7 @@ services:
     volumes:
       - ./.data/services:/data
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"

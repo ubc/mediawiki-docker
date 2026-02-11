@@ -115,6 +115,10 @@ switch ($wgMainCacheType) {
         }
         break;
 }
+# by default, uses $wgMainCacheType. With memcached, sessions start getting
+# deleted when it runs out of space, so use db to be sure that user sessions
+# don't expire prematurely.
+$wgSessionCacheType = CACHE_DB;
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

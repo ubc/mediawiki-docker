@@ -17,7 +17,7 @@ USER www-data
 
 # Install simplesamlphp, note we're using an older version for compatibility
 # as the wiki simplesamlphp extension is in a php7 environment
-ARG SIMPLESAMLPHP_TAG=v2.4.2
+ARG SIMPLESAMLPHP_TAG=v2.4.4
 RUN git clone --branch $SIMPLESAMLPHP_TAG https://github.com/simplesamlphp/simplesamlphp.git simplesamlphp-base
 WORKDIR /var/www/simplesamlphp-base
 

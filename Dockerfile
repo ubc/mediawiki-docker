@@ -39,6 +39,10 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 
 RUN curl -L https://releases.wikimedia.org/mediawiki/$WIKI_VERSION_MAJOR_MINOR/mediawiki-$WIKI_VERSION.tar.gz | tar xz --strip=1
+# TODO: REMOVE ON UPGRADE. Composer refuse to install phpunit with high
+# vulnerability, so we switch it out for a patched version.
+# https://github.com/advisories/GHSA-vvj3-c3rp-c85p
+RUN sed -i -e 's/"phpunit\/phpunit": "9.6.19"/"phpunit\/phpunit": "9.6.33"/g' composer.json
 
 COPY php.ini /usr/local/etc/php/
 
