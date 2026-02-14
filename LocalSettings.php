@@ -603,11 +603,13 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Wi
 if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Math') !== false) {
     # Math
     # ref: https://www.mediawiki.org/wiki/Extension:Mat://www.mediawiki.org/wiki/Extension:Math
-    $wgMathValidModes[] = 'mathml';
-    $wgDefaultUserOptions['math'] = 'mathml';
+    $wgMathValidModes[] = 'mathjax';
+    $wgMathValidModes[] = 'native';
+    $wgDefaultUserOptions['math'] = 'mathjax';
 
     # used in browser, so it has to be public accessible, using proxy to forward request to Restbase
-    $wgMathFullRestbaseURL= $wgServer . '/api/rest_';
+    # default to use Beta cluster's Mathoid and RESTBase services
+    #$wgMathFullRestbaseURL= $wgServer . '/api/rest_';
 }
 
 if (getenv('LDAP_SERVER') || getenv('LDAP_BASE_DN') || getenv('LDAP_SEARCH_STRINGS') || getenv('LDAP_SEARCH_ATTRS')) {
