@@ -7,7 +7,8 @@
     "extra": {
         "merge-plugin": {
             "include": [
-                "extensions/caliper/composer.json"
+                "extensions/caliper/composer.json",
+                "extensions/AbuseFilter/composer.json"
             ]
         }
     }
