@@ -847,6 +847,9 @@ if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'Nu
     wfLoadExtension( 'Nuke' );
 }
 
+if (getenv('MEDIAWIKI_EXTENSIONS') && strpos(getenv('MEDIAWIKI_EXTENSIONS'), 'AbuseFilter') !== false) {
+    wfLoadExtension( 'AbuseFilter' );
+}
 
 @include('/conf/CustomSettings.php');
 
