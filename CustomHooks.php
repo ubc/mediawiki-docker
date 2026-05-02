@@ -1,8 +1,7 @@
 <?php
-use Exception;
-
 use IMSGlobal\Caliper\entities\agent\Person;
 use CaliperExtension\caliper\CaliperSensor;
+use MediaWiki\MediaWikiServices;
 
 if (filter_var( getenv( 'UBC_AUTH_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
     # if Caliper is setup, use a custom actor with puid
@@ -19,22 +18,23 @@ if (filter_var( getenv( 'UBC_AUTH_ENABLED' ), FILTER_VALIDATE_BOOLEAN )) {
                 return false;
             }
 
-            $puid = null;
             $userId = $user->getId();
 
-            $dbr = wfGetDB(DB_REPLICA);
-            $res = $dbr->select(
-                array('ucead' => $wgDBprefix.'user_cwl_extended_account_data'),   // tables
-                array('ucead.puid'),       // fields
-                array('ucead.user_id' => $userId, 'ucead.account_status' => 1),   // where clause
-                __METHOD__,     // caller function name
-                array('LIMIT' => 1)      // options. fetch first row only
-            );
-            foreach ($res as $row) {
-                $puid = $row->puid;
-            }
+            $dbr = MediaWikiServices::getInstance()
+                ->getConnectionProvider()
+                ->getReplicaDatabase();
 
-            if (!$puid) {
+            $puid = $dbr->newSelectQueryBuilder()
+                ->select( 'puid' )
+                ->from( $wgDBprefix . 'user_cwl_extended_account_data' )
+                ->where( [
+                    'user_id' => $userId,
+                    'account_status' => 1,
+                ] )
+                ->caller( __METHOD__ )
+                ->fetchField();
+
+            if ( !$puid ) {
                 return false;
             }
 
