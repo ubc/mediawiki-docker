@@ -517,7 +517,11 @@ if (getenv('SMTP_HOST')) {
     }
 }
 
-$wgReadOnly = loadenv('MEDIAWIKI_READONLY', null);
+# Only apply read-only mode to web requests so maintenance scripts run from
+# the CLI (e.g. update.php, runJobs.php) can still write to the database.
+if (PHP_SAPI !== 'cli') {
+    $wgReadOnly = loadenv('MEDIAWIKI_READONLY', null);
+}
 
 $wgLocalisationCacheConf = array(
     'class' => 'LocalisationCache',

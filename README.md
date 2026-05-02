@@ -38,6 +38,7 @@ Use the following environmental variables to generate a `LocalSettings.php` and 
  - `-e LDAP_EMAIL_ATTR` (defaults to `mail`, LDAP attribute for for email address)
  - `-e MEDIAWIKI_MAIN_CACHE` (defaults to `CACHE_NONE`, main cache)
  - `-e MEDIAWIKI_MEMCACHED_SERVERS` (defaults to `[]`, list of memcched servers, comma separated, e.g.["memcached:11211", "memcached1:11211"])
+ - `-e MEDIAWIKI_READONLY` (defaults not set; configures `$wgReadOnly`. When set to a non-empty string, the wiki is put into read-only mode and the string is shown to users as the reason. Leave unset to allow normal editing.)
  - `-e UBC_AUTH` (defaults not set. Set o `true` to enable the UBC-specific authentication extension)
  - `-e AUTO_CREATED_USER_REDIRECT` (defaults not set.  Set it to a wiki page [e.g. `Main_page`] to redirect new users to a specific page when they first login via LDAP)
 
