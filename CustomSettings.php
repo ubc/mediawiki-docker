@@ -64,6 +64,15 @@ $wgNamespacesWithSubpages[NS_YOUTUBE] = false;
 $wgNamespacesWithSubpages[NS_YOUTUBE_TALK] = false;
 $wgContentNamespaces[] = NS_YOUTUBE;
 
+## YouTube video IDs are case-sensitive, so do NOT force first-letter
+## capitalization in this namespace. Without this, IDs stored with a lowercase
+## first letter (e.g. "yQq6akVEFqk") yield invalid Titles (canExist() === false),
+## which makes MediaWiki 1.43 throw a PreconditionException while rendering any
+## Special:Search result that matches them, returning HTTP 500 for the whole
+## search page.
+$wgCapitalLinkOverrides[NS_YOUTUBE] = false;
+$wgCapitalLinkOverrides[NS_YOUTUBE_TALK] = false;
+
 ## Elearning Namespace
 define("NS_ELEARNING", 118);
 define("NS_ELEARNING_TALK", 119);
