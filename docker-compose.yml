@@ -210,7 +210,7 @@ services:
 #      - PARSOID_DOMAIN_web=http://web/api.php
 #      - PARSOID_LOGGING_LEVEL=debug
   ldap:
-    image: osixia/openldap:1.1.9
+    image: osixia/openldap:1.5.0
     command: --copy-service
     ports:
       - 1389:389
