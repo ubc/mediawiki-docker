@@ -66,37 +66,45 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -L https://getcomposer.org/installer | php \
     && php composer.phar install --no-dev
 
-RUN EXTS=`curl https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
+# Every download must fail the build: `set -e` does not apply inside a for loop that is
+# part of an && list, so each extdist step checks its own result and exits on error.
+RUN EXTS=`curl -fsSL https://extdist.wmflabs.org/dist/extensions/ | awk 'BEGIN { FS = "\""  } ; {print $2}'` \
     && for i in SmiteSpam VisualEditor Scribunto LiquidThreads Cite WikiEditor LDAPProvider PluggableAuth LDAPAuthentication2 ParserFunctions TemplateData InputBox Widgets Variables RightFunctions CategoryTree LabeledSectionTransclusion UserPageEditProtection Quiz Collection DeleteBatch LinkTarget HitCounters Math 3D MultimediaViewer TimedMediaHandler SimpleSAMLphp; do \
-      FILENAME=`echo "$EXTS" | grep ^${i}-REL${WIKI_VERSION_STR}`; \
+      FILENAME=`echo "$EXTS" | grep "^${i}-REL${WIKI_VERSION_STR}-"`; \
+      if [ -z "$FILENAME" ] || [ `echo "$FILENAME" | wc -l` -ne 1 ]; then \
+        echo "Expected one extdist tarball for $i REL${WIKI_VERSION_STR}, found: '$FILENAME'" >&2; exit 1; \
+      fi; \
       echo "Installing https://extdist.wmflabs.org/dist/extensions/$FILENAME"; \
-      curl -Ls https://extdist.wmflabs.org/dist/extensions/$FILENAME | tar xz -C /var/www/html/extensions; \
+      curl -fsSL -o /tmp/extension.tar.gz https://extdist.wmflabs.org/dist/extensions/$FILENAME \
+        && tar xzf /tmp/extension.tar.gz -C /var/www/html/extensions \
+        && rm /tmp/extension.tar.gz \
+        || exit 1; \
     done \
     && echo "Installing https://github.com/ubc/EmbedPage/archive/v2.0.2.tar.gz" \
     && mkdir /var/www/html/extensions/EmbedPage \
-    && curl -Ls https://github.com/ubc/EmbedPage/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
+    && curl -fLs https://github.com/ubc/EmbedPage/archive/v2.0.1.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/EmbedPage \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz" \
     && mkdir /var/www/html/extensions/UploadWizard \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
+    && curl -fLs https://github.com/ubc/mediawiki-extensions-UploadWizard/archive/refs/heads/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UploadWizard \
     && echo "Installing https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz" \
     && mkdir -p /var/www/html/extensions/Widgets/smarty \
-    && curl -Ls https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
+    && curl -fLs https://github.com/smarty-php/smarty/archive/v3.1.44.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/Widgets/smarty \
     && echo "Installing https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/GTag \
-    && curl -Ls https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GTag\
+    && curl -fLs https://github.com/SkizNet/mediawiki-GTag/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/GTag\
     && echo "Installing https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.1.0.tar.gz" \
     && mkdir -p /var/www/html/extensions/caliper \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
+    && curl -fLs https://github.com/ubc/mediawiki-extensions-caliper/archive/v2.1.0.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/caliper \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-ubcauth/archive/REL1_43.tar.gz" \
     && mkdir -p /var/www/html/extensions/UBCAuth\
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-ubcauth/archive/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
+    && curl -fLs https://github.com/ubc/mediawiki-extensions-ubcauth/archive/REL1_43.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/UBCAuth \
     && echo "Installing https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz" \
     && mkdir -p /var/www/html/extensions/AutoCreatedUserRedirector \
-    && curl -Ls https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
+    && curl -fLs https://github.com/ubc/mediawiki-extensions-AutoCreatedUserRedirector/archive/master.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/AutoCreatedUserRedirector \
     # WARNING: if updating DynamicPageList3 from 3.5.1, check if fix below is still required \
     && echo "Installing https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.4.tar.gz" \
     && mkdir -p /var/www/html/extensions/DynamicPageList \
-    && curl -Ls https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.4.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
+    && curl -fLs https://github.com/Universal-Omega/DynamicPageList3/archive/refs/tags/3.6.4.tar.gz | tar xz --strip=1 -C /var/www/html/extensions/DynamicPageList
     ##Comment out to use with MW Extension method
     ##&& echo "Installing SmiteSpam https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip" \
     ##&& curl -L -o smitespam.zip https://github.com/wikimedia/mediawiki-extensions-SmiteSpam/archive/REL1_39.zip \
