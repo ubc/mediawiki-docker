@@ -5,9 +5,13 @@ WORKDIR /var/www
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+# timezonedb: config.php logs in America/Vancouver, and PHP's bundled timezone database
+# (2026.1) still has BC falling back to UTC-8 on 2026-11-01; BC stays on UTC-7. The check
+# fails the build if Vancouver is still UTC-8 in December 2026.
 RUN apt-get update && \
     apt-get -y install git curl vim  && \
-    install-php-extensions zip memcached
+    install-php-extensions zip memcached timezonedb && \
+    php -r 'exit((new DateTime("2026-12-01 12:00", new DateTimeZone("America/Vancouver")))->getOffset() === -7 * 3600 ? 0 : 1);'
 
 # create dirs we need and make sure apache user can access them
 RUN mkdir simplesamlphp-base/ /var/cache/simplesamlphp simplesamlphp/ && \
