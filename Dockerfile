@@ -31,8 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # install php extensions
 # pcntl for Scribunto, zip for SimpleSAMLphp
+# timezonedb: PHP 8.3's bundled timezone database (2026.1) still has America/Vancouver
+# falling back to UTC-8 on 2026-11-01, but BC stays on UTC-7. Users whose time preference
+# is Vancouver would see times an hour early. The PECL extension replaces it with the
+# current database; the check fails the build if Vancouver is still UTC-8 in December 2026.
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions mbstring xml intl mysqli ldap pcntl opcache calendar zip imagick redis memcached
+RUN install-php-extensions mbstring xml intl mysqli ldap pcntl opcache calendar zip imagick redis memcached timezonedb \
+    && php -r 'exit((new DateTime("2026-12-01 12:00", new DateTimeZone("America/Vancouver")))->getOffset() === -7 * 3600 ? 0 : 1);'
 
 RUN a2enmod rewrite
 
