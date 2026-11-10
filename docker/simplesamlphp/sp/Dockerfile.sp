@@ -9,6 +9,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 # (2026.1) still has BC falling back to UTC-8 on 2026-11-01; BC stays on UTC-7. The check
 # fails the build if Vancouver is still UTC-8 in December 2026.
 RUN apt-get update && \
+    apt-get -y upgrade && \
     apt-get -y install git curl vim  && \
     install-php-extensions zip memcached timezonedb && \
     php -r 'exit((new DateTime("2026-12-01 12:00", new DateTimeZone("America/Vancouver")))->getOffset() === -7 * 3600 ? 0 : 1);'
@@ -30,7 +31,10 @@ WORKDIR /var/www/simplesamlphp-base
 RUN rm -r cert/
 
 # Use composer to install dependencies
+# twig, symfony/yaml and saml2-legacy are bumped past the versions locked by simplesamlphp
+# for their security fixes; the constraints in simplesamlphp's composer.json still allow them.
 RUN composer install && \
+    composer update twig/twig symfony/yaml simplesamlphp/saml2-legacy --with-dependencies && \
     composer require simplesamlphp/simplesamlphp-module-metarefresh
 
 # Copy config files
